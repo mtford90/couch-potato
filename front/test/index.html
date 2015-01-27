@@ -1,0 +1,28 @@
+<html>
+<head>
+    <title>Mocha CouchDB (Front)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../bower_components/mocha/mocha.css"/>
+    <script src="../../bower_components/chai/chai.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../../bower_components/mocha/mocha.js"></script>
+    <script>mocha.setup('bdd')</script>
+
+    <script>
+        onload = function () {
+            mocha.globals(['jQuery']);
+            var runner = mocha.run();
+        };
+    </script>
+</head>
+<body>
+<div id="mocha"></div>
+<script src="../build/bundle.js"></script>
+<script src="../build/test-bundle.js"></script>
+<script src="../../bower_components/source-map-support/browser-source-map-support.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="http://localhost:6597/livereload.js"></script>
+<script>sourceMapSupport.install();</script>
+</body>
+</html>
