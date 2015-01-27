@@ -220,6 +220,17 @@
         };
 
         /**
+         * CouchDB has a weird convention for user identifiers. This function simply transforms the username into
+         * to match that convention.
+         * @param username
+         * @returns {string}
+         * @private
+         */
+        function _getFullyQualifedUsername(username) {
+            return 'org.couchdb.user:' + username;
+        }
+
+        /**
          * @param opts
          * @param opts.username
          * @param opts.password
@@ -228,7 +239,7 @@
         var createUser = function (opts, cb) {
             var username = opts.username,
                 password = opts.password;
-            var fullyQualifiedUsername = 'org.couchdb.user:' + username;
+            var fullyQualifiedUsername = _getFullyQualifedUsername(username);
             http({
                 path: '_users/' + fullyQualifiedUsername,
                 type: 'PUT',
@@ -505,6 +516,13 @@
                     }
                     else cb(err);
                 });
+            },
+
+            getUser: function (username, cb) {
+                var fullyQualifiedUsername = _getFullyQualifedUsername(username);
+                http({
+                    path: '_users/' + fullyQualifiedUsername
+                }, cb);
             }
         };
 

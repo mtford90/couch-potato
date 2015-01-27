@@ -1,0 +1,21 @@
+{
+  "name": "couchdb-as-a-backend",
+  "version": "0.0.1",
+  "authors": [
+    "Michael Ford <mtford@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "source-map-support": "*",
+    "chai": "~1.10.0",
+    "mocha": "~2.1.0",
+    "jquery": "~2.1.3"
+  }
+}

@@ -34,6 +34,7 @@ gulp.task('watch', ['build'], function () {
     open('http://localhost:7682/front/test');
     gulp.watch(['front/src/**/*.js'], ['build-couchdb']);
     gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['build-test']);
+    gulp.watch(['config.js'])
 });
 
 

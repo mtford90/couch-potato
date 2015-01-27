@@ -177,6 +177,36 @@ describe.only('CouchDB integration tests', function () {
         });
     });
 
+    describe('get user', function () {
+        beforeEach(function (done) {
+            couch.admin.reset(done);
+        });
+        it('random user, should only be able to get the name', function (done) {
+            var username = 'mike',
+                password = 'mike';
+            couch.createUser({
+                username: username,
+                password: password
+            }, function (err) {
+                if (!err) {
+                    couch.getUser('mike', function (err, doc) {
+                        assert.ok(doc._id);
+                        assert.ok(doc._rev);
+                        assert.equal(doc.name, username);
+                        done();
+                    });
+                } else done(err);
+            });
+        });
 
+        it('no user exists', function (done) {
+            couch.getUser('mike', function (err, doc) {
+                assert.notOk(doc);
+                assert.ok(err.isHttpError);
+                done();
+            });
+        });
+        done(err);
+    });
 
 });
