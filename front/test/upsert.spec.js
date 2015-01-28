@@ -1,19 +1,24 @@
-var assert = require('chai').assert;
+var assert = require('chai').assert,
+    prettyJson = require('./util').prettyJson;
+
+
 
 describe('upsert documents', function () {
     var couch = couchdb();
     beforeEach(function (done) {
         couch.admin.reset(function (err) {
             if (!err) {
-                couch.admin.createDatabase(done);
+                couch.admin.createDatabase({anonymousUpdates: true, anonymousReads: true}, done);
             }
             else done(err);
         });
     });
+
     describe('no user', function () {
+
         it('auto ids', function (done) {
             couch.upsertDocument({x: 1}, function (err, doc, resp) {
-                assert.notOk(err);
+                assert.notOk(err, 'Was expecting error to be falsy: ' + prettyJson(err));
                 assert.ok(resp.id);
                 assert.ok(resp.rev);
                 assert.ok(resp.ok);

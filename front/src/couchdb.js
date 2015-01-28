@@ -176,7 +176,7 @@
                     cb(new CouchError({thrown: errorThrown}));
                 }
                 else {
-                    cb(new CouchError({message: errorThrown, xhr: jqXHR, status: jqXHR.status}));
+                    cb(new CouchError({message: errorThrown, xhr: jqXHR, status: jqXHR.status, opts: opts}));
                 }
             });
             return {cb: cb, opts: opts};
@@ -408,6 +408,61 @@
                         }
                     });
                 },
+
+                /**
+                 *
+                 * @param doc
+                 * @param opts
+                 * @param opts.id
+                 * @param [opts.remove]
+                 * @param [opts.admin]
+                 * @param [opts.database]
+                 * @param cb
+                 * @private
+                 */
+                _toggleDoc: function (doc, opts, cb) {
+                    var _http = opts.admin ? adminHttp : http,
+                        database = opts.database || defaultDB,
+                        id = opts.id,
+                        remove = opts.remove;
+                    var path = database + '/' + id;
+                    console.log('_http', _http);
+                    _http(merge(true, opts, {
+                        path: path
+                    }), function (err, resp) {
+                        var found = true;
+                        if (err) {
+                            if (err.status == API.HTTP_STATUS.NOT_FOUND) found = false;
+                            else {
+                                cb(err);
+                                return;
+                            }
+                        }
+                        if (remove && found) {
+                            // delete it
+                            path += '?rev=' + resp._rev;
+                            _http(merge(true, opts, {
+                                type: 'DELETE',
+                                path: path
+                            }), cb);
+                        }
+                        else if (!remove) {
+                            // create or update it
+                            if (found) doc._rev = resp._rev;
+                            _http(merge(true, opts, {
+                                type: 'PUT',
+                                path: path,
+                                data: doc
+                            }), cb);
+                        }
+                        else {
+                            // Nothing to do!
+                            cb(null, resp);
+                        }
+                    })
+                },
+
+
                 /**
                  * Clear out the database. Useful during testing.
                  * @param [optsOrCb]
@@ -424,10 +479,58 @@
                         cb(err);
                     });
                 },
+
                 /**
+                 *
+                 * @param [opts]
+                 * @param [opts.anonymousUpdates]
+                 * @param [opts.anonymousReads]
+                 * @param [cb]
+                 */
+                configureDatabase: function (opts, cb) {
+                    var tasks = [];
+                    if (opts.anonymousUpdates != undefined) {
+                        tasks.push(function (done) {
+                            var doc = {
+                                language: 'javascript',
+                                validate_doc_update: function (new_doc, old_doc, userCtx) {
+                                    if (!userCtx.name) {
+                                        throw({forbidden: "Not Authorized"});
+                                    }
+                                }.toString()
+                            };
+                            API.admin._toggleDoc(doc, {
+                                id: '_design/blockAnonymousUpdates',
+                                remove: opts.anonymousUpdates,
+                                admin: true
+                            }, done);
+                        });
+                    }
+                    if (opts.anonymousReads != undefined) {
+                        tasks.push(function (done) {
+                            var doc = {
+                                language: 'javascript',
+                                validate_doc_read: function (doc, userCtx) {
+                                    if (!userCtx.name) {
+                                        throw({forbidden: "Not Authorized"});
+                                    }
+                                }.toString()
+                            };
+                            API.admin._toggleDoc(doc, {
+                                id: '_design/blockAnonymousReads',
+                                remove: opts.anonymousReads,
+                                admin: true
+                            }, done);
+                        });
+                    }
+                    _.parallel(tasks, cb);
+                }
+                , /**
                  *
                  * @param [optsOrCb]
                  * @param [optsOrCb.database]
+                 * @param [optsOrCb.anonymousUpdates]
+                 * @param [optsOrCb.anonymousReads]
                  * @param [optsOrCb.username]
                  * @param [optsOrCb.password]
                  * @param [cb]
@@ -438,8 +541,14 @@
                     cb = __ret.cb;
                     opts.path = opts.database || defaultDB;
                     opts.type = 'PUT';
-                    adminHttp(opts, cb);
-                },
+                    adminHttp(opts, function (err) {
+                        if (!err) {
+                            console.log('configureDatabase opts', opts);
+                            this.configureDatabase(opts, cb);
+                        } else cb(err);
+                    }.bind(this));
+                }
+                ,
 
                 /**
                  * @param [optsOrCb]
@@ -460,7 +569,9 @@
             },
             HTTP_STATUS: {
                 UNAUTHORISED: 401,
-                CONFLICT: 409
+                CONFLICT: 409,
+                NOT_FOUND: 404,
+                FORBIDDEN: 403
             },
             AUTH_METHOD: AUTH_METHOD,
             /**
