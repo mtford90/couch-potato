@@ -1,0 +1,23 @@
+@import url(http://fonts.googleapis.com/css?family=Montserrat);
+
+@font-face {
+  font-family: 'caecilia';
+  src: url('../fonts/Caecilia-LT-Std-45-Light_8982.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html, body {
+  font-family: montserrat, helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  text-rendering: optimizeLegibility; /* 1 */
+  font-feature-settings: "kern" 1; /* 2 */
+  font-kerning: normal; /* 3 */
+}
+
+.title {
+  font-family: caecilia, serif;
+}
+

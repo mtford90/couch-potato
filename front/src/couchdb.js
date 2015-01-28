@@ -667,6 +667,8 @@
                 }.bind(this));
             },
 
+
+
             /**
              * Will repeatedly hit CouchDB until doc has been merged (e.g. no conflict)
              * @param doc
