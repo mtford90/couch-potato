@@ -443,7 +443,8 @@
 
             },
             HTTP_STATUS: {
-                UNAUTHORISED: 401
+                UNAUTHORISED: 401,
+                CONFLICT: 409
             },
             AUTH_METHOD: AUTH_METHOD,
             /**
@@ -478,6 +479,20 @@
                 return {doc: doc, opts: opts, cb: cb};
             },
             /**
+             * Updates special fields in the couchdb doc given a response from couchdb.
+             * @param doc
+             * @param resp
+             * @private
+             * @returns {string|undefined} - validation error if appropriate
+             */
+            _updateDocWithResponse: function (doc, resp) {
+                var newid = resp.id,
+                    newrev = resp.rev;
+                if (!newid) return 'No id in response';
+                if (!newrev) return 'No rev in response';
+                doc._id = newid;
+                doc._rev = newrev;
+            }, /**
              * Creates or updates a document. Uses PUT/POST appropriately.
              * @param [doc]
              * @param [opts]
@@ -492,7 +507,6 @@
                     id, path;
                 if (doc._id) {
                     id = doc._id;
-                    delete doc._id;
                 }
                 path = opts.db || defaultDB;
                 if (id) path += '/' + id;
@@ -510,12 +524,56 @@
                 }, function (err, resp) {
                     if (!err) {
                         var processedDoc = merge({}, doc);
-                        processedDoc._id = resp.id;
-                        processedDoc._rev = resp.rev;
+                        err = this._updateDocWithResponse(processedDoc, resp);
                         cb(err, processedDoc, resp);
                     }
-                    else cb(err);
-                });
+                    else {
+                        var isConflict = err.status == API.HTTP_STATUS.CONFLICT,
+                            shouldMerge = opts.conflicts == 'merge';
+                        if (shouldMerge && isConflict) {
+                            API._merge(doc, opts, cb);
+                        }
+                        else {
+                            cb(err);
+                        }
+                    }
+                }.bind(this));
+            },
+
+            /**
+             * Will repeatedly hit CouchDB until doc has been merged (e.g. no conflict)
+             * @param doc
+             * @param opts
+             * @param cb
+             * @private
+             */
+            _merge: function (doc, opts, cb) {
+                console.log('doc._id', doc);
+                API.getDocument(doc._id, opts, function (err, resp) {
+                    if (!err) {
+                        delete doc._rev;
+                        doc = merge(resp, doc);
+                        // Try again now that _rev should be updated.
+                        this.upsertDocument(doc, opts, cb);
+                    } else cb(err);
+                }.bind(this));
+            },
+
+            /**
+             * Get document with id
+             * @param _id
+             * @param [optsOrCb]
+             * @param [optsOrCb.database]
+             * @param [cb]
+             */
+            getDocument: function (_id, optsOrCb, cb) {
+                var __ret = optsOrCallback(optsOrCb, cb),
+                    opts = __ret.opts;
+                cb = __ret.cb;
+                var database = opts.database || defaultDB;
+                http({
+                    path: database + '/' + _id
+                }, cb);
             },
 
             getUser: function (username, cb) {

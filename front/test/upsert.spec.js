@@ -99,4 +99,56 @@ describe('upsert documents', function () {
             });
         });
     });
+    describe('update', function () {
+        it('if specify latest revision, should update', function (done) {
+            couch.upsertDocument({x: 1}, function (err, doc) {
+                assert.notOk(err);
+                assert.equal(doc.x, 1);
+                assert.ok(doc._rev);
+                assert.ok(doc._id);
+                doc.x = 2;
+                couch.upsertDocument(doc, function (err, newdoc) {
+                    assert.notOk(err);
+                    assert.equal(newdoc.x, 2);
+                    assert.notEqual(newdoc._rev, doc._rev);
+                    done();
+                });
+            });
+        });
+        it('if dont specify revision, should give conflict error', function (done) {
+            couch.upsertDocument({x: 1}, function (err, doc) {
+                assert.notOk(err);
+                assert.equal(doc.x, 1);
+                assert.ok(doc._rev);
+                assert.ok(doc._id);
+                // should cause a conflict
+                delete doc._rev;
+                doc.x = 2;
+                couch.upsertDocument(doc, function (err) {
+                    assert.ok(err.isHttpError);
+                    assert.equal(err.status, 409);
+                    console.log('err', err);
+                    done();
+                });
+            });
+        });
+        it('if dont specify revision, but enable conflict merge, should update', function (done) {
+            couch.upsertDocument({x: 1}, function (err, doc) {
+                assert.notOk(err);
+                assert.equal(doc.x, 1);
+                assert.ok(doc._rev);
+                assert.ok(doc._id);
+                // should cause a conflict
+                delete doc._rev;
+                doc.x = 2;
+                couch.upsertDocument(doc, {conflicts: 'merge'}, function (err, newdoc) {
+                    console.log('err', err);
+                    assert.notOk(err, 'Should no longer throw an error as should be merging any conflicts');
+                    assert.equal(newdoc.x, 2);
+                    assert.notEqual(newdoc._rev, doc._rev);
+                    done();
+                });
+            });
+        });
+    });
 });

@@ -31,7 +31,6 @@ describe('User management', function () {
                 done();
             });
         });
-        done(err);
     });
     describe('auth', function () {
         beforeEach(function (done) {
