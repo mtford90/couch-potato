@@ -1,0 +1,3 @@
+[submodule "submodules/rcouch"]
+	path = submodules/rcouch
+	url = https://github.com/rcouch/rcouch.git

@@ -439,6 +439,22 @@
                     opts.path = opts.database || defaultDB;
                     opts.type = 'PUT';
                     adminHttp(opts, cb);
+                },
+
+                /**
+                 * @param [optsOrCb]
+                 * @param [optsOrCb.database]
+                 * @param [optsOrCb.username]
+                 * @param [optsOrCb.password]
+                 * @param [cb]
+                 */
+                getPermissions: function (optsOrCb, cb) {
+                    var __ret = optsOrCallback(optsOrCb, cb);
+                    var opts = __ret.opts;
+                    cb = __ret.cb;
+                    var database = opts.database || defaultDB;
+                    opts.path = database + '/_security';
+                    adminHttp(opts, cb);
                 }
 
             },
