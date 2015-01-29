@@ -55,6 +55,17 @@ function scaleToFit(width, height) {
     return {width: outputWidth, height: outputHeight};
 }
 
+function scaleToMatchWidth(width, height) {
+    var outputHeight;
+    if ((width / height) > (maxWidth / maxHeight)) {
+        outputHeight = (maxWidth * height) / width;
+    }
+    else {
+        outputHeight = maxHeight;
+    }
+    return {width: maxWidth, height: outputHeight};
+}
+
 var data = [
     {
         url: "http://www.100percentoptical.com/images/2014/10/london.jpg",
@@ -195,7 +206,7 @@ var MasonryComp = React.createClass({
             <div ref="container" className="masonry">
                 <div className="items">
                     {data.map(function (item) {
-                        var scaled = scaleToFit(item.width, item.height);
+                        var scaled = scaleToMatchWidth(item.width, item.height);
                         return (
                             <div className="item" style={{width: scaled.width, height: scaled.height}}>
                                 <Img onMouseOut={this.onMouseOut}
