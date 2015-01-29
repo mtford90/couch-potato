@@ -14,6 +14,7 @@ var baseWidth = 300,
     maxWidth = baseWidth,
     maxHeight = baseHeight;
 
+
 var calculateMaxWidth = function () {
     var $main = $('.main');
     var w = $main.width();
@@ -132,6 +133,18 @@ var data = [
         title: 'Gherkin',
         width: 675,
         height: 900
+    },
+    {
+        url: 'http://moore.se/emil/files/2013/02/london-227602.jpg',
+        title: 'Westminster',
+        width: 2560,
+        height: 1600
+    },
+    {
+        url: 'http://cdn.londonandpartners.com/l-and-p/assets/business/45356-640x360-london_eye_hero.jpg',
+        title: 'London Eye',
+        width: 640,
+        height: 360
     }
 ];
 
@@ -238,7 +251,7 @@ var MasonryComp = React.createClass({
                         $node.masonry('layout');
                     });
                 }
-            }.bind(this), 300));
+            }.bind(this), 150));
         }.bind(this));
 
         //
