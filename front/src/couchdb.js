@@ -71,7 +71,12 @@
         /**
          * Encapsulates auth strategy e.g. session, token. Used in every HTTP request to couch.
          */
-        var auth = null;
+        var auth = null,
+            adminAuth = {
+                method: AUTH_METHOD.BASIC,
+                username: DEFAULT_ADMIN,
+                password: DEFAULT_ADMIN
+            };
 
 
         /**
@@ -105,20 +110,19 @@
         /**
          * Configure the ajax options to match the configured authorisation method.
          * @param opts
-         * @param [_auth] - override the configured auth method
+         * @param auth
          * @private
          */
-        function _configureAuth(opts, _auth) {
-            var a = _auth || auth;
-            if (a) {
+        function _configureAuth(opts, auth) {
+            if (auth) {
                 var headers = opts.headers || {};
                 opts.headers = headers;
                 // Allow for authorization overrides.
                 if (!headers.Authorization) {
-                    if (a.method == AUTH_METHOD.BASIC) {
+                    if (auth.method == AUTH_METHOD.BASIC) {
                         // Note: jQuery >=1.7 has username/password options. I do this simply for backwards
                         // compatibility.
-                        headers.Authorization = 'Basic ' + btoa(a.username + ':' + a.password);
+                        headers.Authorization = 'Basic ' + btoa(auth.username + ':' + auth.password);
                     }
                 }
             }
@@ -126,9 +130,10 @@
 
         /**
          * Send a HTTP request
-         * @param {Object} opts - The usual jquery opts +
-         * @param {Object} opts.path - Path to append to host
-         * @param {Function} [cb]
+         * @param opts - The usual jquery opts +
+         * @param opts.path - Path to append to host
+         * @param opts.admin - True if endpoint requires admin access
+         * @param [cb]
          * @private
          */
         function _http(opts, cb) {
@@ -148,7 +153,8 @@
                     }
                 }
             }
-            _configureAuth(opts);
+            console.log('opts', opts);
+            _configureAuth(opts, opts.admin ? adminAuth : auth);
             var path = opts.path || '';
             if (opts.path != null) delete opts.path;
             if (!opts.url) {
@@ -202,24 +208,6 @@
         };
 
         /**
-         * Send a http request (or multiple http requests) as an admin.
-         * @param {Object|Array} opts - The usual jquery opts, or an array of them.
-         * @param {Object} [opts.path] - Path to append to host
-         * @param [opts.username] - Admin username
-         * @param [opts.password] - Admin username
-         * @param cb
-         */
-        var adminHttp = function (opts, cb) {
-            var adminOpts = {
-                username: opts.username,
-                password: opts.password
-            };
-            delete opts.username;
-            delete opts.password;
-            http(_configureAjaxOptsForAdmin(adminOpts, opts), cb);
-        };
-
-        /**
          * CouchDB has a weird convention for user identifiers. This function simply transforms the username into
          * to match that convention.
          * @param username
@@ -256,19 +244,15 @@
         /**
          * The first time, an admin user can be created without any permissions. Subsequently, you must authenticate
          * as an another admin user
-         * @param opts
-         * @param opts.username
-         * @param opts.password
-         * @param cb
+         * @param [cb]
          */
-        var createAdminUser = function (opts, cb) {
-            var username = opts.username || DEFAULT_ADMIN,
-                password = opts.password || DEFAULT_ADMIN;
+        var createAdminUser = function (cb) {
             http({
-                path: '_config/admins/' + username,
+                path: '_config/admins/' + adminAuth.username,
                 type: 'PUT',
-                data: '"' + password + '"'
-            })
+                data: '"' + adminAuth.password + '"',
+                admin: true
+            }, cb);
         };
 
         /**
@@ -309,36 +293,27 @@
             });
         };
 
+
         /**
-         * Configure the ajax options with admin username + password
-         * @param ajaxOptsOrOpts
-         * @param [ajaxOptsOrOpts.username]
-         * @param [ajaxOptsOrOpts.password]
-         * @param [ajaxOpts] - O
-         * @private
+         * Admin users are different with CouchDB and don't exist under the normal _users database.
+         * @param [authOpts]
+         * @param [authOpts.username]
+         * @param [authOpts.password]
+         * @param cb
          */
-        function _configureAjaxOptsForAdmin(ajaxOptsOrOpts, ajaxOpts) {
-            var opts;
-            if (!ajaxOpts) {
-                ajaxOpts = ajaxOptsOrOpts;
-                opts = {};
-            }
-            else {
-                opts = ajaxOptsOrOpts;
-            }
-            var authOpts = {
-                method: AUTH_METHOD.BASIC,
-                username: opts.username || DEFAULT_ADMIN,
-                password: opts.password || DEFAULT_ADMIN
-            };
-            if (Array.isArray(ajaxOpts)) {
-                ajaxOpts.forEach(function (_ajaxOpts) {
-                    _configureAuth(_ajaxOpts, authOpts);
-                })
-            }
-            _configureAuth(ajaxOpts, authOpts);
-            return ajaxOpts;
-        }
+        var adminLogin = function (authOpts, cb) {
+            // Only admins can read global config, therefore we test that credentials are correct by querying that
+            // database.
+            http({
+                path: '_config'
+            }, function (err) {
+                if (!err) {
+                    adminAuth = merge({}, authOpts);
+                    adminAuth.method = AUTH_METHOD.BASIC;
+                }
+                cb(err);
+            });
+        };
 
         function optsOrCallback(optsOrCb, cb) {
             var opts;
@@ -363,28 +338,15 @@
             },
             createUser: createUser,
             basicAuth: basicAuth,
+            adminLogin: adminLogin,
             logout: function () {
                 auth = null;
             },
             admin: {
                 createAdminUser: createAdminUser,
                 /**
-                 * @param [opts]
-                 * @param [opts.username]
-                 * @param [opts.password]
-                 * @param cb
-                 */
-                deleteAllUsers: function (opts, cb) {
-                    http(_configureAjaxOptsForAdmin(opts, {
-                        path: '_users/',
-                        type: 'DELETE'
-                    }), cb);
-                },
-                /**
                  * Clear out the database. Useful during testing.
                  * @param [optsOrCb]
-                 * @param [optsOrCb.username] - admin username
-                 * @param [optsOrCb.password] - admin password
                  * @param cb
                  */
                 deleteAllDatabases: function (optsOrCb, cb) {
@@ -392,19 +354,21 @@
                         opts = __ret.opts;
                     cb = __ret.cb;
                     opts.path = '_all_dbs';
-                    adminHttp(opts, function (err, data) {
+                    opts.admin = true;
+                    http(opts, function (err, data) {
                         if (err) cb(err);
                         else {
                             var ajaxOpts = data.reduce(function (memo, dbName) {
                                 if (!IGNORE_DATABASES.memberOf(dbName)) {
                                     memo.push({
                                         type: 'DELETE',
-                                        path: dbName
+                                        path: dbName,
+                                        admin: true
                                     });
                                 }
                                 return memo;
                             }, []);
-                            adminHttp(ajaxOpts, cb);
+                            http(ajaxOpts, cb);
                         }
                     });
                 },
@@ -421,14 +385,14 @@
                  * @private
                  */
                 _toggleDoc: function (doc, opts, cb) {
-                    var _http = opts.admin ? adminHttp : http,
-                        database = opts.database || defaultDB,
+                    var database = opts.database || defaultDB,
                         id = opts.id,
                         remove = opts.remove;
                     var path = database + '/' + id;
                     console.log('_http', _http);
-                    _http(merge(true, opts, {
-                        path: path
+                    http(merge(true, opts, {
+                        path: path,
+                        admin: opts.admin
                     }), function (err, resp) {
                         var found = true;
                         if (err) {
@@ -441,18 +405,20 @@
                         if (remove && found) {
                             // delete it
                             path += '?rev=' + resp._rev;
-                            _http(merge(true, opts, {
+                            http(merge(true, opts, {
                                 type: 'DELETE',
-                                path: path
+                                path: path,
+                                admin: opts.admin
                             }), cb);
                         }
                         else if (!remove) {
                             // create or update it
                             if (found) doc._rev = resp._rev;
-                            _http(merge(true, opts, {
+                            http(merge(true, opts, {
                                 type: 'PUT',
                                 path: path,
-                                data: doc
+                                data: doc,
+                                admin: opts.admin
                             }), cb);
                         }
                         else {
@@ -462,12 +428,11 @@
                     })
                 },
 
-
                 /**
                  * Clear out the database. Useful during testing.
                  * @param [optsOrCb]
-                 * @param [optsOrCb.username]
-                 * @param [optsOrCb.password]
+                 * @param [optsOrCb.username] - admin username
+                 * @param [optsOrCb.password] - admin password
                  * @param cb
                  */
                 reset: function (optsOrCb, cb) {
@@ -531,8 +496,6 @@
                  * @param [optsOrCb.database]
                  * @param [optsOrCb.anonymousUpdates]
                  * @param [optsOrCb.anonymousReads]
-                 * @param [optsOrCb.username]
-                 * @param [optsOrCb.password]
                  * @param [cb]
                  */
                 createDatabase: function (optsOrCb, cb) {
@@ -541,7 +504,8 @@
                     cb = __ret.cb;
                     opts.path = opts.database || defaultDB;
                     opts.type = 'PUT';
-                    adminHttp(opts, function (err) {
+                    opts.admin = true;
+                    http(opts, function (err) {
                         if (!err) {
                             console.log('configureDatabase opts', opts);
                             this.configureDatabase(opts, cb);
@@ -553,8 +517,6 @@
                 /**
                  * @param [optsOrCb]
                  * @param [optsOrCb.database]
-                 * @param [optsOrCb.username]
-                 * @param [optsOrCb.password]
                  * @param [cb]
                  */
                 getPermissions: function (optsOrCb, cb) {
@@ -563,7 +525,8 @@
                     cb = __ret.cb;
                     var database = opts.database || defaultDB;
                     opts.path = database + '/_security';
-                    adminHttp(opts, cb);
+                    opts.admin = true;
+                    http(opts, cb);
                 }
 
             },
@@ -666,7 +629,6 @@
                     }
                 }.bind(this));
             },
-
 
 
             /**
