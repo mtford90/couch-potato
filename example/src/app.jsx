@@ -14,8 +14,7 @@ var baseWidth = 300,
     maxWidth = baseWidth,
     maxHeight = baseHeight;
 
-$(window).resize(function () {
-    console.log(1);
+var calculateMaxWidth = function () {
     var $main = $('.main');
     var w = $main.width();
     var h = $main.height();
@@ -27,11 +26,17 @@ $(window).resize(function () {
     }
     console.log('remainder', remainder);
     var numPhotos = Math.floor(w / parseFloat(baseWidth));
-    console.log('numPhotos', numPhotos);
-    maxWidth = baseWidth + (remainder / numPhotos);
+    if (numPhotos == 1) {
+        maxWidth = w;
+    }
+    else {
+        console.log('numPhotos', numPhotos);
+        maxWidth = baseWidth + (remainder / numPhotos);
+    }
     console.log('maxWidth', maxWidth);
+};
 
-});
+$(window).resize(calculateMaxWidth);
 
 function scaleToFit(width, height) {
     var outputWidth, outputHeight;
@@ -110,6 +115,12 @@ var data = [
         title: "London Marathon",
         width: 5184,
         height: 3350
+    },
+    {
+        url: 'http://www.e-architect.co.uk/images/jpgs/london_city/gherkin_london_a071112_a.jpg',
+        title: 'Gherkin',
+        width: 675,
+        height: 900
     }
 ];
 
