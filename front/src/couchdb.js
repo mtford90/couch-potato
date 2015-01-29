@@ -100,7 +100,7 @@
          *
          * @param opts
          * @param {String} [opts.message] - Error message
-         * @param {jqXHR} [opts.xhr] - jqXHR object
+         * @param {jqXHR|XMLHttpRequest} [opts.xhr] - a jqXHR or XMLHttprequest object
          * @param {Error} [opts.thrown] - An Error object
          * @constructor
          */
@@ -800,6 +800,145 @@
                 else {
                     cb(new CouchError({message: 'Must specify either data or ajax'}));
                 }
+            },
+
+            /**
+             *
+             * @param opts
+             * @param opts.data
+             * @param opts.mimeType,
+             * @param opts.attName
+             * @param cb
+             */
+            constructAttachmentFromRawData: function (opts, cb) {
+                var attachment = {};
+                attachment[opts.attName] = {
+                    'content-type': opts.mimeType,
+                    data: btoa(data)
+                };
+                cb(null, attachment)
+            },
+
+            /**
+             *
+             * @param opts
+             * @param {Blob} opts.data - blob
+             * @param opts.mimeType,
+             * @param opts.attName
+             * @param cb
+             */
+            constructAttachmentFromBlob: function (opts, cb) {
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var b64 = reader.result;
+                    var attachment = {};
+                    attachment[opts.attName] = {
+                        'content-type': opts.mimeType,
+                        data: b64
+                    };
+                    cb(null, attachment);
+                };
+                reader.onerror = function (err) {
+                    cb(err);
+                };
+                reader.readAsDataURL(opts.data);
+            },
+            /**
+             *
+             * @param opts
+             * @param {string} opts.url - a url to something
+             * @param opts.attName
+             * @param [opts.mimeType]
+             * @param cb
+             */
+            constructAttachmentFromURL: function (opts, cb) {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (this.readyState == 4) {
+                        if (this.status == 200) {
+                            opts.data = this.response; // response is a Blob object.
+                            API.constructAttachmentFromBlob(opts, cb);
+                        }
+                        else {
+                            cb(new CouchError({
+                                message: 'Error getting attachment from URL: ' + opts.url,
+                                xhr: xhr,
+                                status: this.status
+                            }))
+                        }
+                    }
+
+                };
+                xhr.open('GET', opts.url);
+                xhr.responseType = 'blob';
+                xhr.send();
+            },
+
+
+
+            /**
+             * Enables attaching files to a set of documents by bulk. These files can either be data/blobs or be downloaded
+             * automatically from a URL.
+             * @param {Object[]} attachments
+             * @param {string} attachments[]._id - the document id to which we will attach a file
+             * @param {string|Blob} [attachments[].data] - raw data
+             * @param {string} [attachments[].mimeType] - mimeType of the raw data
+             * @param {string} attachments[].attName - file name of the attachment. note, this will overwrite
+             * @param {string} [attachments[].url] - url from which to fetch to attach
+             * @param {Function} [cb]
+             */
+            bulkAttachments: function (attachments, cb) {
+                json({
+                    type: 'GET',
+                    contentType: 'json',
+                    data: {
+                        keys: [attachments.map(function (x) {
+                            return x._id
+                        })]
+                    },
+                    path: defaultDB + '/_all_docs?include_docs=true'
+                }, function (err, docs) {
+                    if (!err) {
+                        // Each attachment may either be a URL or raw data/blob.
+                        // Therefore we have a set of tasks that need to be completed in parallel.
+                        var constructAttachmentTasks = [],
+                            attachments = [],
+                            errors = [];
+                        for (var i = 0; i < docs.length; i++) {
+                            (function (i, doc, attachment) {
+                                var constructFunc;
+                                if (attachment.data) {
+                                    if (attachment.data instanceof Blob) constructFunc = API.constructAttachmentFromBlob.bind(API);
+                                    else constructFunc = API.constructAttachmentFromRawData.bind(API);
+                                }
+                                else if (attachment.url) {
+                                    constructFunc = API.constructAttachmentFromURL.bind(API);
+                                }
+                                else {
+                                    errors[i] = new CouchError({message: 'Must pass one of: url, data'});
+                                    return;
+                                }
+                                constructAttachmentTasks.push(function (done) {
+                                    constructFunc(attachment, function (err, a) {
+                                        errors[i] = err;
+                                        attachments[i] = a;
+                                        done();
+                                    });
+                                });
+                            })(i, docs[i], attachments[i]);
+                        }
+                        _.parallel(tasks, function () {
+                            // Attachments & Error arrays will now be populated.
+                            for (var i=0;i<attachments.length; i++) {
+                                var attachment = attachments[i];
+                                if (attachment) {
+                                    var doc = docs[i];
+
+                                }
+                            }
+                        });
+                    } else cb(err);
+                })
             }
         };
 
