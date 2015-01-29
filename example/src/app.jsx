@@ -9,10 +9,29 @@ var Router = ReactRouter,
 
 var masonries = [];
 
-// Set the width of the area and height of the area
-var maxWidth = 300,
-    maxHeight = 300;
+var baseWidth = 300,
+    baseHeight = 300,
+    maxWidth = baseWidth,
+    maxHeight = baseHeight;
 
+$(window).resize(function () {
+    console.log(1);
+    var $main = $('.main');
+    var w = $main.width();
+    var h = $main.height();
+    console.log('w', w);
+    console.log('h', h);
+    var remainder = w;
+    while (remainder >= baseWidth) {
+        remainder -= baseWidth;
+    }
+    console.log('remainder', remainder);
+    var numPhotos = Math.floor(w / parseFloat(baseWidth));
+    console.log('numPhotos', numPhotos);
+    maxWidth = baseWidth + (remainder / numPhotos);
+    console.log('maxWidth', maxWidth);
+
+});
 
 function scaleToFit(width, height) {
     var outputWidth, outputHeight;
@@ -107,12 +126,26 @@ var data = [
 var App = React.createClass({
     render: function () {
         return (
-            <div>
+            <div className="main">
                 <RouteHandler/>
             </div>
         );
     }
+
 });
+
+function debouncer(func, timeout) {
+    var timeoutID;
+    timeout = timeout || 200;
+    return function () {
+        var scope = this, args = arguments;
+        clearTimeout(timeoutID);
+        timeoutID = setTimeout(function () {
+            func.apply(scope, Array.prototype.slice.call(args));
+        }, timeout);
+    }
+}
+
 
 var IMG_PADDING = 5;
 
@@ -123,14 +156,11 @@ var Img = React.createClass({
         else className += ' not-hovered';
         var parentStyle = {
             width: this.props.width,
-            height: this.props.height,
-            paddingLeft: IMG_PADDING + 'px',
-            paddingBottom: IMG_PADDING + 'px'
+            height: this.props.height
         };
         var overlayStyle = {
-            width: this.props.width - IMG_PADDING,
-            height: this.props.height - IMG_PADDING,
-            left: IMG_PADDING
+            width: this.props.width,
+            height: this.props.height
         };
         return (
             <div className={className} onMouseOver={this.props.onMouseOver || function () {
@@ -151,24 +181,62 @@ var Img = React.createClass({
 var MasonryComp = React.createClass({
     render: function () {
         return (
-            <div ref="container">
-            {data.map(function (item) {
-                var scaled = scaleToFit(item.width, item.height);
-                return (
-                    <div className="item" style={{width: scaled.width, height: scaled.height}}>
-                        <Img onMouseOut={this.onMouseOut} onMouseOver={this.onMouseOver} src={item.url} width={scaled.width} height={scaled.height} title={item.title} hover={this.state.hover}></Img>
-                    </div>
-                )
-            }.bind(this))}
+            <div ref="container" className="masonry">
+                <div className="items">
+                    {data.map(function (item) {
+                        var scaled = scaleToFit(item.width, item.height);
+                        return (
+                            <div className="item" style={{width: scaled.width, height: scaled.height}}>
+                                <Img onMouseOut={this.onMouseOut}
+                                    onMouseOver={this.onMouseOver}
+                                    src={item.url}
+                                    width={scaled.width} height={scaled.height}
+                                    title={item.title}
+                                    hover={this.state.hover}></Img>
+                            </div>
+                        )
+                    }.bind(this))}
+                </div>
             </div>
         );
     },
     componentDidMount: function () {
         var node = this.refs.container.getDOMNode();
-        this.masonry = new Masonry(node, {
-            itemSelector: '.item'
+        var $node = $(node);
+        this.masonry = $node.masonry({
+            itemSelector: '.item',
+            isResizeBound: false
         });
+
+        $(window).resize(function () {
+            clearTimeout($.data(this, 'resizeTimer'));
+            $.data(this, 'resizeTimer', setTimeout(function () {
+                if (this._lifeCycleState == 'MOUNTED') {
+                    this.setState({}, function () {
+                        $node.masonry('layout');
+                    });
+                }
+            }.bind(this), 300));
+        }.bind(this));
+
+        //
+        //$(window).resize(function () {
+        //    if (this._lifeCycleState == 'MOUNTED') {
+        //        this.setState({}, function () {
+        //            $node.masonry('layout');
+        //        });
+        //    }
+        //}.bind(this));
+
+
+        //$node.find('.item').each(function (i, itemElem) {
+        //    var draggie = new Draggabilly(itemElem);
+        //    $node.masonry('bindDraggabillyEvents', draggie);
+        //});
         masonries.push(this.masonry);
+        if (this.props.showPlaceholder) {
+            this.showPlaceholder();
+        }
     },
     componentDidUnmount: function () {
         var idx = masonries.indexOf(this.masonry);
@@ -188,26 +256,102 @@ var MasonryComp = React.createClass({
         return {
             hover: false
         }
+    },
+    hidePlaceholder: function () {
+        var node = this.refs.container.getDOMNode();
+        var $node = $(node);
+        $node.masonry('remove', this.newElems);
+        $node.masonry(); // layout remaining items
+        this.newElems = null;
+    },
+    showPlaceholder: function () {
+        var node = this.refs.container.getDOMNode();
+        var $node = $(node);
+        var newElems = $('<div class="item placeholder" style="width: 300px; height: 200px"><i class="fa fa-picture-o"></i></div>');
+        $node.prepend(newElems);
+        $node.masonry('prepended', newElems);
+        this.newElems = newElems;
+    },
+    componentWillReceiveProps: function (nextProps) {
+        if (this.props.showPlaceholder && !nextProps.showPlaceholder) {
+            this.hidePlaceholder();
+        }
+        else if (!this.props.showPlaceholder && nextProps.showPlaceholder) {
+            this.showPlaceholder();
+        }
     }
 });
 
 var Home = React.createClass({
     render: function () {
+        var overlayStyle = this.state.showOverlay ? {
+            opacity: 0.7,
+            pointerEvents: 'none'
+        } : {
+            opacity: 0,
+            pointerEvents: 'none'
+        };
         return (
-            <div className="home">
-                <div className="header">
-                    <div className="fa fa-chevron-left">
-                    </div>
-                    <div className="back">
-                        Home
-                    </div>
+            <div className="home" onDragEnter={this.onDragEnter} onDragOver={this.onDragOver} onDragLeave={this.onDragLeave} onDrop={this.onDrop}>
+                <div className="home-overlay" onMouseOver={this.onMouseOver} style={overlayStyle}>
+                {this.state.numFiles + ' files'}
                 </div>
                 <div className="title">
                     London 2015
                 </div>
-                <MasonryComp/>
+                <MasonryComp ref="masonry" showPlaceholder={this.state.counter > 0}/>
             </div>
         );
+    },
+    onMouseOver: function (e) {
+        e.preventDefault();
+    },
+    getInitialState: function () {
+        return {
+            numFiles: 0,
+            counter: 0
+        }
+    },
+    onDragEnter: function (e) {
+        this.setState({
+            counter: this.state.counter + 1
+        });
+        e.preventDefault();
+        console.log('enter');
+    },
+    onDragOver: function (e) {
+        var x = e.clientX,
+            y = e.clientY;
+        console.log('(' + x + ',' + y + ')');
+        e.preventDefault();
+        this.setState({
+            isDropping: true
+        });
+    },
+    onDragLeave: function (e) {
+        this.setState({
+            counter: this.state.counter - 1
+        });
+        console.log('leave');
+        e.preventDefault();
+        this.setState({
+            isDropping: false
+        });
+    },
+
+    onDrop: function (e) {
+        e.preventDefault();
+        console.log('e.dataTransfer', e.dataTransfer);
+        var file = e.dataTransfer.files[0],
+            reader = new FileReader();
+        reader.onload = function (event) {
+        };
+        console.log(file);
+        reader.readAsDataURL(file);
+        e.preventDefault();
+        this.setState({
+            counter: 0
+        });
     }
 });
 
