@@ -142,7 +142,6 @@
             };
             opts = merge({
                 type: 'GET',
-                dataType: 'json',
                 contentType: MIME.JSON
             }, opts || {});
             if (opts.contentType == MIME.JSON) {
@@ -208,6 +207,24 @@
         };
 
         /**
+         * same as http except default to json
+         * @param opts
+         * @param cb
+         */
+        var json = function (opts, cb) {
+            function _json(opts) {
+                opts.dataType = 'json';
+            }
+            if (Array.isArray(opts)) {
+                opts.forEach(_json);
+            }
+            else {
+                _json(opts);
+            }
+            http(opts, cb);
+        };
+
+        /**
          * CouchDB has a weird convention for user identifiers. This function simply transforms the username into
          * to match that convention.
          * @param username
@@ -228,7 +245,7 @@
             var username = opts.username,
                 password = opts.password;
             var fullyQualifiedUsername = _getFullyQualifedUsername(username);
-            http({
+            json({
                 path: '_users/' + fullyQualifiedUsername,
                 type: 'PUT',
                 data: {
@@ -247,7 +264,7 @@
          * @param [cb]
          */
         var createAdminUser = function (cb) {
-            http({
+            json({
                 path: '_config/admins/' + adminAuth.username,
                 type: 'PUT',
                 data: '"' + adminAuth.password + '"',
@@ -272,7 +289,7 @@
                 contentType: "application/x-www-form-urlencoded",
                 data: 'name=' + username + '&password=' + password
             };
-            http(httpOpts, function (err, data) {
+            json(httpOpts, function (err, data) {
                 if (!err) {
                     if (data.ok) {
                         auth = {
@@ -304,7 +321,7 @@
         var adminLogin = function (authOpts, cb) {
             // Only admins can read global config, therefore we test that credentials are correct by querying that
             // database.
-            http({
+            json({
                 path: '_config'
             }, function (err) {
                 if (!err) {
@@ -334,7 +351,7 @@
         //noinspection JSCommentMatchesSignature,JSCommentMatchesSignature,JSValidateJSDoc
         API = {
             info: function (cb) {
-                http({path: ''}, cb);
+                json({path: ''}, cb);
             },
             createUser: createUser,
             basicAuth: basicAuth,
@@ -355,7 +372,7 @@
                     cb = __ret.cb;
                     opts.path = '_all_dbs';
                     opts.admin = true;
-                    http(opts, function (err, data) {
+                    json(opts, function (err, data) {
                         if (err) cb(err);
                         else {
                             var ajaxOpts = data.reduce(function (memo, dbName) {
@@ -368,7 +385,7 @@
                                 }
                                 return memo;
                             }, []);
-                            http(ajaxOpts, cb);
+                            json(ajaxOpts, cb);
                         }
                     });
                 },
@@ -390,7 +407,7 @@
                         remove = opts.remove;
                     var path = database + '/' + id;
                     console.log('_http', _http);
-                    http(merge(true, opts, {
+                    json(merge(true, opts, {
                         path: path,
                         admin: opts.admin
                     }), function (err, resp) {
@@ -405,7 +422,7 @@
                         if (remove && found) {
                             // delete it
                             path += '?rev=' + resp._rev;
-                            http(merge(true, opts, {
+                            json(merge(true, opts, {
                                 type: 'DELETE',
                                 path: path,
                                 admin: opts.admin
@@ -414,7 +431,7 @@
                         else if (!remove) {
                             // create or update it
                             if (found) doc._rev = resp._rev;
-                            http(merge(true, opts, {
+                            json(merge(true, opts, {
                                 type: 'PUT',
                                 path: path,
                                 data: doc,
@@ -505,7 +522,7 @@
                     opts.path = opts.database || defaultDB;
                     opts.type = 'PUT';
                     opts.admin = true;
-                    http(opts, function (err) {
+                    json(opts, function (err) {
                         if (!err) {
                             console.log('configureDatabase opts', opts);
                             this.configureDatabase(opts, cb);
@@ -526,7 +543,7 @@
                     var database = opts.database || defaultDB;
                     opts.path = database + '/_security';
                     opts.admin = true;
-                    http(opts, cb);
+                    json(opts, cb);
                 }
 
             },
@@ -542,7 +559,7 @@
              * @param cb
              */
             verify: function (cb) {
-                http({
+                json({
                     path: defaultDB
                 }, cb);
             },
@@ -607,7 +624,7 @@
                     }
                     doc.user = auth.user.name;
                 }
-                http({
+                json({
                     path: path,
                     data: doc,
                     type: id ? 'PUT' : 'POST'
@@ -662,16 +679,82 @@
                     opts = __ret.opts;
                 cb = __ret.cb;
                 var database = opts.database || defaultDB;
-                http({
+                json({
                     path: database + '/' + _id
                 }, cb);
             },
 
             getUser: function (username, cb) {
                 var fullyQualifiedUsername = _getFullyQualifedUsername(username);
-                http({
+                json({
                     path: '_users/' + fullyQualifiedUsername
                 }, cb);
+            },
+
+            /**
+             *
+             * @param opts
+             * @param opts.doc - a document with _id or an string representation of _id
+             * @param opts.attName - name of the attachment
+             * @param [cb]
+             */
+            getAttachment: function (opts, cb) {
+                var database = opts.db || defaultDB,
+                    id = isString(opts.doc) ? opts.doc : opts.doc._id,
+                    path = database + '/' + id + '/' + opts.attName;
+                http({
+                    path: path
+                }, cb);
+            },
+
+            /**
+             *
+             * @param opts
+             * @param opts.doc - a document with _id or an string representation of _id
+             * @param opts.attName - name of the attachment
+             * @param [opts.db]
+             * @param [opts.data] - raw bytes to push
+             * @param [opts.url] - url of data
+             * @param [opts.mimeType] - required if use data parameter
+             * @param [cb]
+             */
+            putAttachment: function (opts, cb) {
+                if (opts.data) {
+                    var database = opts.db || defaultDB,
+                        id = isString(opts.doc) ? opts.doc : opts.doc._id,
+                        mimeType = opts.mimeType || false,
+                        rev = opts.doc._rev,
+                        path = database + '/' + id + '/' + opts.attName;
+                    if (rev) path += '?rev=' + rev;
+                    var headers = opts.headers || {};
+                    headers['Content-Type'] = mimeType;
+                    headers['Content-Length'] = opts.data.length;
+                    var httpOpts = {
+                        path: path,
+                        type: 'PUT',
+                        data: opts.data,
+                        cache: false,
+                        processData: false
+                    };
+                    httpOpts.headers = headers;
+                    http(httpOpts, cb);
+                }
+                else if (opts.url) {
+                    // TODO
+                }
+                else {
+                    // TODO
+                }
+            },
+
+            /**
+             * Returns list of attachments and their mime types for a specific document.
+             * @param opts
+             * @param opts.doc - a document with _id or an string representation of _id
+             * @param cb
+             */
+            getAttachments: function (opts, cb) {
+
             }
         };
 
