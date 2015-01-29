@@ -30,6 +30,22 @@
         return typeof o == 'object';
     }
 
+    /**
+     *
+     * @param {Array} required - List of options that cannot be null/undefined
+     * @param {Object} opts - The options to be verified
+     * @param {Function} [cb] - Callback to callback with an error.
+     * @returns {Array} missingOptions
+     */
+    function assertOptions(required, opts, cb) {
+        var missing = [];
+        required.forEach(function (opt) {
+            if (opts[opt] == undefined) missing.push(opt);
+        });
+        if (missing.length && cb) cb(new CouchError({message: 'Missing options: ' + missing.join(', ')}));
+        return missing;
+    }
+
     var AUTH_METHOD = {
         BASIC: 'basic'
     };
@@ -133,6 +149,8 @@
          * @param opts - The usual jquery opts +
          * @param opts.path - Path to append to host
          * @param opts.admin - True if endpoint requires admin access
+         * @param opts.ignoreAuth
+         * @param opts.contentType
          * @param [cb]
          * @private
          */
@@ -144,6 +162,7 @@
                 type: 'GET',
                 contentType: MIME.JSON
             }, opts || {});
+
             if (opts.contentType == MIME.JSON) {
                 var data = opts.data;
                 if (data) {
@@ -153,7 +172,7 @@
                 }
             }
             console.log('opts', opts);
-            _configureAuth(opts, opts.admin ? adminAuth : auth);
+            if (!opts.ignoreAuth) _configureAuth(opts, opts.admin ? adminAuth : auth);
             var path = opts.path || '';
             if (opts.path != null) delete opts.path;
             if (!opts.url) {
@@ -168,7 +187,7 @@
                     textStatus: textStatus,
                     status: jqXHR.status
                 });
-                cb(null, data);
+                cb(null, data, jqXHR);
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 console.info('[CouchDB: HTTP Response]:', {
                     opts: opts,
@@ -215,6 +234,7 @@
             function _json(opts) {
                 opts.dataType = 'json';
             }
+
             if (Array.isArray(opts)) {
                 opts.forEach(_json);
             }
@@ -714,12 +734,15 @@
              * @param opts.attName - name of the attachment
              * @param [opts.db]
              * @param [opts.data] - raw bytes to push
-             * @param [opts.url] - url of data
+             * @param [opts.url] - ajax options to get data
              * @param [opts.mimeType] - required if use data parameter
              * @param [cb]
              */
             putAttachment: function (opts, cb) {
+                cb = cb || function () {
+                };
                 if (opts.data) {
+                    if (assertOptions(['data', 'mimeType', 'attName', 'doc'], opts, cb).length) return;
                     var database = opts.db || defaultDB,
                         id = isString(opts.doc) ? opts.doc : opts.doc._id,
                         mimeType = opts.mimeType || false,
@@ -727,34 +750,56 @@
                         path = database + '/' + id + '/' + opts.attName;
                     if (rev) path += '?rev=' + rev;
                     var headers = opts.headers || {};
-                    headers['Content-Type'] = mimeType;
-                    headers['Content-Length'] = opts.data.length;
+                    //headers['Content-Type'] = mimeType;
                     var httpOpts = {
                         path: path,
                         type: 'PUT',
                         data: opts.data,
                         cache: false,
-                        processData: false
+                        processData: false,
+                        contentType: mimeType
                     };
                     httpOpts.headers = headers;
                     http(httpOpts, cb);
                 }
                 else if (opts.url) {
-                    // TODO
+                    if (assertOptions(['url', 'attName', 'doc'], opts, cb).length) return;
+                    /*
+                     jquery ajax does not support blobs
+                     http://stackoverflow.com/questions/17657184/using-jquerys-ajax-method-to-retrieve-images-as-a-blob
+                     even if not using blob kept experiencing issues with corruption of image data.
+                     It's probably something to do with encoding but will XHR for this for now.
+                     TODO: Use jquery instead for the below (if possible)
+                     */
+                    var xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            var database = opts.db || defaultDB,
+                                id = isString(opts.doc) ? opts.doc : opts.doc._id,
+                                rev = opts.doc._rev,
+                                mimeType = opts.mimeType || false,
+                                path = database + '/' + id + '/' + opts.attName;
+                            if (rev) path += '?rev=' + rev;
+                            var blob = this.response;
+                            http({
+                                path: path,
+                                type: 'PUT',
+                                data: blob,
+                                processData: false,
+                                contentType: mimeType
+                            }, cb);
+                        }
+                        else {
+                            // TODO: Handle errors
+                        }
+                    };
+                    xhr.open('GET', opts.url);
+                    xhr.responseType = 'blob';
+                    xhr.send();
                 }
                 else {
-                    // TODO
+                    cb(new CouchError({message: 'Must specify either data or ajax'}));
                 }
-            },
-
-            /**
-             * Returns list of attachments and their mime types for a specific document.
-             * @param opts
-             * @param opts.doc - a document with _id or an string representation of _id
-             * @param cb
-             */
-            getAttachments: function (opts, cb) {
-
             }
         };
 
