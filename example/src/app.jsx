@@ -254,6 +254,11 @@ var MasonryComp = React.createClass({
             }.bind(this), 150));
         }.bind(this));
 
+        calculateMaxWidth();
+        this.setState({}, function () {
+            $node.masonry('layout');
+        });
+
         //
         //$(window).resize(function () {
         //    if (this._lifeCycleState == 'MOUNTED') {
@@ -302,7 +307,7 @@ var MasonryComp = React.createClass({
     showPlaceholder: function () {
         var node = this.refs.container.getDOMNode();
         var $node = $(node);
-        var newElems = $('<div class="item placeholder" style="width: 300px; height: 200px"><i class="fa fa-picture-o"></i></div>');
+        var newElems = $('<div class="item placeholder" style="width: ' + maxWidth + 'px; height: 200px"><i class="fa fa-picture-o"></i></div>');
         $node.prepend(newElems);
         $node.masonry('prepended', newElems);
         this.newElems = newElems;
