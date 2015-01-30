@@ -15,10 +15,7 @@ var auth = localStorage.getItem('auth'),
 
 console.log('couchPotato auth', couchPotato.auth);
 
-couchPotato.on('auth', function (auth) {
-    console.log('auth changed!');
-    localStorage.setItem('auth', JSON.stringify(auth));
-});
+
 
 
 var userActions = Reflux.createActions(['changeUser']),
@@ -26,7 +23,7 @@ var userActions = Reflux.createActions(['changeUser']),
     userStore = Reflux.createStore({
         init: function () {
             this.listenToMany(userActions);
-            this.user = couchPotato.auth.user;
+            this.user = couchPotato.auth ? couchPotato.auth.user : null;
         },
         onChangeUser: function (user) {
             this.user = user;
@@ -58,6 +55,15 @@ var userActions = Reflux.createActions(['changeUser']),
             })
         }
     });
+
+couchPotato.on('auth', function (auth) {
+    console.log('auth changed!');
+    localStorage.setItem('auth', auth ? JSON.stringify(auth) : null);
+    userActions.changeUser(auth ? auth.user : null);
+    loginActions.changeUsername('');
+    loginActions.changePassword('');
+    loginActions.changeRepeatPassword('');
+});
 
 var App = React.createClass({
     mixins: [Router.State, Router.Navigation],
@@ -105,7 +111,6 @@ var ValidatedInputError = React.createClass({
         }
     }
 });
-
 
 var ValidatedInput = React.createClass({
     render: function () {
@@ -301,7 +306,6 @@ var Login = React.createClass({
             }
             else {
                 console.log('user', user);
-                userActions.changeUser(user);
             }
         }.bind(this));
     },
@@ -389,9 +393,6 @@ var SignUp = React.createClass({
                         });
                     }
                 }
-                else {
-                    userActions.changeUser(user);
-                }
             }.bind(this));
         }
     },
@@ -447,8 +448,14 @@ var TheApp = React.createClass({
 
     render: function () {
         return (
-            <span>yo!</span>
+            <div>
+                <span>yo!</span>
+                <button onClick={this.onClick}>Logout</button>
+            </div>
         )
+    },
+    onClick: function () {
+        couchPotato.logout();
     },
     componentDidMount: function () {
         if (!userStore.user) {

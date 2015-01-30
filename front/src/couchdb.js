@@ -669,7 +669,7 @@
             basicAuth: basicAuth,
             adminLogin: adminLogin,
             logout: function () {
-                auth = null;
+                setAuth(null);
             },
             createAdminUser: createAdminUser,
             /**
