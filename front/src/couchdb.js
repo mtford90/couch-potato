@@ -281,7 +281,8 @@
          * @private
          */
         function _nHttp(opts, cb) {
-            cb = cb || function () {};
+            cb = cb || function () {
+            };
             var parsedURL;
             if (opts.url) {
                 parsedURL = url.parse(opts.url);
@@ -469,6 +470,7 @@
          * @param opts
          * @param opts.username
          * @param opts.password
+         * @param opts.auth - the auth method to use
          * @param cb
          */
         var createUser = function (opts, cb) {
@@ -485,7 +487,32 @@
                     roles: [],
                     password: password
                 }
-            }, cb);
+            }, function (err, resp) {
+                var user;
+                if (!err) {
+                    user = {
+                        name: username,
+                        username: username,
+                        _id: resp.id,
+                        _rev: resp.rev
+                    };
+                    if (opts.auth) {
+                        if (opts.auth == AUTH_METHOD.BASIC) {
+                            auth = {
+                                method: AUTH_METHOD.BASIC,
+                                username: username,
+                                password: password,
+                                user: user
+                            };
+                            user.password = password;
+                        }
+                        else {
+                            cb(new CouchError({message: 'NYI: Auth method "' + opts.auth + '"'}));
+                        }
+                    }
+                }
+                cb(err, user);
+            });
         };
 
         /**
@@ -528,7 +555,10 @@
                             password: password,
                             user: data
                         };
-                        cb();
+                        data.username = username;
+                        data.password = password;
+                        data.name = username;
+                        cb(null, data);
                     }
                     else {
                         cb(new CouchError(data));

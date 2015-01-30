@@ -10,7 +10,7 @@ var Router = ReactRouter,
     merge = require('merge');
 
 
-var couch = couchdb();
+var couchPotato = couchdb();
 
 
 var userActions = Reflux.createActions(['changeUser']),
@@ -246,6 +246,7 @@ var Login = React.createClass({
                         placeholder="username"
                         initialValue={loginStore.username}
                         onInputChange={loginActions.changeUsername.bind(loginActions)}
+                        ref="username"
                     />
                 </div>
                 <div>
@@ -254,6 +255,7 @@ var Login = React.createClass({
                         type="password"
                         id="password"
                         name="password"
+                        ref="password"
                         placeholder="password"
                         initialValue={loginStore.password}
                         onInputChange={loginActions.changePassword.bind(loginActions)}
@@ -267,12 +269,37 @@ var Login = React.createClass({
                 </Link>
             </div>
             <div id="error">
-
+            {this.state.error}
             </div>
         </div>);
     },
     onClick: function () {
-
+        couchPotato.basicAuth({
+            username: this.refs.username.getValue(),
+            password: this.refs.password.getValue()
+        }, function (err, user) {
+            if (err) {
+                if (err.status == 401) {
+                    this.refs.username.validate('Login details incorrect');
+                    this.refs.password.validate('Login details incorrect');
+                }
+                else {
+                    var message = err.message;
+                    this.setState({
+                        message: message || 'Unknown Error'
+                    });
+                }
+            }
+            else {
+                console.log('user', user);
+                userActions.changeUser(user);
+            }
+        }.bind(this));
+    },
+    getInitialState: function () {
+        return {
+            error: ''
+        }
     }
 });
 
@@ -332,7 +359,7 @@ var SignUp = React.createClass({
     signUp: function () {
         if (!this.validateAll().length) {
             this.disableAll();
-            couch.createUser({
+            couchPotato.createUser({
                 username: this.refs.username.getValue(),
                 password: this.refs.password.getValue()
             }, function (err, user) {

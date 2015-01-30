@@ -3,6 +3,55 @@ var assert = require('chai').assert,
 
 describe('User management', function () {
     var couch = couchdb();
+
+    describe('create user', function () {
+        beforeEach(function (done) {
+            couch.admin.reset(done);
+        });
+        it('returns a user document', function (done) {
+            var username = 'mike',
+                password = 'mike';
+            couch.createUser({
+                username: username,
+                password: password
+            }, function (err, user) {
+                assert.notOk(err);
+                assert.ok(user);
+                assert.equal(user.name, 'mike');
+                assert.ok(user._id);
+                assert.ok(user._rev);
+                done();
+            });
+        });
+
+        describe('if auth method is specified, logs the user in', function () {
+            it('basic', function (done) {
+                var username = 'mike',
+                    password = 'mike';
+                couch.createUser({
+                    username: username,
+                    password: password,
+                    auth: couch.AUTH_METHOD.BASIC
+                }, function (err) {
+                    assert.notOk(err);
+                    var auth = couch.auth;
+                    assert.ok(auth, 'auth should be set on successfuly user creation!');
+                    assert.equal(auth.method, couch.AUTH_METHOD.BASIC);
+                    var user = auth.user;
+                    assert.ok(user);
+                    assert.equal(user.name, 'mike');
+                    assert.equal(user.username, 'mike');
+                    assert.equal(user.password, 'mike');
+                    assert.ok(user._id);
+                    assert.ok(user._rev);
+                    assert.equal(auth.username, 'mike');
+                    assert.equal(auth.password, 'mike');
+                    done();
+                });
+            });
+        });
+    });
+
     describe('get user', function () {
         beforeEach(function (done) {
             couch.admin.reset(done);
@@ -15,6 +64,7 @@ describe('User management', function () {
                 password: password
             }, function (err) {
                 assert.notOk(err);
+                couch.logout();
                 couch.getUser('mike', function (err, doc) {
                     assert.ok(doc._id);
                     assert.ok(doc._rev);
@@ -61,12 +111,15 @@ describe('User management', function () {
                     couch.basicAuth({
                         username: username,
                         password: password
-                    }, function (err) {
+                    }, function (err, user) {
                         assert.notOk(err);
                         assert.equal(couch.auth.method, couch.AUTH_METHOD.BASIC);
                         assert.equal(couch.auth.username, username);
                         assert.equal(couch.auth.password, password);
                         assert.equal(couch.auth.user.name, username);
+                        assert.equal(user.name, username);
+                        assert.equal(user.username, username);
+                        assert.equal(user.password, password);
                         done();
                     });
                 });
