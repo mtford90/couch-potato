@@ -6,6 +6,7 @@ var gulp = require('gulp'),
     sass = require('gulp-sass'),
     replace = require('gulp-replace'),
     through = require('through2'),
+    runSequence = require('run-sequence'),
     mocha = require('gulp-mocha'),
     source = require('vinyl-source-stream');
 
@@ -71,15 +72,30 @@ gulp.task('fonts', function () {
 });
 
 // Run tests in the node environment.
-gulp.task('test-node', function () {
-    return gulp.src('./front/test/**/*.spec.js')
-        .pipe(mocha({reporter: 'spec'}));
+gulp.task('test-node', function (cb) {
+    gulp.src('./front/test/**/*.spec.js')
+        .pipe(mocha({reporter: 'spec'}).on('end', function () {
+            cb();
+        }))
 
 });
 
 gulp.task('build', ['build-couchdb', 'build-test']);
 
-gulp.task('watch', ['build'], function () {
+gulp.task('test', function (cb) {
+    // Ran in series due to using the same couchdb database.
+    runSequence('test-node', 'build-test', cb);
+});
+
+// Same as test, except opens up the browser tests once the node tests have completed.
+gulp.task('test-first-time', ['test-server'],function (cb) {
+    runSequence('test-node', 'build-test', function () {
+        open('http://localhost:7682/front/test');
+        cb();
+    });
+});
+
+gulp.task('test-server',  function () {
     connect.server({
         host: 'localhost',
         port: 7682,
@@ -87,9 +103,13 @@ gulp.task('watch', ['build'], function () {
             port: 6597
         }
     });
-    open('http://localhost:7682/front/test');
-    gulp.watch(['front/src/**/*.js'], ['build-couchdb']);
-    gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['build-test']);
+});
+
+
+
+gulp.task('watch', ['test-first-time', 'build'], function () {
+    gulp.watch(['front/src/**/*.js'], ['test', 'build-couchdb']);
+    gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['test']);
 });
 
 gulp.task('watch-example', ['build-example', 'sass', 'fonts'], function () {

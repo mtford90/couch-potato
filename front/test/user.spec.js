@@ -14,14 +14,13 @@ describe('User management', function () {
                 username: username,
                 password: password
             }, function (err) {
-                if (!err) {
-                    couch.getUser('mike', function (err, doc) {
-                        assert.ok(doc._id);
-                        assert.ok(doc._rev);
-                        assert.equal(doc.name, username);
-                        done();
-                    });
-                } else done(err);
+                assert.notOk(err);
+                couch.getUser('mike', function (err, doc) {
+                    assert.ok(doc._id);
+                    assert.ok(doc._rev);
+                    assert.equal(doc.name, username);
+                    done();
+                });
             });
         });
 

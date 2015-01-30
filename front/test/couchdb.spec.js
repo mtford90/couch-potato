@@ -5,7 +5,8 @@ describe('CouchDB', function () {
     var couch = couchdb();
     it('info', function (done) {
         couch.info(function (err, data) {
-            done(err);
+            assert.notOk(err);
+            done();
         });
     });
-});
+}); 

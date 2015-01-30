@@ -8,10 +8,8 @@ describe('permissions', function () {
     describe('_security', function () {
         beforeEach(function (done) {
             couch.admin.reset(function (err) {
-                if (!err) {
-                    couch.admin.createDatabase(done);
-                }
-                else done(err);
+                assert.notOk(err);
+                couch.admin.createDatabase(done);
             });
         });
         it('get default permissions', function (done) {
@@ -27,10 +25,8 @@ describe('permissions', function () {
         describe('defaults', function () {
             beforeEach(function (done) {
                 couch.admin.reset(function (err) {
-                    if (!err) {
-                        couch.admin.createDatabase(done);
-                    }
-                    else done(err);
+                    assert.notOk(err);
+                    couch.admin.createDatabase(done);
                 });
             });
             it('anonymous creation', function (done) {
@@ -92,7 +88,10 @@ describe('permissions', function () {
                 beforeEach(function (done) {
                     couch.admin.reset(function (err) {
                         assert.notOk(err);
-                        couch.admin.createDatabase({anonymousReads: false}, done);
+                        couch.admin.createDatabase({anonymousReads: false}, function (err) {
+                            assert.notOk(err);
+                            done();
+                        });
                     });
                 });
                 it('anonymous creation should be fine', function (done) {
@@ -117,7 +116,10 @@ describe('permissions', function () {
                 beforeEach(function (done) {
                     couch.admin.reset(function (err) {
                         assert.notOk(err);
-                        couch.admin.createDatabase({anonymousReads: false, anonymousUpdates: false}, done);
+                        couch.admin.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
+                            assert.notOk(err);
+                            done();
+                        });
                     });
                 });
                 it('anonymous creation should now be forbidden', function (done) {
@@ -155,7 +157,10 @@ describe('permissions', function () {
                 beforeEach(function (done) {
                     couch.admin.reset(function (err) {
                         assert.notOk(err);
-                        couch.admin.createDatabase({anonymousReads: false, anonymousUpdates: false}, done);
+                        couch.admin.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
+                            assert.notOk(err);
+                            done();
+                        });
                     });
                 });
 

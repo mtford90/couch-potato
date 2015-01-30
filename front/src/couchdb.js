@@ -309,7 +309,6 @@
                 httpOpts.headers = {'content-type': requestType};
             }
             if (!opts.ignoreAuth) _configureAuth(httpOpts, opts.admin ? adminAuth : auth);
-            console.log('httpOpts', httpOpts);
             var req = nodeHttp.request(httpOpts, function (res) {
                 // Override to prevent circular JSON errors.
                 var responseString = '';
@@ -346,8 +345,6 @@
 
                     }
                     else {
-                        console.log(1);
-
                         cb(new CouchError({response: res, status: statusCode}));
                     }
                 });
@@ -421,7 +418,7 @@
                 _nHttp(nodeHTTPOpts, cb);
             }
             else {
-                var XMLHttpRequest = globals['XMLHttpRequest'];
+                var XMLHttpRequest = global['XMLHttpRequest'];
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
                     if (this.readyState == 4) {
@@ -986,7 +983,6 @@
                         url: opts.url,
                         responseType: 'blob'
                     }, function (errStatus, data, xhr) {
-                        console.log('2');
                         if (!errStatus) {
                             var database = opts.db || defaultDB,
                                 id = isString(opts.doc) ? opts.doc : opts.doc._id,
@@ -1003,7 +999,6 @@
                             }, cb);
                         }
                         else {
-                            console.log('3');
                             cb(new CouchError({xhr: xhr, status: errStatus}));
                         }
                     });

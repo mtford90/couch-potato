@@ -7,10 +7,11 @@ describe('upsert documents', function () {
     var couch = couchdb();
     beforeEach(function (done) {
         couch.admin.reset(function (err) {
-            if (!err) {
-                couch.admin.createDatabase({anonymousUpdates: true, anonymousReads: true}, done);
-            }
-            else done(err);
+            assert.notOk(err);
+            couch.admin.createDatabase({anonymousUpdates: true, anonymousReads: true}, function (err) {
+                assert.notOk(err);
+                done();
+            });
         });
     });
 
@@ -45,11 +46,13 @@ describe('upsert documents', function () {
     describe('user', function () {
         beforeEach(function (done) {
             couch.createUser({username: 'mike', password: 'mike'}, function (err) {
-                if (!err) {
-                    couch.basicAuth({
-                        username: 'mike', password: 'mike'
-                    }, done);
-                } else done(err);
+                assert.notOk(err);
+                couch.basicAuth({
+                    username: 'mike', password: 'mike'
+                }, function (err) {
+                    assert.notOk(err);
+                    done();
+                });
             });
         });
         it('auto ids', function (done) {

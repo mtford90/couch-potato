@@ -7,10 +7,11 @@ describe('attachments', function () {
     var couch = couchdb();
     beforeEach(function (done) {
         couch.admin.reset(function (err) {
-            if (!err) {
-                couch.admin.createDatabase({anonymousUpdates: true, anonymousReads: true}, done);
-            }
-            else done(err);
+            assert.notOk(err);
+            couch.admin.createDatabase({anonymousUpdates: true, anonymousReads: true}, function (err) {
+                assert.notOk(err);
+                done();
+            });
         });
     });
     describe('data', function () {
@@ -23,7 +24,8 @@ describe('attachments', function () {
                     attName: 'myAttr',
                     mimeType: 'text/plain'
                 }, function (err) {
-                    done(err);
+                    assert.notOk(err);
+                    done();
                 });
             })
         });
@@ -41,7 +43,8 @@ describe('attachments', function () {
                         doc: doc,
                         attName: 'myAttr'
                     }, function (err) {
-                        done(err);
+                        assert.notOk(err);
+                        done();
                     });
                 });
             })
