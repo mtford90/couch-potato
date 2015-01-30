@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
+    couchdb = require('../src/couchdb').couchdb,
     prettyJson = require('./util').prettyJson;
-
 
 
 describe('upsert documents', function () {
@@ -132,7 +132,6 @@ describe('upsert documents', function () {
                 couch.upsertDocument(doc, function (err) {
                     assert.ok(err.isHttpError);
                     assert.equal(err.status, 409);
-                    console.log('err', err);
                     done();
                 });
             });
@@ -147,7 +146,6 @@ describe('upsert documents', function () {
                 delete doc._rev;
                 doc.x = 2;
                 couch.upsertDocument(doc, {conflicts: 'merge'}, function (err, newdoc) {
-                    console.log('err', err);
                     assert.notOk(err, 'Should no longer throw an error as should be merging any conflicts');
                     assert.equal(newdoc.x, 2);
                     assert.notEqual(newdoc._rev, doc._rev);

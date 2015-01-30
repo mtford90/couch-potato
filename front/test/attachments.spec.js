@@ -1,4 +1,5 @@
 var assert = require('chai').assert,
+    couchdb = require('../src/couchdb').couchdb,
     prettyJson = require('./util').prettyJson;
 
 
@@ -52,10 +53,11 @@ describe('attachments', function () {
                 assert.notOk(err);
                 couch.putAttachment({
                     doc: doc,
-                    url: 'data/blah.png',
+                    url: 'http://localhost:7682/front/test/data/blah.png',
                     attName: 'myAttr'
                 }, function (err) {
-                    done(err);
+                    assert.notOk(err);
+                    done();
                 });
             });
         });

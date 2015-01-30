@@ -1,8 +1,14 @@
-(function () {
+(function (root) {
 
     var _ = require('nimble'),
         merge = require('merge'),
-        nodeHttp = require('http');
+        nodeHttp = require('http'),
+        url = require('url');
+
+    var btoa = root.btoa;
+    if (!btoa) btoa = function (str) {
+        return new Buffer(str).toString('base64');
+    };
 
     /**
      * Normalise the host parameter e.g. standardise forward slash, protocol etc.
@@ -52,7 +58,8 @@
     };
 
     var MIME = {
-        JSON: 'application/json'
+        JSON: 'application/json',
+        PLAIN_TEXT: 'text/plain'
     };
 
     var DEFAULT_ADMIN = 'admin';
@@ -73,12 +80,6 @@
 
     var IGNORE_DATABASES = new Set(['_replicator']);
 
-    /**
-     * This module uses jquery ajax to provide full interaction with CouchDB as a backend.
-     * @param [opts]
-     * @param {String} [opts.host] - Base URL of CouchDB
-     * @returns {Object}
-     */
     var couchdb = function (opts) {
         opts = opts || {};
 
@@ -107,25 +108,38 @@
          */
         function CouchError(opts) {
             merge(this, opts);
-            Object.defineProperty(this, 'isHttpError', {
-                get: function () {
-                    return !!this.xhr;
+            this.isError = true;
+            Object.defineProperties(this, {
+                isHttpError: {
+                    get: function () {
+                        return !!(this.isNodeHttpError || this.isBrowserHttpError);
+                    }
+                },
+                isNodeHttpError: {
+                    get: function () {
+                        return !!this.response;
+                    }
+                },
+                isBrowserHttpError: {
+                    get: function () {
+                        return !!this.xhr;
+                    }
+                },
+                isThrownError: {
+                    get: function () {
+                        return !!this.thrown;
+                    }
+                },
+                isUserError: {
+                    get: function () {
+                        return !this.isThrownError && !this.isHttpError
+                    }
                 }
             });
-            Object.defineProperty(this, 'isThrownError', {
-                get: function () {
-                    return !!this.thrown;
-                }
-            });
-            Object.defineProperty(this, 'isUserError', {
-                get: function () {
-                    return !this.isThrownError && !this.isHttpError;
-                }
-            })
         }
 
         /**
-         * Configure the ajax options to match the configured authorisation method.
+         * Configure the ajax/nodeHttp options to match the configured authorisation method.
          * @param opts
          * @param auth
          * @private
@@ -146,6 +160,46 @@
         }
 
         /**
+         *
+         * @param opts
+         * @param opts.path
+         * @param [opts.protocol]
+         * @returns {string}
+         * @private
+         */
+        function _constructURL(opts) {
+            var protocol = opts.protocol || 'http://',
+                path = opts.path;
+            return protocol + host + (path.length ? (path[0] == '/' ? '' : '/') : '') + path;
+        }
+
+        /**
+         * transform data into a string depending on the mimetype
+         * @param mimeType
+         * @param data
+         * @returns {*}
+         */
+        function coerceData(mimeType, data) {
+            var coercedData;
+            if (mimeType == MIME.JSON) {
+                if (data) {
+                    if (!isString(data)) {
+                        try {
+                            coercedData = JSON.stringify(data);
+                        }
+                        catch (e) {
+                            return new CouchError({thrown: e});
+                        }
+                    }
+                }
+            }
+            else {
+                coercedData = data;
+            }
+            return coercedData;
+        }
+
+        /**
          * Send a HTTP request using jquery
          * @param opts - The usual jquery opts +
          * @param opts.path - Path to append to host
@@ -163,23 +217,16 @@
                 type: 'GET',
                 contentType: MIME.JSON
             }, opts || {});
-
-            if (opts.contentType == MIME.JSON) {
-                var data = opts.data;
-                if (data) {
-                    if (!isString(data)) {
-                        opts.data = JSON.stringify(data);
-                    }
-                }
+            var coercedData = coerceData(opts.contentType, opts.data);
+            if (coercedData && coercedData.isError) {
+                cb(coercedData);
+                return;
             }
-            console.log('opts', opts);
+            if (coercedData != undefined) opts.data = coercedData;
             if (!opts.ignoreAuth) _configureAuth(opts, opts.admin ? adminAuth : auth);
             var path = opts.path || '';
             if (opts.path != null) delete opts.path;
-            if (!opts.url) {
-                var protocol = 'http://';
-                opts.url = protocol + host + (path.length ? (path[0] == '/' ? '' : '/') : '') + path;
-            }
+            if (!opts.url) opts.url = _constructURL({path: path});
             console.info('[CouchDB: HTTP Request]:', opts);
             $.ajax(opts).done(function (data, textStatus, jqXHR) {
                 console.info('[CouchDB: HTTP Response]:', {
@@ -207,15 +254,119 @@
         }
 
         /**
-         * Send a HTTP request. Uses either jquery or nodes http depending on what's available in the environment
+         * Best efforts at ensuring that a string represents a MIME type.
+         * @param {String} [dataType]
+         */
+        function ensureMimeType(dataType) {
+            if (dataType) {
+                if (dataType.trim() == 'json') {
+                    dataType = MIME.JSON;
+                }
+            }
+            return dataType;
+        }
+
+        /**
+         * Send a http request using node. Shims from jquery style ajax opts
          * @param opts
+         * @param opts.type
+         * @param [opts.path]
+         * @param [opts.url] - if url is present, path will be ignored!
+         * @param [opts.contentType] - Content type of data being sent
+         * @param [opts.dataType] - Expected response type
+         * @param [opts.ignoreAuth]
+         * @param opts.data - Must be a string at the moment
+         * @param opts.admin - if true, will use configured admin credentials
+         * @param cb
+         * @private
+         */
+        function _nHttp(opts, cb) {
+            var parsedURL;
+            if (opts.url) {
+                parsedURL = url.parse(opts.url);
+                // Check that the url param wasnt just a path...
+                if (!parsedURL.host) parsedURL = url.parse(_constructURL({path: opts.url}));
+            }
+            else {
+                parsedURL = url.parse(_constructURL({path: opts.path || ''}))
+            }
+
+            var data = opts.data,
+                requestType = 'contentType' in opts ? opts.contentType : MIME.JSON,
+                responseType = ensureMimeType(opts.dataType),
+                method = opts.type || 'GET';
+
+            var httpOpts = {
+                method: method,
+                hostname: parsedURL.hostname,
+                port: parsedURL.port,
+                path: parsedURL.path
+            };
+
+
+            if (requestType) {
+                if (data) data = coerceData(requestType, data);
+                httpOpts.headers = {'content-type': requestType};
+            }
+            if (!opts.ignoreAuth) _configureAuth(httpOpts, opts.admin ? adminAuth : auth);
+            console.log('httpOpts', httpOpts);
+            var req = nodeHttp.request(httpOpts, function (res) {
+                // Override to prevent circular JSON errors.
+                var responseString = '';
+
+
+                res.on('data', function (chunk) {
+                    responseString += chunk;
+                });
+
+                res.on('end', function () {
+                    var statusCode = res.statusCode,
+                        isSuccess = statusCode >= 200 && statusCode < 300;
+                    if (isSuccess) {
+                        var parsedResponse;
+                        var _responseType = (responseType || res.headers['content-type'].split(';')[0]).trim();
+                        if (_responseType) {
+                            if (_responseType == MIME.JSON) {
+                                try {
+                                    parsedResponse = JSON.parse(responseString);
+                                }
+                                catch (e) {
+                                    cb(new CouchError({thrown: e}));
+                                }
+                            }
+                            else {
+                                parsedResponse = responseString;
+                            }
+
+                        }
+                        else {
+                            parsedResponse = responseString;
+                        }
+                        cb(null, parsedResponse, res);
+
+                    }
+                    else {
+                        console.log(1);
+
+                        cb(new CouchError({response: res, status: statusCode}));
+                    }
+                });
+            });
+
+            if (data)  req.write(data);
+
+            req.end();
+        }
+
+        /**
+         * Send a HTTP request. Uses either jquery or nodes http depending on what's available in the environment
+         * @param opts - jquery style http opts
          * @param cb
          * @private
          */
         function _http(opts, cb) {
             if (nodeHttp) {
-                // TODO: Use node's http library if available.
-                throw new Error('NYI!');
+                _nHttp(opts, cb);
             }
             else {
                 _$http(opts, cb);
@@ -258,11 +409,20 @@
             cb = cb || function () {
             };
             if (nodeHttp) {
-                // TODO
-                throw new Error('NYI');
+                // No need to use XHR
+                var nodeHTTPOpts = {
+                    url: opts.url,
+                    type: method
+                };
+                // No concept of HTML5 blob in Node.
+                if (responseType != 'blob') {
+                    nodeHTTPOpts['responseType'] = responseType;
+                }
+                _nHttp(nodeHTTPOpts, cb);
             }
             else {
-                var xhr = new window.XMLHttpRequest();
+                var XMLHttpRequest = globals['XMLHttpRequest'];
+                var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
                     if (this.readyState == 4) {
                         if (this.status == 200) cb(null, this.response, xhr);
@@ -478,7 +638,6 @@
                         id = opts.id,
                         remove = opts.remove;
                     var path = database + '/' + id;
-                    console.log('_http', _http);
                     json(merge(true, opts, {
                         path: path,
                         admin: opts.admin
@@ -596,7 +755,6 @@
                     opts.admin = true;
                     json(opts, function (err) {
                         if (!err) {
-                            console.log('configureDatabase opts', opts);
                             this.configureDatabase(opts, cb);
                         } else cb(err);
                     }.bind(this));
@@ -728,7 +886,6 @@
              * @private
              */
             _merge: function (doc, opts, cb) {
-                console.log('doc._id', doc);
                 API.getDocument(doc._id, opts, function (err, resp) {
                     if (!err) {
                         delete doc._rev;
@@ -775,7 +932,8 @@
                     id = isString(opts.doc) ? opts.doc : opts.doc._id,
                     path = database + '/' + id + '/' + opts.attName;
                 http({
-                    path: path
+                    path: path,
+                    contentType: null
                 }, cb);
             },
 
@@ -828,12 +986,13 @@
                         url: opts.url,
                         responseType: 'blob'
                     }, function (errStatus, data, xhr) {
+                        console.log('2');
                         if (!errStatus) {
-                            var database = defaultDB,
+                            var database = opts.db || defaultDB,
                                 id = isString(opts.doc) ? opts.doc : opts.doc._id,
                                 rev = opts.doc._rev,
                                 mimeType = opts.mimeType || false,
-                                path = defaultDB + '/' + id + '/' + opts.attName;
+                                path = database + '/' + id + '/' + opts.attName;
                             if (rev) path += '?rev=' + rev;
                             http({
                                 path: path,
@@ -844,6 +1003,7 @@
                             }, cb);
                         }
                         else {
+                            console.log('3');
                             cb(new CouchError({xhr: xhr, status: errStatus}));
                         }
                     });
@@ -939,7 +1099,6 @@
 
     };
 
-    if (typeof window !== undefined) window.couchdb = couchdb;
-    if (typeof module !== undefined) module.exports = couchdb;
-})();
+    root.couchdb = couchdb;
 
+})(this);

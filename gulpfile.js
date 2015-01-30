@@ -6,14 +6,23 @@ var gulp = require('gulp'),
     sass = require('gulp-sass'),
     replace = require('gulp-replace'),
     through = require('through2'),
+    mocha = require('gulp-mocha'),
     source = require('vinyl-source-stream');
 
+
+var NODE_LIBS = ['url', 'http'];
+
 /**
- * Ensure that all node dependencies are eliminated before bundling.
+ * Ensure that all node dependencies are eliminated before generating the browser bundle.
  */
 function removeNodeDeps(file) {
     return through(function (buf, enc, next) {
-        this.push(buf.toString('utf8').replace("require('http')", 'null').replace('require("http")', 'null'));
+        var str = buf.toString('utf8');
+        NODE_LIBS.forEach(function (lib) {
+            str = str.replace("require('" + lib + "')", 'null')
+                .replace('require("' + lib + '")', 'null');
+        });
+        this.push(str);
         next();
     });
 }
@@ -58,14 +67,20 @@ gulp.task('sass', function () {
 gulp.task('fonts', function () {
     gulp.src('./example/fonts/**/*')
         .pipe(gulp.dest('./example/build/fonts'))
-        .pipe(connect.reload())
+        .pipe(connect.reload());
+});
+
+// Run tests in the node environment.
+gulp.task('test-node', function () {
+    return gulp.src('./front/test/**/*.spec.js')
+        .pipe(mocha({reporter: 'spec'}));
+
 });
 
 gulp.task('build', ['build-couchdb', 'build-test']);
 
 gulp.task('watch', ['build'], function () {
     connect.server({
-        root: './',
         host: 'localhost',
         port: 7682,
         livereload: {
@@ -79,7 +94,6 @@ gulp.task('watch', ['build'], function () {
 
 gulp.task('watch-example', ['build-example', 'sass', 'fonts'], function () {
     connect.server({
-        root: './',
         host: 'localhost',
         port: 7683,
         livereload: {

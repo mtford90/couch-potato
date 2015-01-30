@@ -1,4 +1,5 @@
 var assert = require('chai').assert,
+    couchdb = require('../src/couchdb').couchdb,
     prettyJson = require('./util').prettyJson;
 
 describe('permissions', function () {
@@ -16,7 +17,6 @@ describe('permissions', function () {
         it('get default permissions', function (done) {
             couch.admin.getPermissions(function (err, resp) {
                 assert.notOk(err);
-                console.log('resp', resp);
                 done();
             });
         });

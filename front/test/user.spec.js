@@ -1,4 +1,5 @@
-var assert = require('chai').assert;
+var assert = require('chai').assert,
+    couchdb = require('../src/couchdb').couchdb;
 
 describe('User management', function () {
     var couch = couchdb();
@@ -62,7 +63,6 @@ describe('User management', function () {
                         username: username,
                         password: password
                     }, function (err) {
-                        console.log('err', err);
                         assert.notOk(err);
                         assert.equal(couch.auth.method, couch.AUTH_METHOD.BASIC);
                         assert.equal(couch.auth.username, username);

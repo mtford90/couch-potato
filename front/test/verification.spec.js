@@ -1,4 +1,5 @@
-var assert = require('chai').assert;
+var assert = require('chai').assert,
+    couchdb = require('../src/couchdb').couchdb;
 
 describe('verificaiton', function () {
     var couch = couchdb();
