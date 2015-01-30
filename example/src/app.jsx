@@ -5,392 +5,424 @@ var Router = ReactRouter,
     DefaultRoute = Router.DefaultRoute,
     NotFoundRoute = Router.NotFoundRoute,
     RouteHandler = Router.RouteHandler,
-    Link = Router.Link;
-
-var masonries = [];
-
-var baseWidth = 300,
-    baseHeight = 300,
-    maxWidth = baseWidth,
-    maxHeight = baseHeight;
+    Link = Router.Link,
+    couchdb = require('../../front/src/couchdb').couchdb,
+    merge = require('merge');
 
 
-var calculateMaxWidth = function () {
-    var $main = $('.main');
-    var w = $main.width();
-    var h = $main.height();
-    console.log('w', w);
-    console.log('h', h);
-    var remainder = w;
-    while (remainder >= baseWidth) {
-        remainder -= baseWidth;
-    }
-    console.log('remainder', remainder);
-    var numPhotos = Math.floor(w / parseFloat(baseWidth));
-    if (numPhotos == 1) {
-        maxWidth = w;
-    }
-    else {
-        console.log('numPhotos', numPhotos);
-        maxWidth = baseWidth + (remainder / numPhotos);
-    }
-    console.log('maxWidth', maxWidth);
-};
+var couch = couchdb();
 
-$(window).resize(calculateMaxWidth);
 
-function scaleToFit(width, height) {
-    var outputWidth, outputHeight;
-    if ((width / height) > (maxWidth / maxHeight)) {
-        outputWidth = maxWidth;
-        outputHeight = (maxWidth * height) / width;
-    }
-    else if ((width / height) < (maxWidth / maxHeight)) {
-        outputWidth = (maxHeight * width) / height;
-        outputHeight = maxHeight;
-    }
-    else if ((width / height) == (maxWidth / maxHeight)) {
-        outputWidth = maxWidth;
-        outputHeight = maxHeight;
-    }
-    return {width: outputWidth, height: outputHeight};
-}
-
-function scaleToMatchWidth(width, height) {
-    var outputHeight;
-    if ((width / height) > (maxWidth / maxHeight)) {
-        outputHeight = (maxWidth * height) / width;
-    }
-    else {
-        outputHeight = maxHeight;
-    }
-    return {width: maxWidth, height: outputHeight};
-}
-
-var data = [
-    {
-        url: "http://www.100percentoptical.com/images/2014/10/london.jpg",
-        title: 'Red Bus',
-        width: 5616,
-        height: 3744
-    },
-    {
-        url: "http://ilondonvouchers.com/wp-content/uploads/2014/05/IMG_0214-Copy.jpg",
-        title: 'Streets of London',
-        width: 560,
-        height: 420
-    },
-    {
-        url: "http://www.excel-london.co.uk/media/77990/business1.jpg",
-        title: 'Canary Wharf',
-        width: 450,
-        height: 300
-    },
-    {
-        url: "http://cdni.wired.co.uk/1920x1280/k_n/London_5.jpg",
-        title: "The Gherkin",
-        width: 1920,
-        height: 1080
-    },
-    {
-        url: "http://recruitmentbuzz.co.uk/recruitment/wp-content/uploads/2014/10/r60.jpg",
-        title: "Artistic London",
-        width: 2048,
-        height: 1359
-    },
-    {
-        url: "http://www.digitaluk.co.uk/__data/assets/image/0007/17683/london.jpg",
-        title: "Tower Bridge",
-        width: 595,
-        height: 265
-    },
-    {
-        url: "http://www.dentalorganiser.com/wp-content/uploads/2014/10/london.jpg",
-        title: "Tower Bridge Wide",
-        width: 1400,
-        height: 500
-    },
-    {
-        url: "http://altitudeacquisitions.co.uk/wp-content/uploads/2014/08/london.jpg",
-        title: "Telephone Box",
-        width: 3024,
-        height: 2016
-    },
-    {
-        url: "http://member.aigac.org/images/london2.jpg",
-        title: "London Bridge",
-        width: 476,
-        height: 300
-    },
-    {
-        url: "https://metrouk2.files.wordpress.com/2013/04/ay108339854london-england.jpg",
-        title: "London Marathon",
-        width: 5184,
-        height: 3350
-    },
-    {
-        url: 'http://www.e-architect.co.uk/images/jpgs/london_city/gherkin_london_a071112_a.jpg',
-        title: 'Gherkin',
-        width: 675,
-        height: 900
-    },
-    {
-        url: 'http://moore.se/emil/files/2013/02/london-227602.jpg',
-        title: 'Westminster',
-        width: 2560,
-        height: 1600
-    },
-    {
-        url: 'http://cdn.londonandpartners.com/l-and-p/assets/business/45356-640x360-london_eye_hero.jpg',
-        title: 'London Eye',
-        width: 640,
-        height: 360
-    }
-];
-
-/*
- <header>
- <ul>
- <li>
- <Link to="home">Home</Link>
- </li>
- </ul>
- </header>
- */
+var userActions = Reflux.createActions(['changeUser']),
+    loginActions = Reflux.createActions(['changeUsername', 'changePassword', 'changeRepeatPassword']),
+    userStore = Reflux.createStore({
+        init: function () {
+            this.listenToMany(userActions);
+        },
+        onChangeUser: function (user) {
+            this.user = user;
+            this.trigger(this.user);
+        }
+    }),
+    loginStore = Reflux.createStore({
+        init: function () {
+            this.listenToMany(loginActions);
+        },
+        onChangeUsername: function (username) {
+            console.log('username changed', username);
+            this.username = username;
+            this._trigger();
+        },
+        onChangePassword: function (password) {
+            this.password = password;
+            this._trigger();
+        },
+        onChangeRepeatPassword: function (repeatPassword) {
+            this.repeatPassword = repeatPassword;
+            this._trigger();
+        },
+        _trigger: function () {
+            this.trigger({
+                username: this.username,
+                password: this.password,
+                repeatPassword: this.repeatPassword
+            })
+        }
+    });
 
 var App = React.createClass({
+    mixins: [Router.State, Router.Navigation],
     render: function () {
         return (
             <div className="main">
                 <RouteHandler/>
             </div>
         );
-    }
+    },
+    componentDidMount: function () {
+        var user = userStore.user;
+        this.user = user;
+        if (user) {
+            this.transitionTo('app');
+        }
+        else {
+            this.transitionTo('home');
+        }
+        userStore.listen(function (user) {
+            var loggedOut = !user && this.user;
+            if (loggedOut) {
+                this.user = null;
+                this.transitionTo('home');
+            }
+            else if (user && !this.user) {
+                this.user = user;
+                this.transitionTo('app');
+            }
+            else {
+                // Do nothing! The user somehow changed without logging out. Therefore no reason to transition.
+            }
+        }.bind(this));
 
+    }
 });
 
-var Img = React.createClass({
+var ValidatedInputError = React.createClass({
     render: function () {
-        var className = "img";
-        if (this.props.hover) className += ' hover';
-        else className += ' not-hovered';
-        var parentStyle = {
-            width: this.props.width,
-            height: this.props.height
-        };
-        var overlayStyle = {
-            width: this.props.width,
-            height: this.props.height
-        };
+        return <i className="fa fa-times" ref="error" data-toggle="tooltip" data-original-title={this.props.error} data-placement="right"/>;
+    },
+    componentDidMount: function () {
+        if (this.props.error) {
+            $(this.refs.error.getDOMNode()).tooltip();
+        }
+    }
+});
+
+
+var ValidatedInput = React.createClass({
+    render: function () {
+        var inputProps = merge({}, this.props);
+        inputProps['ref'] = 'input';
+        inputProps['onBlur'] = this.onBlur;
+        inputProps['onChange'] = this.onChange;
+        inputProps['disabled'] = !this.state.inputEnabled;
+        inputProps['value'] = this.state.value;
+        var input = React.DOM.input(inputProps);
         return (
-            <div className={className} onMouseOver={this.props.onMouseOver || function () {
-            }} onMouseOut={this.props.onMouseOut || function () {
-            }}style={parentStyle}>
-                <div className="overlay" style={overlayStyle}>
-                    <div className="img-title">
-                        {this.props.title}
-                    </div>
-                </div>
-                <div className="actual-img" style={{backgroundImage: 'url(' + this.props.src + ')'}}>
-                </div>
+            <div className="validated-input">
+                {input}
+             {this.state.error ? <ValidatedInputError error={this.state.error}/> : ''}
             </div>
-        );
+        )
+    },
+    getValue: function () {
+        var input = this.refs.input;
+        return $(input.getDOMNode()).val();
+    },
+    validate: function (error) {
+        error = error || this.state.validate(this.getValue());
+        console.log('error', error);
+        this.setState({
+            error: error
+        });
+        return error;
+    },
+    onBlur: function () {
+        this.validate();
+    },
+    onChange: function () {
+        var value = this.getValue();
+        if (this.state.error) {
+            this.validate();
+        }
+        this.setState({
+            value: value
+        });
+        this.props.onInputChange(value);
+    },
+    validateIfHasValue: function () {
+        var length = this.getValue().trim().length;
+        if (length) {
+            console.log(length);
+            this.validate();
+        }
+    },
+    componentDidMount: function () {
+        var validate = this.props.validate;
+        if (validate) {
+            this.setState({
+                validate: validate
+            });
+        }
+        var value = this.getValue();
+        if (value.trim().length) this.validate();
+    },
+    getDefaultProps: function () {
+        return {
+            onInputChange: function () {
+
+            }
+        };
+    },
+    getInitialState: function () {
+        return {
+            validate: this.props.validate || function () {
+            },
+            error: null,
+            inputEnabled: true,
+            value: this.props.initialValue
+        }
+    },
+    enable: function () {
+        this.setState({
+            inputEnabled: true
+        });
+    },
+    disable: function () {
+        this.setState({
+            inputEnabled: false
+        });
+    },
+    clear: function () {
+        $(this.refs.input.getDOMNode()).val('');
+    },
+    focus: function () {
+        $(this.refs.input.getDOMNode()).focus();
     }
 });
 
-var MasonryComp = React.createClass({
+var Login = React.createClass({
+    mixins: [Router.State],
+    render: function () {
+        return (<div className="login">
+            <form>
+                <div>
+                    <i className="fa fa-user"/>
+                    <ValidatedInput
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="username"
+                        initialValue={loginStore.username}
+                        onInputChange={loginActions.changeUsername.bind(loginActions)}
+                    />
+                </div>
+                <div>
+                    <i className="fa fa-lock"/>
+                    <ValidatedInput
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="password"
+                        initialValue={loginStore.password}
+                        onInputChange={loginActions.changePassword.bind(loginActions)}
+                    />
+                </div>
+            </form>
+            <div id="buttons">
+                <button onClick={this.onClick}>Login</button>
+                <Link to="sign-up">
+                    <button>Sign Up</button>
+                </Link>
+            </div>
+            <div id="error">
+
+            </div>
+        </div>);
+    },
+    onClick: function () {
+
+    }
+});
+
+var SignUp = React.createClass({
+    mixins: [Router.State],
+    render: function () {
+        return (<div className="sign-up">
+            <form>
+                <div>
+                    <i className="fa fa-user"/>
+                    <ValidatedInput type="text"
+                        id="text"
+                        name="username"
+                        placeholder="username"
+                        ref="username"
+                        onInputChange={loginActions.changeUsername.bind(loginActions)}
+                        initialValue={loginStore.username}
+                        validate={this.validateUsername}/>
+                </div>
+                <div>
+                    <i className="fa fa-lock"/>
+                    <ValidatedInput type="password"
+                        id="password"
+                        name="password"
+                        placeholder="password"
+                        ref="password"
+                        onInputChange={loginActions.changePassword.bind(loginActions)}
+                        initialValue={loginStore.password}
+                        validate={this.validatePassword}/>
+                </div>
+                <div>
+                    <i className="fa fa-lock"/>
+                    <ValidatedInput type="password"
+                        id="repeat-password"
+                        name="repeat-password"
+                        placeholder="repeat password"
+                        ref="repeatPassword"
+                        onInputChange={loginActions.changeRepeatPassword.bind(loginActions)}
+                        initialValue={loginStore.repeatPassword}
+                        validate={this.validateRepeatPassword}/>
+                </div>
+            </form>
+            <div id="buttons">
+                <Link to="login">
+                    <button className="icon-button">
+                        <i className="fa fa-chevron-left"/>
+                    </button>
+                </Link>
+                <button onClick={this.signUp}>Sign Up</button>
+            </div>
+            <div id="error">
+            {this.state.error}
+            </div>
+        </div>)
+    },
+    /**
+     *
+     * @returns {Array} - array of errors
+     */
+    validateAll: function () {
+        return Object.keys(this.refs).reduce(function (errors, k) {
+            var ref = this.refs[k];
+            if (ref.validate) var err = ref.validate();
+            if (err) errors.push(err);
+            return errors;
+        }.bind(this), []);
+    },
+    validateIfHasValue: function () {
+        return Object.keys(this.refs).forEach(function (k) {
+            this.refs[k].validateIfHasValue();
+        }.bind(this));
+    },
+    enableAll: function () {
+        return Object.keys(this.refs).forEach(function (k) {
+            this.refs[k].enable();
+        }.bind(this));
+    },
+    disableAll: function () {
+        return Object.keys(this.refs).forEach(function (k) {
+            this.refs[k].disable();
+        }.bind(this));
+    },
+    signUp: function () {
+        if (!this.validateAll().length) {
+            this.disableAll();
+            couch.createUser({
+                username: this.refs.username.getValue(),
+                password: this.refs.password.getValue()
+            }, function (err, user) {
+                this.enableAll();
+                if (err) {
+                    var message;
+                    if (err.status == 409 || err.status == 403 || err.status == 401) {
+                        message = 'That user already exists!';
+                        this.refs.username.clear();
+                        this.refs.username.focus();
+                        this.refs.username.validate(message);
+                    }
+                    else {
+                        message = err.message || 'Unknown Error.';
+                        this.setState({
+                            error: message
+                        });
+                    }
+                }
+                else {
+                    userActions.changeUser(user);
+                }
+            }.bind(this));
+        }
+    },
+    validateUsername: function (username) {
+        if (username.length < 4) {
+            return 'Username must be at least 4 characters long'
+        }
+    },
+    validatePassword: function (password) {
+        if (password.length < 8) {
+            return 'Password must be at least 8 characters long'
+        }
+    },
+    validateRepeatPassword: function (repeatPassword) {
+        var password = this.refs.password.getValue();
+        if (repeatPassword != password) {
+            return 'Passwords do not match'
+        }
+    },
+    getInitialState: function () {
+        return {
+            error: ''
+        }
+    },
+    componentDidMount: function () {
+        this.validateIfHasValue();
+    }
+});
+
+var Home = React.createClass({
+    mixins: [Router.State, Router.Navigation],
+
     render: function () {
         return (
-            <div ref="container" className="masonry">
-                <div className="items">
-                    {data.map(function (item) {
-                        var scaled = scaleToMatchWidth(item.width, item.height);
-                        return (
-                            <div className="item" style={{width: scaled.width, height: scaled.height}}>
-                                <Img onMouseOut={this.onMouseOut}
-                                    onMouseOver={this.onMouseOver}
-                                    src={item.url}
-                                    width={scaled.width} height={scaled.height}
-                                    title={item.title}
-                                    hover={this.state.hover}></Img>
-                            </div>
-                        )
-                    }.bind(this))}
+            <div id="home">
+                <div id="inner-home">
+                    <div className="header">
+                        <h1 className="app-name">
+                            Your App
+                        </h1>
+                        <h3 className="subtitle">
+                            ...backed by nothing but CouchDB
+                        </h3>
+                    </div>
+                    <RouteHandler/>
                 </div>
             </div>
         );
     },
     componentDidMount: function () {
-        var node = this.refs.container.getDOMNode();
-        var $node = $(node);
-        this.masonry = $node.masonry({
-            itemSelector: '.item',
-            isResizeBound: false
-        });
 
-        $(window).resize(function () {
-            clearTimeout($.data(this, 'resizeTimer'));
-            $.data(this, 'resizeTimer', setTimeout(function () {
-                if (this._lifeCycleState == 'MOUNTED') {
-                    this.setState({}, function () {
-                        $node.masonry('layout');
-                    });
-                }
-            }.bind(this), 150));
-        }.bind(this));
-
-        calculateMaxWidth();
-        this.setState({}, function () {
-            $node.masonry('layout');
-        });
-
-        //
-        //$(window).resize(function () {
-        //    if (this._lifeCycleState == 'MOUNTED') {
-        //        this.setState({}, function () {
-        //            $node.masonry('layout');
-        //        });
-        //    }
-        //}.bind(this));
-
-
-        //$node.find('.item').each(function (i, itemElem) {
-        //    var draggie = new Draggabilly(itemElem);
-        //    $node.masonry('bindDraggabillyEvents', draggie);
-        //});
-        masonries.push(this.masonry);
-        if (this.props.showPlaceholder) {
-            this.showPlaceholder();
-        }
-    },
-    componentDidUnmount: function () {
-        var idx = masonries.indexOf(this.masonry);
-        masonries.splice(idx, 1);
-    },
-    onMouseOut: function () {
-        this.setState({
-            hover: false
-        })
-    },
-    onMouseOver: function () {
-        this.setState({
-            hover: true
-        })
     },
     getInitialState: function () {
         return {
-            hover: false
-        }
-    },
-    hidePlaceholder: function () {
-        var node = this.refs.container.getDOMNode();
-        var $node = $(node);
-        $node.masonry('remove', this.newElems);
-        $node.masonry(); // layout remaining items
-        this.newElems = null;
-    },
-    showPlaceholder: function () {
-        var node = this.refs.container.getDOMNode();
-        var $node = $(node);
-        var newElems = $('<div class="item placeholder" style="width: ' + maxWidth + 'px; height: 200px"><i class="fa fa-picture-o"></i></div>');
-        $node.prepend(newElems);
-        $node.masonry('prepended', newElems);
-        this.newElems = newElems;
-    },
-    componentWillReceiveProps: function (nextProps) {
-        if (this.props.showPlaceholder && !nextProps.showPlaceholder) {
-            this.hidePlaceholder();
-        }
-        else if (!this.props.showPlaceholder && nextProps.showPlaceholder) {
-            this.showPlaceholder();
+            login: true
         }
     }
 });
 
-var Home = React.createClass({
-    render: function () {
-        var overlayStyle = this.state.showOverlay ? {
-            opacity: 0.7,
-            pointerEvents: 'none'
-        } : {
-            opacity: 0,
-            pointerEvents: 'none'
-        };
-        return (
-            <div className="home" onDragEnter={this.onDragEnter} onDragOver={this.onDragOver} onDragLeave={this.onDragLeave} onDrop={this.onDrop}>
-                <div className="home-overlay" onMouseOver={this.onMouseOver} style={overlayStyle}>
-                {this.state.numFiles + ' files'}
-                </div>
-                <div className="title">
-                    London 2015
-                </div>
-                <MasonryComp ref="masonry" showPlaceholder={this.state.counter > 0}/>
-            </div>
-        );
-    },
-    onMouseOver: function (e) {
-        e.preventDefault();
-    },
-    getInitialState: function () {
-        return {
-            numFiles: 0,
-            counter: 0
-        }
-    },
-    onDragEnter: function (e) {
-        this.setState({
-            counter: this.state.counter + 1
-        });
-        e.preventDefault();
-        console.log('enter');
-    },
-    onDragOver: function (e) {
-        var x = e.clientX,
-            y = e.clientY;
-        console.log('(' + x + ',' + y + ')');
-        e.preventDefault();
-        this.setState({
-            isDropping: true
-        });
-    },
-    onDragLeave: function (e) {
-        this.setState({
-            counter: this.state.counter - 1
-        });
-        console.log('leave');
-        e.preventDefault();
-        this.setState({
-            isDropping: false
-        });
-    },
+var TheApp = React.createClass({
+    mixins: [Router.State, Router.Navigation],
 
-    onDrop: function (e) {
-        e.preventDefault();
-        console.log('e.dataTransfer', e.dataTransfer);
-        var file = e.dataTransfer.files[0],
-            reader = new FileReader();
-        reader.onload = function (event) {
-        };
-        console.log(file);
-        reader.readAsDataURL(file);
-        e.preventDefault();
-        this.setState({
-            counter: 0
-        });
+    render: function () {
+        return (
+            <span>yo!</span>
+        )
+    },
+    componentDidMount: function () {
+        if (!userStore.user) {
+            this.transitionTo('home');
+        }
     }
 });
 
 var routes = (
-    <Route handler={App} path="/">
-        <DefaultRoute handler={Home} />
-        <Route name="home" handler={Home} />
-        <NotFoundRoute handler={Home}/>
+    <Route handler={App} >
+        <Route name="home" path="/" handler={Home}>
+            <Route name="login" path="login" handler={Login}/>
+            <Route name="sign-up" path="signup" handler={SignUp}/>
+            <DefaultRoute handler={Login}/>
+        </Route>
+        <Route name="app" path="/app" handler={TheApp}/>
     </Route>
 );
-
-Router.run(routes, function (Handler) {
-    React.render(<Handler/>, document.body);
-});
 
 Router.run(routes, Router.HashLocation, function (Handler) {
     React.render(<Handler/>, document.body);

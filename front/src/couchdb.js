@@ -281,6 +281,7 @@
          * @private
          */
         function _nHttp(opts, cb) {
+            cb = cb || function () {};
             var parsedURL;
             if (opts.url) {
                 parsedURL = url.parse(opts.url);

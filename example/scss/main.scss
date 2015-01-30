@@ -1,5 +1,10 @@
 @import url(http://fonts.googleapis.com/css?family=Montserrat);
 
+$primary: white;
+$tertiary: #e1e1e1;
+$secondary-color: #6ba3ff;
+$brighter-secondary: #94b6ff;
+$error-color: #ae0000;
 @font-face {
   font-family: 'caecilia';
   src: url('../fonts/Caecilia-LT-Std-45-Light_8982.ttf');
@@ -19,116 +24,133 @@ html, body {
   padding: 0;
 }
 
-.header {
-  font-size: 14px;
-  margin-top: 5px;
-  div {
-    display: inline-block;
-    margin-left: 5px;
-  }
-  .fa {
-    font-size: 16px;
-  }
-}
-
-$transition: 0.4s;
-
-.title {
-  padding-bottom: 8px;
-  padding-top: 10px;
-  padding-left: 15px;
-  font-size: 30px;
-  font-weight: bold;
-  background-color: white;
-}
-
 .main {
   width: 100%;
   height: 100%;
-  background-color: #e1e1e1;
+  background-color: $primary;
 }
 
+::-webkit-input-placeholder {
+  color: rgb(198, 198, 198);
+}
 
-.home-overlay {
-  position: fixed;
-  float: left;
-  width: 100%;
-  height: 100%;
-  background-color: black;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  pointer-events: auto;
-  color: white;
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: rgb(198, 198, 198);
+}
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: rgb(198, 198, 198);
+}
+
+:-ms-input-placeholder {
+  color: rgb(198, 198, 198);
+}
+
+#home {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.item {
-  font-family: 'Helvetic Neue', sans-serif;
-  width: 200px;
-  height: 200px;
-  .img {
-    position: relative;
-    .actual-img {
-      height: 100%;
-      width: 100%;
-      background-size: cover;
+  width: 100%;
+  height: 100%;
+  #inner-home {
+    width: 40%;
+    .header {
+      h1 {
+        margin: 0;
+        padding: 0;
+        margin-bottom: 15px;
+      }
+      h3 {
+        margin: 0;
+        padding: 0;
+      }
+      text-align: center;
+      .app-name {
+        font-size: 50px;
+        font-weight: bold;
+      }
+      margin-bottom: 25px;
     }
-    .img-title {
+    form {
+      margin: 0;
+      padding: 0;
+      .fa {
+        color: rgb(198, 198, 198);
+        font-size: 26px;
+        position: relative;
+        top: 3px;
+        &.fa-lock {
+          margin-right: 20px;
+        }
+        &.fa-user {
+          margin-right: 15px;
+        }
+
+      }
+      .validated-input {
+        position: relative;
+        width: 90%;
+        display: inline-block;
+        input {
+          font-family: 'Montserrat', serif;
+          width: 100%;
+          font-size: 36px;
+          color: #606060;
+          border: none;
+          border-bottom-width: 1px;
+          border-bottom-style: solid;
+          border-bottom-color: rgb(231, 231, 231);
+          padding: 3px;
+          &:focus {
+            outline: none;
+          }
+        }
+        .fa-times {
+          color: $error-color;
+          position: absolute;
+          right: 0;
+          top: 18px;
+        }
+      }
+    }
+    #buttons {
+      width: 100%;
       color: white;
-      display: none;
-    }
-    cursor: pointer;
-    .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-
-    }
-    .img-title {
-      opacity: 0;
-      transition: opacity $transition;
-      display: inherit;
-      position: absolute;
-      bottom: 5px;
-      right: 10px;
-    }
-    &.not-hovered {
-      .overlay {
-        background-color: rgba(0, 0, 0, 0.0);
-        transition: background-color $transition;
+      font-family: 'Montserrat', serif;
+      margin-top: 40px;
+      a {
+        color: white;
+        &:hover {
+          text-decoration: none;
+        }
       }
-    }
-    &.hover {
-      .overlay {
-        background-color: rgba(0, 0, 0, 0.3);
-        transition: background-color $transition;
+      button {
+        display: inline;
+        margin-left: 5px;
+        position: relative;
+        right: 5px;
+        border: none;
+        background-color: $secondary-color;
+        padding: 10px 14px;
+        border-radius: 3px;
+        &:hover {
+          background-color: $brighter-secondary;
+        }
+        &:focus {
+          outline: none;
+        }
+        &.icon-button {
+          padding: 13px 8px;
+        }
       }
-      .img-title {
-        opacity: 1;
-        display: inherit;
-        transition: opacity $transition;
-      }
+      text-align: center;
     }
-  }
-
-  &.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .fa {
-      font-size: 40px;
+    #error {
+      margin-top: 30px;
+      text-align: center;
+      color: $error-color;
     }
-  }
-}
-
-.masonry {
-  text-align: center;
-  .items {
-    display: inline;
   }
 }
