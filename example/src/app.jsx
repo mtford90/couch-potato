@@ -340,8 +340,6 @@ var SignUp = React.createClass({
                 <div>
                     <i className="fa fa-lock"/>
                     <ValidatedInput type="password"
-                        id="password"
-                        name="password"
                         placeholder="password"
                         ref="password"
                         onInputChange={loginActions.changePassword.bind(loginActions)}
@@ -351,8 +349,6 @@ var SignUp = React.createClass({
                 <div>
                     <i className="fa fa-lock"/>
                     <ValidatedInput type="password"
-                        id="repeat-password"
-                        name="repeat-password"
                         placeholder="repeat password"
                         ref="repeatPassword"
                         onInputChange={loginActions.changeRepeatPassword.bind(loginActions)}
