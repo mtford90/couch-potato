@@ -215,6 +215,7 @@
         function _http(opts, cb) {
             if (nodeHttp) {
                 // TODO: Use node's http library if available.
+                throw new Error('NYI!');
             }
             else {
                 _$http(opts, cb);
@@ -237,6 +238,42 @@
             }
             else {
                 _http(opts, cb);
+            }
+        };
+
+
+        /**
+         * A wrapper around XMLHttpRequest. This exists due to some short-comings in jquery ajax around blobs.
+         * If we're in the Node environment, this will simply pass onto Node.
+         * @param opts
+         * @param opts.method
+         * @param opts.responseType
+         * @param opts.url
+         * @param cb
+         * @private
+         */
+        var _xhrHttp = function (opts, cb) {
+            var method = opts.method || 'GET',
+                responseType = opts.responseType;
+            cb = cb || function () {
+            };
+            if (nodeHttp) {
+                // TODO
+                throw new Error('NYI');
+            }
+            else {
+                var xhr = new window.XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (this.readyState == 4) {
+                        if (this.status == 200) cb(null, this.response, xhr);
+                        else cb(this.status, this.response, xhr);
+                    }
+                };
+                xhr.open(method, opts.url);
+                if (responseType) {
+                    xhr.responseType = responseType;
+                }
+                xhr.send();
             }
         };
 
@@ -786,33 +823,30 @@
                      It's probably something to do with encoding but will XHR for this for now.
                      TODO: Use jquery instead for the below (if possible)
                      */
-                    var xhr = new XMLHttpRequest();
-                    xhr.onreadystatechange = function () {
-                        if (this.readyState == 4 && this.status == 200) {
-                            if (this.status == 200) {
-                                var database = opts.db || defaultDB,
-                                    id = isString(opts.doc) ? opts.doc : opts.doc._id,
-                                    rev = opts.doc._rev,
-                                    mimeType = opts.mimeType || false,
-                                    path = database + '/' + id + '/' + opts.attName;
-                                if (rev) path += '?rev=' + rev;
-                                var blob = this.response;
-                                http({
-                                    path: path,
-                                    type: 'PUT',
-                                    data: blob,
-                                    processData: false,
-                                    contentType: mimeType
-                                }, cb);
-                            }
-                            else {
-                                cb(new CouchError({xhr: xhr, status: this.status}));
-                            }
+                    _xhrHttp({
+                        method: 'GET',
+                        url: opts.url,
+                        responseType: 'blob'
+                    }, function (errStatus, data, xhr) {
+                        if (!errStatus) {
+                            var database = defaultDB,
+                                id = isString(opts.doc) ? opts.doc : opts.doc._id,
+                                rev = opts.doc._rev,
+                                mimeType = opts.mimeType || false,
+                                path = defaultDB + '/' + id + '/' + opts.attName;
+                            if (rev) path += '?rev=' + rev;
+                            http({
+                                path: path,
+                                type: 'PUT',
+                                data: data,
+                                processData: false,
+                                contentType: mimeType
+                            }, cb);
                         }
-                    };
-                    xhr.open('GET', opts.url);
-                    xhr.responseType = 'blob';
-                    xhr.send();
+                        else {
+                            cb(new CouchError({xhr: xhr, status: errStatus}));
+                        }
+                    });
                 }
                 else {
                     cb(new CouchError({message: 'Must specify either data or ajax'}));
@@ -869,28 +903,24 @@
              * @param cb
              */
             constructAttachmentFromURL: function (opts, cb) {
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function () {
-                    if (this.readyState == 4) {
-                        if (this.status == 200) {
-                            opts.data = this.response; // response is a Blob object.
-                            API.constructAttachmentFromBlob(opts, cb);
-                        }
-                        else {
-                            cb(new CouchError({
-                                message: 'Error getting attachment from URL: ' + opts.url,
-                                xhr: xhr,
-                                status: this.status
-                            }))
-                        }
+                _xhrHttp({
+                    method: 'GET',
+                    responseType: 'blob',
+                    url: opts.url
+                }, function (errStatus, data, xhr) {
+                    if (!errStatus) {
+                        opts.data = data; // response is a Blob object.
+                        API.constructAttachmentFromBlob(opts, cb);
                     }
-
-                };
-                xhr.open('GET', opts.url);
-                xhr.responseType = 'blob';
-                xhr.send();
+                    else {
+                        cb(new CouchError({
+                            message: 'Error getting attachment from URL: ' + opts.url,
+                            xhr: xhr,
+                            status: errStatus
+                        }))
+                    }
+                });
             }
-
         };
 
         Object.defineProperty(API, 'auth', {
