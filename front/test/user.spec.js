@@ -82,6 +82,7 @@ describe('User management', function () {
             });
         });
     });
+
     describe('auth', function () {
         beforeEach(function (done) {
             couch.reset(done);
@@ -131,6 +132,40 @@ describe('User management', function () {
                 assert.notOk(couch.auth);
             });
         });
-
+        describe('verify', function () {
+            it('success', function (done) {
+                var username = 'mike',
+                    password = 'mike';
+                couch.createUser({
+                    username: username,
+                    password: password,
+                    auth: couch.AUTH_METHOD.BASIC
+                }, function (err) {
+                    assert.notOk(err);
+                    couch.verifyAuth(function (err) {
+                        assert.notOk(err);
+                        done();
+                    });
+                });
+            });
+            it('failure if no user exists', function (done) {
+                couch.auth = {
+                    username: 'blah',
+                    password: 'blah',
+                    method: couch.AUTH_METHOD.BASIC
+                };
+                couch.verifyAuth(function (err) {
+                    assert.ok(err);
+                    assert.ok(err.isHttpError);
+                    done();
+                });
+            });
+            it('fail if no auth', function (done) {
+                couch.verifyAuth(function (err) {
+                    assert.ok(err);
+                    done();
+                });
+            })
+        });
     });
 });

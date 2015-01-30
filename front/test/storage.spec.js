@@ -3,6 +3,7 @@ var assert = require('chai').assert,
     prettyJson = require('./util').prettyJson;
 
 describe('storage', function () {
+
     it('set auth when initialising', function () {
         var auth = {
             username: 'mike',
@@ -43,5 +44,29 @@ describe('storage', function () {
         });
     });
 
-    describe('event on auth change')
+    describe('event on auth change', function () {
+        var couch = couchdb();
+        beforeEach(function (done) {
+            couch.reset(function (err) {
+                assert.notOk(err);
+                couch.createDatabase({anonymousUpdates: true, anonymousReads: true}, function (err) {
+                    assert.notOk(err);
+                    done();
+                });
+            });
+        });
+        it('create user', function (done) {
+            couch.once('auth', function (auth) {
+                assert.equal(auth.username, 'mike');
+                assert.equal(auth.password, 'mike');
+                done();
+            });
+            couch.createUser({
+                username: 'mike',
+                password: 'mike',
+                auth: couchdb.AUTH_METHOD.BASIC
+            });
+        });
+
+    });
 });

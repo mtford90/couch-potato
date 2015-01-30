@@ -160,8 +160,8 @@
 
         function setAuth(_auth) {
             auth = _auth;
+            api.emit('auth', _auth);
         }
-
 
         /**
          * Configure the ajax/nodeHttp options to match the configured authorisation method.
@@ -500,6 +500,8 @@
          * @param cb
          */
         var createUser = function (opts, cb) {
+            cb = cb || function () {
+            };
             var username = opts.username,
                 password = opts.password;
             var fullyQualifiedUsername = _getFullyQualifedUsername(username);
@@ -588,6 +590,7 @@
                         cb(null, data);
                     }
                     else {
+                        auth = null;
                         cb(new CouchError(data));
                     }
                 }
@@ -595,6 +598,24 @@
                     cb(err);
                 }
             });
+        };
+
+        /**
+         * Check that the current auth credentials are still valid, nullifying them if not
+         * and returning the error.
+         * @param {Function} [cb]
+         */
+        var verifyAuth = function (cb) {
+            cb = cb || function () {
+            };
+            if (auth) {
+                if (auth.method == AUTH_METHOD.BASIC) {
+                    basicAuth(auth, cb);
+                }
+            }
+            else {
+                cb(new CouchError({message: 'No auth method has been set.'}))
+            }
         };
 
 
@@ -1083,6 +1104,8 @@
                 };
                 cb(null, attachment)
             },
+
+            verifyAuth: verifyAuth,
 
             /**
              *
