@@ -9,4 +9,4 @@ describe('CouchDB', function () {
             done();
         });
     });
-}); 
+});

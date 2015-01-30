@@ -7,7 +7,9 @@ var gulp = require('gulp'),
     replace = require('gulp-replace'),
     through = require('through2'),
     runSequence = require('run-sequence'),
+    rename = require('gulp-rename'),
     mocha = require('gulp-mocha'),
+    uglify = require('gulp-uglify'),
     source = require('vinyl-source-stream');
 
 
@@ -88,14 +90,14 @@ gulp.task('test', function (cb) {
 });
 
 // Same as test, except opens up the browser tests once the node tests have completed.
-gulp.task('test-first-time', ['test-server'],function (cb) {
+gulp.task('test-first-time', ['test-server'], function (cb) {
     runSequence('test-node', 'build-test', function () {
         open('http://localhost:7682/front/test');
         cb();
     });
 });
 
-gulp.task('test-server',  function () {
+gulp.task('test-server', function () {
     connect.server({
         host: 'localhost',
         port: 7682,
@@ -105,6 +107,12 @@ gulp.task('test-server',  function () {
     });
 });
 
+gulp.task('compile', ['build-couchdb'], function () {
+    return gulp.src('./front/build/bundle.js')
+        .pipe(uglify())
+        .pipe(rename('bundle.min.js'))
+        .pipe(gulp.dest('./front/build/'));
+});
 
 
 gulp.task('watch', ['test-first-time', 'build'], function () {
