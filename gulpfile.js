@@ -4,19 +4,35 @@ var gulp = require('gulp'),
     open = require('open'),
     reactify = require('reactify'),
     sass = require('gulp-sass'),
+    replace = require('gulp-replace'),
+    through = require('through2'),
     source = require('vinyl-source-stream');
 
+/**
+ * Ensure that all node dependencies are eliminated before bundling.
+ */
+function removeNodeDeps(file) {
+    return through(function (buf, enc, next) {
+        this.push(buf.toString('utf8').replace("require('http')", 'null').replace('require("http")', 'null'));
+        next();
+    });
+}
+
 gulp.task('build-couchdb', function () {
-    return browserify('./front/src/couchdb.js', {debug: true})
-        .bundle()
+    var b = browserify({debug: true});
+    b.transform(removeNodeDeps);
+    b.add('./front/src/couchdb.js');
+    return b.bundle()
         .pipe(source('bundle.js'))
         .pipe(gulp.dest('./front/build'))
         .pipe(connect.reload());
 });
 
 gulp.task('build-test', function () {
-    return browserify('./front/test/tests.js', {debug: true})
-        .bundle()
+    var b = browserify({debug: true});
+    b.transform(removeNodeDeps);
+    b.add('./front/test/tests.js');
+    b.bundle()
         .pipe(source('test-bundle.js'))
         .pipe(gulp.dest('./front/build'))
         .pipe(connect.reload());

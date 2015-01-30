@@ -1,7 +1,8 @@
 (function () {
 
     var _ = require('nimble'),
-        merge = require('merge');
+        merge = require('merge'),
+        nodeHttp = require('http');
 
     /**
      * Normalise the host parameter e.g. standardise forward slash, protocol etc.
@@ -145,7 +146,7 @@
         }
 
         /**
-         * Send a HTTP request
+         * Send a HTTP request using jquery
          * @param opts - The usual jquery opts +
          * @param opts.path - Path to append to host
          * @param opts.admin - True if endpoint requires admin access
@@ -154,7 +155,7 @@
          * @param [cb]
          * @private
          */
-        function _http(opts, cb) {
+        function _$http(opts, cb) {
             cb = cb || function () {
                 // Do nothing.
             };
@@ -203,7 +204,21 @@
                     cb(new CouchError({message: errorThrown, xhr: jqXHR, status: jqXHR.status, opts: opts}));
                 }
             });
-            return {cb: cb, opts: opts};
+        }
+
+        /**
+         * Send a HTTP request. Uses either jquery or nodes http depending on what's available in the environment
+         * @param opts
+         * @param cb
+         * @private
+         */
+        function _http(opts, cb) {
+            if (nodeHttp) {
+                // TODO: Use node's http library if available.
+            }
+            else {
+                _$http(opts, cb);
+            }
         }
 
         /**
