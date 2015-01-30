@@ -42,4 +42,6 @@ describe('storage', function () {
             }, couchdb.CouchError);
         });
     });
+
+    describe('event on auth change')
 });

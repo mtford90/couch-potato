@@ -6,9 +6,9 @@ var assert = require('chai').assert,
 describe('attachments', function () {
     var couch = couchdb();
     beforeEach(function (done) {
-        couch.admin.reset(function (err) {
+        couch.reset(function (err) {
             assert.notOk(err);
-            couch.admin.createDatabase({anonymousUpdates: true, anonymousReads: true}, function (err) {
+            couch.createDatabase({anonymousUpdates: true, anonymousReads: true}, function (err) {
                 assert.notOk(err);
                 done();
             });

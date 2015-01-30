@@ -6,7 +6,7 @@ describe('User management', function () {
 
     describe('create user', function () {
         beforeEach(function (done) {
-            couch.admin.reset(done);
+            couch.reset(done);
         });
         it('returns a user document', function (done) {
             var username = 'mike',
@@ -54,7 +54,7 @@ describe('User management', function () {
 
     describe('get user', function () {
         beforeEach(function (done) {
-            couch.admin.reset(done);
+            couch.reset(done);
         });
         it('random user, should only be able to get the name', function (done) {
             var username = 'mike',
@@ -84,7 +84,7 @@ describe('User management', function () {
     });
     describe('auth', function () {
         beforeEach(function (done) {
-            couch.admin.reset(done);
+            couch.reset(done);
         });
         describe('basic', function () {
             it('fail', function (done) {

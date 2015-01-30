@@ -3,7 +3,8 @@
     var _ = require('nimble'),
         merge = require('merge'),
         nodeHttp = require('http'),
-        url = require('url');
+        url = require('url'),
+        EventEmitter = require('events').EventEmitter;
 
     var btoa = root.btoa;
     if (!btoa) btoa = function (str) {
@@ -77,6 +78,7 @@
             }
         });
     }
+
 
     /**
      *
@@ -154,6 +156,10 @@
             else {
                 throw new CouchError({message: 'Must specify method in auth'});
             }
+        }
+
+        function setAuth(_auth) {
+            auth = _auth;
         }
 
 
@@ -518,12 +524,13 @@
                     };
                     if (opts.auth) {
                         if (opts.auth == AUTH_METHOD.BASIC) {
-                            auth = {
+
+                            setAuth({
                                 method: AUTH_METHOD.BASIC,
                                 username: username,
                                 password: password,
                                 user: user
-                            };
+                            });
                             user.password = password;
                         }
                         else {
@@ -569,12 +576,12 @@
             json(httpOpts, function (err, data) {
                 if (!err) {
                     if (data.ok) {
-                        auth = {
+                        setAuth({
                             method: AUTH_METHOD.BASIC,
                             username: username,
                             password: password,
                             user: data
-                        };
+                        });
                         data.username = username;
                         data.password = password;
                         data.name = username;
@@ -627,9 +634,13 @@
         /**
          * Public API providing access to the backing CouchDB instance.
          */
-        var API;
-        //noinspection JSCommentMatchesSignature,JSCommentMatchesSignature,JSValidateJSDoc
-        API = {
+        var API = function (opts) {
+            EventEmitter.call(this, opts);
+        };
+
+        API.prototype = Object.create(EventEmitter.prototype);
+
+        merge(API.prototype, {
             info: function (cb) {
                 json({path: ''}, cb);
             },
@@ -639,191 +650,188 @@
             logout: function () {
                 auth = null;
             },
-            admin: {
-                createAdminUser: createAdminUser,
-                /**
-                 * Clear out the database. Useful during testing.
-                 * @param [optsOrCb]
-                 * @param cb
-                 */
-                deleteAllDatabases: function (optsOrCb, cb) {
-                    var __ret = optsOrCallback(optsOrCb, cb),
-                        opts = __ret.opts;
-                    cb = __ret.cb;
-                    opts.path = '_all_dbs';
-                    opts.admin = true;
-                    json(opts, function (err, data) {
-                        if (err) cb(err);
-                        else {
-                            var ajaxOpts = data.reduce(function (memo, dbName) {
-                                if (!IGNORE_DATABASES.memberOf(dbName)) {
-                                    memo.push({
-                                        type: 'DELETE',
-                                        path: dbName,
-                                        admin: true
-                                    });
-                                }
-                                return memo;
-                            }, []);
-                            json(ajaxOpts, cb);
-                        }
-                    });
-                },
-
-                /**
-                 *
-                 * @param doc
-                 * @param opts
-                 * @param opts.id
-                 * @param [opts.remove]
-                 * @param [opts.admin]
-                 * @param [opts.database]
-                 * @param cb
-                 * @private
-                 */
-                _toggleDoc: function (doc, opts, cb) {
-                    var database = opts.database || defaultDB,
-                        id = opts.id,
-                        remove = opts.remove;
-                    var path = database + '/' + id;
-                    json(merge(true, opts, {
-                        path: path,
-                        admin: opts.admin
-                    }), function (err, resp) {
-                        var found = true;
-                        if (err) {
-                            if (err.status == API.HTTP_STATUS.NOT_FOUND) found = false;
-                            else {
-                                cb(err);
-                                return;
+            createAdminUser: createAdminUser,
+            /**
+             * Clear out the database. Useful during testing.
+             * @param [optsOrCb]
+             * @param cb
+             */
+            deleteAllDatabases: function (optsOrCb, cb) {
+                var __ret = optsOrCallback(optsOrCb, cb),
+                    opts = __ret.opts;
+                cb = __ret.cb;
+                opts.path = '_all_dbs';
+                opts.admin = true;
+                json(opts, function (err, data) {
+                    if (err) cb(err);
+                    else {
+                        var ajaxOpts = data.reduce(function (memo, dbName) {
+                            if (!IGNORE_DATABASES.memberOf(dbName)) {
+                                memo.push({
+                                    type: 'DELETE',
+                                    path: dbName,
+                                    admin: true
+                                });
                             }
-                        }
-                        if (remove && found) {
-                            // delete it
-                            path += '?rev=' + resp._rev;
-                            json(merge(true, opts, {
-                                type: 'DELETE',
-                                path: path,
-                                admin: opts.admin
-                            }), cb);
-                        }
-                        else if (!remove) {
-                            // create or update it
-                            if (found) doc._rev = resp._rev;
-                            json(merge(true, opts, {
-                                type: 'PUT',
-                                path: path,
-                                data: doc,
-                                admin: opts.admin
-                            }), cb);
-                        }
+                            return memo;
+                        }, []);
+                        json(ajaxOpts, cb);
+                    }
+                });
+            },
+
+            /**
+             *
+             * @param doc
+             * @param opts
+             * @param opts.id
+             * @param [opts.remove]
+             * @param [opts.admin]
+             * @param [opts.database]
+             * @param cb
+             * @private
+             */
+            _toggleDoc: function (doc, opts, cb) {
+                var database = opts.database || defaultDB,
+                    id = opts.id,
+                    remove = opts.remove;
+                var path = database + '/' + id;
+                json(merge(true, opts, {
+                    path: path,
+                    admin: opts.admin
+                }), function (err, resp) {
+                    var found = true;
+                    if (err) {
+                        if (err.status == this.HTTP_STATUS.NOT_FOUND) found = false;
                         else {
-                            // Nothing to do!
-                            cb(null, resp);
+                            cb(err);
+                            return;
                         }
-                    })
-                },
-
-                /**
-                 * Clear out the database. Useful during testing.
-                 * @param [optsOrCb]
-                 * @param [optsOrCb.username] - admin username
-                 * @param [optsOrCb.password] - admin password
-                 * @param cb
-                 */
-                reset: function (optsOrCb, cb) {
-                    var __ret = optsOrCallback(optsOrCb, cb),
-                        opts = __ret.opts;
-                    cb = __ret.cb;
-                    API.admin.deleteAllDatabases(opts, function (err) {
-                        if (!err) API.logout();
-                        cb(err);
-                    });
-                },
-
-                /**
-                 *
-                 * @param [opts]
-                 * @param [opts.anonymousUpdates]
-                 * @param [opts.anonymousReads]
-                 * @param [cb]
-                 */
-                configureDatabase: function (opts, cb) {
-                    var tasks = [];
-                    if (opts.anonymousUpdates != undefined) {
-                        tasks.push(function (done) {
-                            var doc = {
-                                language: 'javascript',
-                                validate_doc_update: function (new_doc, old_doc, userCtx) {
-                                    if (!userCtx.name) {
-                                        throw({forbidden: "Not Authorized"});
-                                    }
-                                }.toString()
-                            };
-                            API.admin._toggleDoc(doc, {
-                                id: '_design/blockAnonymousUpdates',
-                                remove: opts.anonymousUpdates,
-                                admin: true
-                            }, done);
-                        });
                     }
-                    if (opts.anonymousReads != undefined) {
-                        tasks.push(function (done) {
-                            var doc = {
-                                language: 'javascript',
-                                validate_doc_read: function (doc, userCtx) {
-                                    if (!userCtx.name) {
-                                        throw({forbidden: "Not Authorized"});
-                                    }
-                                }.toString()
-                            };
-                            API.admin._toggleDoc(doc, {
-                                id: '_design/blockAnonymousReads',
-                                remove: opts.anonymousReads,
-                                admin: true
-                            }, done);
-                        });
+                    if (remove && found) {
+                        // delete it
+                        path += '?rev=' + resp._rev;
+                        json(merge(true, opts, {
+                            type: 'DELETE',
+                            path: path,
+                            admin: opts.admin
+                        }), cb);
                     }
-                    _.parallel(tasks, cb);
-                }
-                , /**
-                 *
-                 * @param [optsOrCb]
-                 * @param [optsOrCb.database]
-                 * @param [optsOrCb.anonymousUpdates]
-                 * @param [optsOrCb.anonymousReads]
-                 * @param [cb]
-                 */
-                createDatabase: function (optsOrCb, cb) {
-                    var __ret = optsOrCallback(optsOrCb, cb);
-                    var opts = __ret.opts;
-                    cb = __ret.cb;
-                    opts.path = opts.database || defaultDB;
-                    opts.type = 'PUT';
-                    opts.admin = true;
-                    json(opts, function (err) {
-                        if (!err) {
-                            this.configureDatabase(opts, cb);
-                        } else cb(err);
+                    else if (!remove) {
+                        // create or update it
+                        if (found) doc._rev = resp._rev;
+                        json(merge(true, opts, {
+                            type: 'PUT',
+                            path: path,
+                            data: doc,
+                            admin: opts.admin
+                        }), cb);
+                    }
+                    else {
+                        // Nothing to do!
+                        cb(null, resp);
+                    }
+                }.bind(this))
+            },
+
+            /**
+             * Clear out the database. Useful during testing.
+             * @param [optsOrCb]
+             * @param [optsOrCb.username] - admin username
+             * @param [optsOrCb.password] - admin password
+             * @param cb
+             */
+            reset: function (optsOrCb, cb) {
+                var __ret = optsOrCallback(optsOrCb, cb),
+                    opts = __ret.opts;
+                cb = __ret.cb;
+                this.deleteAllDatabases(opts, function (err) {
+                    if (!err) this.logout();
+                    cb(err);
+                }.bind(this));
+            },
+
+            /**
+             *
+             * @param [opts]
+             * @param [opts.anonymousUpdates]
+             * @param [opts.anonymousReads]
+             * @param [cb]
+             */
+            configureDatabase: function (opts, cb) {
+                var tasks = [];
+                if (opts.anonymousUpdates != undefined) {
+                    tasks.push(function (done) {
+                        var doc = {
+                            language: 'javascript',
+                            validate_doc_update: function (new_doc, old_doc, userCtx) {
+                                if (!userCtx.name) {
+                                    throw({forbidden: "Not Authorized"});
+                                }
+                            }.toString()
+                        };
+                        this._toggleDoc(doc, {
+                            id: '_design/blockAnonymousUpdates',
+                            remove: opts.anonymousUpdates,
+                            admin: true
+                        }, done);
                     }.bind(this));
                 }
-                ,
-
-                /**
-                 * @param [optsOrCb]
-                 * @param [optsOrCb.database]
-                 * @param [cb]
-                 */
-                getPermissions: function (optsOrCb, cb) {
-                    var __ret = optsOrCallback(optsOrCb, cb);
-                    var opts = __ret.opts;
-                    cb = __ret.cb;
-                    var database = opts.database || defaultDB;
-                    opts.path = database + '/_security';
-                    opts.admin = true;
-                    json(opts, cb);
+                if (opts.anonymousReads != undefined) {
+                    tasks.push(function (done) {
+                        var doc = {
+                            language: 'javascript',
+                            validate_doc_read: function (doc, userCtx) {
+                                if (!userCtx.name) {
+                                    throw({forbidden: "Not Authorized"});
+                                }
+                            }.toString()
+                        };
+                        this._toggleDoc(doc, {
+                            id: '_design/blockAnonymousReads',
+                            remove: opts.anonymousReads,
+                            admin: true
+                        }, done);
+                    }.bind(this));
                 }
+                _.parallel(tasks, cb);
+            }
+            , /**
+             *
+             * @param [optsOrCb]
+             * @param [optsOrCb.database]
+             * @param [optsOrCb.anonymousUpdates]
+             * @param [optsOrCb.anonymousReads]
+             * @param [cb]
+             */
+            createDatabase: function (optsOrCb, cb) {
+                var __ret = optsOrCallback(optsOrCb, cb);
+                var opts = __ret.opts;
+                cb = __ret.cb;
+                opts.path = opts.database || defaultDB;
+                opts.type = 'PUT';
+                opts.admin = true;
+                json(opts, function (err) {
+                    if (!err) {
+                        this.configureDatabase(opts, cb);
+                    } else cb(err);
+                }.bind(this));
+            }
+            ,
 
+            /**
+             * @param [optsOrCb]
+             * @param [optsOrCb.database]
+             * @param [cb]
+             */
+            getPermissions: function (optsOrCb, cb) {
+                var __ret = optsOrCallback(optsOrCb, cb);
+                var opts = __ret.opts;
+                cb = __ret.cb;
+                var database = opts.database || defaultDB;
+                opts.path = database + '/_security';
+                opts.admin = true;
+                json(opts, cb);
             },
             HTTP_STATUS: {
                 UNAUTHORISED: 401,
@@ -913,10 +921,10 @@
                         cb(err, processedDoc, resp);
                     }
                     else {
-                        var isConflict = err.status == API.HTTP_STATUS.CONFLICT,
+                        var isConflict = err.status == this.HTTP_STATUS.CONFLICT,
                             shouldMerge = opts.conflicts == 'merge';
                         if (shouldMerge && isConflict) {
-                            API._merge(doc, opts, cb);
+                            this._merge(doc, opts, cb);
                         }
                         else {
                             cb(err);
@@ -934,7 +942,7 @@
              * @private
              */
             _merge: function (doc, opts, cb) {
-                API.getDocument(doc._id, opts, function (err, resp) {
+                this.getDocument(doc._id, opts, function (err, resp) {
                     if (!err) {
                         delete doc._rev;
                         doc = merge(resp, doc);
@@ -1116,7 +1124,7 @@
                 }, function (errStatus, data, xhr) {
                     if (!errStatus) {
                         opts.data = data; // response is a Blob object.
-                        API.constructAttachmentFromBlob(opts, cb);
+                        this.constructAttachmentFromBlob(opts, cb);
                     }
                     else {
                         cb(new CouchError({
@@ -1125,23 +1133,26 @@
                             status: errStatus
                         }))
                     }
-                });
+                }.bind(this));
             }
-        };
+        });
 
-        Object.defineProperty(API, 'auth', {
+        var api = new API();
+
+
+        Object.defineProperty(api, 'auth', {
             get: function () {
                 return auth;
             },
             set: function (_auth) {
-                auth = _auth
+                setAuth(_auth);
             },
             configurable: false,
             enumerable: true
         });
 
 
-        return API;
+        return api;
 
     };
 

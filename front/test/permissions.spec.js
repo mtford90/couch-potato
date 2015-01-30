@@ -7,13 +7,13 @@ describe('permissions', function () {
 
     describe('_security', function () {
         beforeEach(function (done) {
-            couch.admin.reset(function (err) {
+            couch.reset(function (err) {
                 assert.notOk(err);
-                couch.admin.createDatabase(done);
+                couch.createDatabase(done);
             });
         });
         it('get default permissions', function (done) {
-            couch.admin.getPermissions(function (err, resp) {
+            couch.getPermissions(function (err, resp) {
                 assert.notOk(err);
                 done();
             });
@@ -24,9 +24,9 @@ describe('permissions', function () {
     describe('configure database', function () {
         describe('defaults', function () {
             beforeEach(function (done) {
-                couch.admin.reset(function (err) {
+                couch.reset(function (err) {
                     assert.notOk(err);
-                    couch.admin.createDatabase(done);
+                    couch.createDatabase(done);
                 });
             });
             it('anonymous creation', function (done) {
@@ -48,9 +48,9 @@ describe('permissions', function () {
         describe('anonymous operations', function () {
             describe('no anonymous updates', function () {
                 beforeEach(function (done) {
-                    couch.admin.reset(function (err) {
+                    couch.reset(function (err) {
                         assert.notOk(err, 'Was not expecting error when reseting');
-                        couch.admin.createDatabase({anonymousUpdates: false}, function (err) {
+                        couch.createDatabase({anonymousUpdates: false}, function (err) {
                             assert.notOk(err, 'Was not expecting error when creating database...' + prettyJson(err));
                             done();
                         });
@@ -86,9 +86,9 @@ describe('permissions', function () {
             });
             describe('no anonymous reads', function () {
                 beforeEach(function (done) {
-                    couch.admin.reset(function (err) {
+                    couch.reset(function (err) {
                         assert.notOk(err);
-                        couch.admin.createDatabase({anonymousReads: false}, function (err) {
+                        couch.createDatabase({anonymousReads: false}, function (err) {
                             assert.notOk(err);
                             done();
                         });
@@ -114,9 +114,9 @@ describe('permissions', function () {
             });
             describe('disable both', function () {
                 beforeEach(function (done) {
-                    couch.admin.reset(function (err) {
+                    couch.reset(function (err) {
                         assert.notOk(err);
-                        couch.admin.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
+                        couch.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
                             assert.notOk(err);
                             done();
                         });
@@ -155,9 +155,9 @@ describe('permissions', function () {
             });
             describe('reenable ', function () {
                 beforeEach(function (done) {
-                    couch.admin.reset(function (err) {
+                    couch.reset(function (err) {
                         assert.notOk(err);
-                        couch.admin.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
+                        couch.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
                             assert.notOk(err);
                             done();
                         });
@@ -166,7 +166,7 @@ describe('permissions', function () {
 
                 describe('reenable reads', function () {
                     beforeEach(function (done) {
-                        couch.admin.configureDatabase({
+                        couch.configureDatabase({
                             anonymousReads: true
                         }, function (err) {
                             assert.notOk(err, 'was not expecting an error when enabling anonymous reads:' + prettyJson(err));
@@ -204,7 +204,7 @@ describe('permissions', function () {
 
                 describe('reenable updates', function () {
                     beforeEach(function (done) {
-                        couch.admin.configureDatabase({
+                        couch.configureDatabase({
                             anonymousUpdates: true
                         }, function (err) {
                             assert.notOk(err, 'did not expect an error when reconfiguring: ' + prettyJson(err));
