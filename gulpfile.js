@@ -114,6 +114,15 @@ gulp.task('compile', ['build-couchdb'], function () {
         .pipe(gulp.dest('./front/build/'));
 });
 
+gulp.task('dist', ['compile'], function () {
+    gulp.src('./front/build/bundle.js')
+        .pipe(rename('couch.js'))
+        .pipe(gulp.dest('./dist'));
+    gulp.src('./front/build/bundle.min.js')
+        .pipe(rename('couch.min.js'))
+        .pipe(gulp.dest('./dist'));
+});
+
 
 gulp.task('watch', ['test-first-time', 'build'], function () {
     gulp.watch(['front/src/**/*.js'], ['test', 'build-couchdb']);
