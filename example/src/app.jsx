@@ -16,8 +16,6 @@ var auth = localStorage.getItem('auth'),
 console.log('couchPotato auth', couchPotato.auth);
 
 
-
-
 var userActions = Reflux.createActions(['changeUser']),
     loginActions = Reflux.createActions(['changeUsername', 'changePassword', 'changeRepeatPassword']),
     userStore = Reflux.createStore({
@@ -120,6 +118,7 @@ var ValidatedInput = React.createClass({
         inputProps['onChange'] = this.onChange;
         inputProps['disabled'] = !this.state.inputEnabled;
         inputProps['value'] = this.state.value;
+        inputProps['autoComplete'] = 'off';
         var input = React.DOM.input(inputProps);
         return (
             <div className="validated-input">
@@ -174,6 +173,12 @@ var ValidatedInput = React.createClass({
         }
         var value = this.getValue();
         if (value.trim().length) this.validate();
+    },
+    // http://stackoverflow.com/questions/12374442/chrome-browser-ignoring-autocomplete-off
+    preventAutocompleteInChrome: function () {
+        if (navigator.userAgent.toLowerCase().indexOf('chrome') >= 0) {
+            this.refs.input.getDOMNode().autocomplete = 'off';
+        }
     },
     getDefaultProps: function () {
         return {
@@ -246,11 +251,12 @@ var ValidatedFormMixin = {
     }
 };
 
+
 var Login = React.createClass({
     mixins: [Router.State, ValidatedFormMixin],
     render: function () {
         return (<div className="login">
-            <form>
+            <form autocomplete="off">
                 <div>
                     <i className="fa fa-user"/>
                     <ValidatedInput
@@ -267,8 +273,6 @@ var Login = React.createClass({
                     <i className="fa fa-lock"/>
                     <ValidatedInput
                         type="password"
-                        id="password"
-                        name="password"
                         ref="password"
                         placeholder="password"
                         initialValue={loginStore.password}
@@ -316,11 +320,12 @@ var Login = React.createClass({
     }
 });
 
+
 var SignUp = React.createClass({
     mixins: [Router.State, ValidatedFormMixin],
     render: function () {
         return (<div className="sign-up">
-            <form>
+            <form autocomplete="off">
                 <div>
                     <i className="fa fa-user"/>
                     <ValidatedInput type="text"

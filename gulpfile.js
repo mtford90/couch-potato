@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     replace = require('gulp-replace'),
     through = require('through2'),
     runSequence = require('run-sequence'),
+    autoprefixer = require('gulp-autoprefixer'),
     rename = require('gulp-rename'),
     mocha = require('gulp-mocha'),
     uglify = require('gulp-uglify'),
@@ -63,6 +64,7 @@ gulp.task('build-example', function () {
 gulp.task('sass', function () {
     gulp.src('./example/scss/*.scss')
         .pipe(sass())
+        .pipe(autoprefixer())
         .pipe(gulp.dest('./example/build/css'))
         .pipe(connect.reload());
 });
