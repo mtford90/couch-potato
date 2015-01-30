@@ -361,7 +361,8 @@ var SignUp = React.createClass({
             this.disableAll();
             couchPotato.createUser({
                 username: this.refs.username.getValue(),
-                password: this.refs.password.getValue()
+                password: this.refs.password.getValue(),
+                auth: couchPotato.AUTH_METHOD.BASIC
             }, function (err, user) {
                 this.enableAll();
                 if (err) {
