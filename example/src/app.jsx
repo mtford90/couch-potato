@@ -127,7 +127,7 @@ var ValidatedInput = React.createClass({
         return error;
     },
     onBlur: function () {
-        this.validate();
+        this.validateIfHasValue();
     },
     onChange: function () {
         var value = this.getValue();
@@ -144,6 +144,11 @@ var ValidatedInput = React.createClass({
         if (length) {
             console.log(length);
             this.validate();
+        }
+        else {
+            this.setState({
+                error: null
+            });
         }
     },
     componentDidMount: function () {
@@ -190,8 +195,45 @@ var ValidatedInput = React.createClass({
     }
 });
 
+
+var ValidatedFormMixin = {
+    validateAll: function () {
+        return Object.keys(this.refs).reduce(function (errors, k) {
+            var ref = this.refs[k];
+            if (ref.validate) var err = ref.validate();
+            if (err) errors.push(err);
+            return errors;
+        }.bind(this), []);
+    },
+    validateIfHasValue: function () {
+        return Object.keys(this.refs).forEach(function (k) {
+            this.refs[k].validateIfHasValue();
+        }.bind(this));
+    },
+    enableAll: function () {
+        return Object.keys(this.refs).forEach(function (k) {
+            this.refs[k].enable();
+        }.bind(this));
+    },
+    disableAll: function () {
+        return Object.keys(this.refs).forEach(function (k) {
+            this.refs[k].disable();
+        }.bind(this));
+    },
+    validateUsername: function (username) {
+        if (username.length < 4) {
+            return 'Username must be at least 4 characters long'
+        }
+    },
+    validatePassword: function (password) {
+        if (password.length < 8) {
+            return 'Password must be at least 8 characters long'
+        }
+    }
+};
+
 var Login = React.createClass({
-    mixins: [Router.State],
+    mixins: [Router.State, ValidatedFormMixin],
     render: function () {
         return (<div className="login">
             <form>
@@ -235,7 +277,7 @@ var Login = React.createClass({
 });
 
 var SignUp = React.createClass({
-    mixins: [Router.State],
+    mixins: [Router.State, ValidatedFormMixin],
     render: function () {
         return (<div className="sign-up">
             <form>
@@ -286,33 +328,7 @@ var SignUp = React.createClass({
             </div>
         </div>)
     },
-    /**
-     *
-     * @returns {Array} - array of errors
-     */
-    validateAll: function () {
-        return Object.keys(this.refs).reduce(function (errors, k) {
-            var ref = this.refs[k];
-            if (ref.validate) var err = ref.validate();
-            if (err) errors.push(err);
-            return errors;
-        }.bind(this), []);
-    },
-    validateIfHasValue: function () {
-        return Object.keys(this.refs).forEach(function (k) {
-            this.refs[k].validateIfHasValue();
-        }.bind(this));
-    },
-    enableAll: function () {
-        return Object.keys(this.refs).forEach(function (k) {
-            this.refs[k].enable();
-        }.bind(this));
-    },
-    disableAll: function () {
-        return Object.keys(this.refs).forEach(function (k) {
-            this.refs[k].disable();
-        }.bind(this));
-    },
+
     signUp: function () {
         if (!this.validateAll().length) {
             this.disableAll();
@@ -342,16 +358,7 @@ var SignUp = React.createClass({
             }.bind(this));
         }
     },
-    validateUsername: function (username) {
-        if (username.length < 4) {
-            return 'Username must be at least 4 characters long'
-        }
-    },
-    validatePassword: function (password) {
-        if (password.length < 8) {
-            return 'Password must be at least 8 characters long'
-        }
-    },
+
     validateRepeatPassword: function (repeatPassword) {
         var password = this.refs.password.getValue();
         if (repeatPassword != password) {
