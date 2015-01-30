@@ -10,7 +10,15 @@ var Router = ReactRouter,
     merge = require('merge');
 
 
-var couchPotato = couchdb();
+var auth = localStorage.getItem('auth'),
+    couchPotato = couchdb({auth: auth ? JSON.parse(auth) : null});
+
+console.log('couchPotato auth', couchPotato.auth);
+
+couchPotato.on('auth', function (auth) {
+    console.log('auth changed!');
+    localStorage.setItem('auth', JSON.stringify(auth));
+});
 
 
 var userActions = Reflux.createActions(['changeUser']),
@@ -18,6 +26,7 @@ var userActions = Reflux.createActions(['changeUser']),
     userStore = Reflux.createStore({
         init: function () {
             this.listenToMany(userActions);
+            this.user = couchPotato.auth.user;
         },
         onChangeUser: function (user) {
             this.user = user;
