@@ -107,6 +107,10 @@ gulp.task('test-server', function () {
     });
 });
 
+gulp.task('open-tests', function () {
+    open('http://localhost:7682/front/test');
+});
+
 gulp.task('compile', ['build-couchdb'], function () {
     return gulp.src('./front/build/bundle.js')
         .pipe(uglify())
@@ -127,6 +131,11 @@ gulp.task('dist', ['compile'], function () {
 gulp.task('watch', ['test-first-time', 'build'], function () {
     gulp.watch(['front/src/**/*.js'], ['test', 'build-couchdb']);
     gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['test']);
+});
+
+gulp.task('watch-browser', ['test-server', 'build-couchdb', 'open-tests'], function () {
+    gulp.watch(['front/src/**/*.js'], ['build-test']);
+    gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['build-test']);
 });
 
 gulp.task('watch-example', ['build-example', 'sass', 'fonts'], function () {

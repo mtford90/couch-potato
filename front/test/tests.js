@@ -9,3 +9,4 @@ require('./user.spec');
 require('./permissions.spec');
 
 require('./attachments.spec');
+require('./storage.spec');

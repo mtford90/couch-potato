@@ -38,6 +38,47 @@
     }
 
     /**
+     * Encapsulates errors produced whilst interacting with CouchDB over HTTP.
+     *
+     * @param opts
+     * @param {String} [opts.message] - Error message
+     * @param {jqXHR|XMLHttpRequest} [opts.xhr] - a jqXHR or XMLHttprequest object
+     * @param {Error} [opts.thrown] - An Error object
+     * @constructor
+     */
+    function CouchError(opts) {
+        merge(this, opts);
+        this.isError = true;
+        Object.defineProperties(this, {
+            isHttpError: {
+                get: function () {
+                    return !!(this.isNodeHttpError || this.isBrowserHttpError);
+                }
+            },
+            isNodeHttpError: {
+                get: function () {
+                    return !!this.response;
+                }
+            },
+            isBrowserHttpError: {
+                get: function () {
+                    return !!this.xhr;
+                }
+            },
+            isThrownError: {
+                get: function () {
+                    return !!this.thrown;
+                }
+            },
+            isUserError: {
+                get: function () {
+                    return !this.isThrownError && !this.isHttpError
+                }
+            }
+        });
+    }
+
+    /**
      *
      * @param {Array} required - List of options that cannot be null/undefined
      * @param {Object} opts - The options to be verified
@@ -89,54 +130,32 @@
         /**
          * Encapsulates auth strategy e.g. session, token. Used in every HTTP request to couch.
          */
-        var auth = null,
+        var auth = opts.auth,
             adminAuth = {
                 method: AUTH_METHOD.BASIC,
                 username: DEFAULT_ADMIN,
                 password: DEFAULT_ADMIN
             };
 
-
-        /**
-         * Encapsulates errors produced whilst interacting with CouchDB over HTTP.
-         *
-         * @param opts
-         * @param {String} [opts.message] - Error message
-         * @param {jqXHR|XMLHttpRequest} [opts.xhr] - a jqXHR or XMLHttprequest object
-         * @param {Error} [opts.thrown] - An Error object
-         * @constructor
-         */
-        function CouchError(opts) {
-            merge(this, opts);
-            this.isError = true;
-            Object.defineProperties(this, {
-                isHttpError: {
-                    get: function () {
-                        return !!(this.isNodeHttpError || this.isBrowserHttpError);
+        if (auth) {
+            if (auth.method) {
+                if (auth.method == AUTH_METHOD.BASIC) {
+                    if (!auth.username) {
+                        throw new CouchError({message: 'Must specify username if using basic auth'});
                     }
-                },
-                isNodeHttpError: {
-                    get: function () {
-                        return !!this.response;
-                    }
-                },
-                isBrowserHttpError: {
-                    get: function () {
-                        return !!this.xhr;
-                    }
-                },
-                isThrownError: {
-                    get: function () {
-                        return !!this.thrown;
-                    }
-                },
-                isUserError: {
-                    get: function () {
-                        return !this.isThrownError && !this.isHttpError
+                    if (!auth.password) {
+                        throw new CouchError({message: 'Must specify password if using basic auth'});
                     }
                 }
-            });
+                else {
+                    throw new CouchError({message: 'Unknown auth methid "' + auth.method + '"'});
+                }
+            }
+            else {
+                throw new CouchError({message: 'Must specify method in auth'});
+            }
         }
+
 
         /**
          * Configure the ajax/nodeHttp options to match the configured authorisation method.
@@ -407,7 +426,8 @@
                 responseType = opts.responseType;
             cb = cb || function () {
             };
-            if (nodeHttp) {
+            var inNodeEnvironment = !global['XMLHttpRequest'];
+            if (inNodeEnvironment) {
                 // No need to use XHR
                 var nodeHTTPOpts = {
                     url: opts.url,
@@ -1125,6 +1145,10 @@
 
     };
 
+    couchdb.AUTH_METHOD = AUTH_METHOD;
+    couchdb.CouchError = CouchError;
+
     root.couchdb = couchdb;
+
 
 })(this);
