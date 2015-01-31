@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../couch-potato-example/.idea/couch-potato-example.iml" filepath="$PROJECT_DIR$/../couch-potato-example/.idea/couch-potato-example.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/couchdb-as-a-backend.iml" filepath="$PROJECT_DIR$/.idea/couchdb-as-a-backend.iml" />
     </modules>
   </component>

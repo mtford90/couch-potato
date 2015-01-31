@@ -27,6 +27,11 @@ var BUILD_DIR = './build/',
     WATCH_TEST_HTML = ['front/test/**/*.html'];
 
 
+function swallowError (error) {
+    console.error(error.toString());
+    this.emit('end');
+}
+
 /**
  * Ensure that all node dependencies are eliminated before generating the browser bundle.
  */
@@ -63,12 +68,10 @@ gulp.task('build-test', function () {
 });
 
 // Run tests in the node environment.
-gulp.task('test-node', function (cb) {
+gulp.task('test-node', function () {
     gulp.src('./test/**/*.spec.js')
-        .pipe(mocha({reporter: 'spec'}).on('end', function () {
-            cb();
-        }))
-
+        .pipe(mocha({reporter: 'spec'}))
+        .on('error', swallowError)
 });
 
 gulp.task('build', ['build-api', 'build-test']);
@@ -81,7 +84,7 @@ gulp.task('test', function (cb) {
 // Same as test, except opens up the browser tests once the node tests have completed.
 gulp.task('test-first-time', ['test-server'], function (cb) {
     runSequence('test-node', 'build-test', function () {
-        open('http://localhost:7682/front/test');
+        open('http://localhost:7682/test');
         cb();
     });
 });
