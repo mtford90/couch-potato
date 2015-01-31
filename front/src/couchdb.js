@@ -26,13 +26,7 @@
         return db || 'db';
     }
 
-    function isString(str) {
-        return typeof str == 'string' || str instanceof String;
-    }
 
-    function isObject(o) {
-        return typeof o == 'object';
-    }
 
     /**
      * Encapsulates errors produced whilst interacting with CouchDB over HTTP.
@@ -204,7 +198,7 @@
             var coercedData;
             if (mimeType == MIME.JSON) {
                 if (data) {
-                    if (!isString(data)) {
+                    if (!util.isString(data)) {
                         try {
                             coercedData = JSON.stringify(data);
                         }
@@ -869,12 +863,12 @@
 
             _upsertDocumentArguments: function (arguments) {
                 var doc, opts, cb;
-                if (isObject(arguments[0]) && isObject(arguments[1])) {
+                if (util.isObject(arguments[0]) && util.isObject(arguments[1])) {
                     doc = arguments[0];
                     opts = arguments[1];
                     cb = arguments[2];
                 }
-                else if (isObject(arguments[0])) {
+                else if (util.isObject(arguments[0])) {
                     doc = arguments[0];
                     opts = {};
                     cb = arguments[1];
@@ -1002,7 +996,7 @@
              */
             getAttachment: function (opts, cb) {
                 var database = opts.db || defaultDB,
-                    id = isString(opts.doc) ? opts.doc : opts.doc._id,
+                    id = util.isString(opts.doc) ? opts.doc : opts.doc._id,
                     path = database + '/' + id + '/' + opts.attName;
                 http({
                     path: path,
@@ -1027,7 +1021,7 @@
                 if (opts.data) {
                     if (assertOptions(['data', 'mimeType', 'attName', 'doc'], opts, cb).length) return;
                     var database = opts.db || defaultDB,
-                        id = isString(opts.doc) ? opts.doc : opts.doc._id,
+                        id = util.isString(opts.doc) ? opts.doc : opts.doc._id,
                         mimeType = opts.mimeType || false,
                         rev = opts.doc._rev,
                         path = database + '/' + id + '/' + opts.attName;
@@ -1061,7 +1055,7 @@
                     }, function (errStatus, data, xhr) {
                         if (!errStatus) {
                             var database = opts.db || defaultDB,
-                                id = isString(opts.doc) ? opts.doc : opts.doc._id,
+                                id = util.isString(opts.doc) ? opts.doc : opts.doc._id,
                                 rev = opts.doc._rev,
                                 mimeType = opts.mimeType || false,
                                 path = database + '/' + id + '/' + opts.attName;
@@ -1104,7 +1098,7 @@
             verifyAuth: verifyAuth,
 
             /**
-             * 
+             *
              * @param opts
              * @param {Blob} opts.data - blob
              * @param opts.mimeType,
