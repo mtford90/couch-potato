@@ -7,7 +7,7 @@ describe('upsert documents', function () {
     var couch = couchdb();
     beforeEach(function (done) {
         couch.reset(function (err) {
-            assert.notOk(err);
+            assert.notOk(err, 'Error when reset database: ' + prettyJson(err));
             couch.createDatabase({anonymousUpdates: true, anonymousReads: true}, function (err) {
                 assert.notOk(err);
                 done();

@@ -135,9 +135,15 @@ gulp.task('watch', ['test-first-time', 'build'], function () {
     gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['test']);
 });
 
-gulp.task('watch-browser', ['test-server', 'build-couchdb', 'open-tests'], function () {
+gulp.task('watch-browser', ['test-server', 'build-test', 'open-tests'], function () {
     gulp.watch(['front/src/**/*.js'], ['build-test']);
     gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['build-test']);
+});
+
+
+gulp.task('watch-node', ['test-server', 'test-node'], function () {
+    gulp.watch(['front/src/**/*.js'], ['test-node']);
+    gulp.watch(['front/test/**/*.js'], ['test-node']);
 });
 
 gulp.task('watch-example', ['build-example', 'sass', 'fonts'], function () {

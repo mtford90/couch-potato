@@ -481,7 +481,6 @@ var TheApp = React.createClass({
                     </div>
                 </Navbar>
                 <div className="container">
-
                     <RouteHandler/>
                 </div>
             </div>
@@ -517,11 +516,11 @@ var routes = (
             <DefaultRoute handler={Login}/>
         </Route>
         <Route name="app" path="/app" handler={TheApp}>
-            <DefaultRoute handler={}
-                </Route>
-                </Route>
-                );
+            <DefaultRoute handler={Profile}/>
+        </Route>
+    </Route>
+);
 
-                Router.run(routes, Router.HashLocation, function (Handler) {
-                React.render(<Handler/>, document.body);
-                });
+Router.run(routes, Router.HashLocation, function (Handler) {
+    React.render(<Handler/>, document.body);
+});
