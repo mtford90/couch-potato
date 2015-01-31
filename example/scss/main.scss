@@ -1,12 +1,9 @@
 @import url(http://fonts.googleapis.com/css?family=Montserrat);
 
-@import "nav";
 
-$primary: white;
-$tertiary: #e1e1e1;
-$secondary-color: #6ba3ff;
-$brighter-secondary: #94b6ff;
-$error-color: #ae0000;
+@import "colours";
+@import "components";
+
 @font-face {
   font-family: 'caecilia';
   src: url('../fonts/Caecilia-LT-Std-45-Light_8982.ttf');
@@ -130,25 +127,6 @@ input:-webkit-autofill {
         color: white;
         &:hover {
           text-decoration: none;
-        }
-      }
-      button {
-        display: inline;
-        margin-left: 5px;
-        position: relative;
-        right: 5px;
-        border: none;
-        background-color: $secondary-color;
-        padding: 10px 14px;
-        border-radius: 3px;
-        &:hover {
-          background-color: $brighter-secondary;
-        }
-        &:focus {
-          outline: none;
-        }
-        &.icon-button {
-          padding: 13px 8px;
         }
       }
       text-align: center;

@@ -464,19 +464,20 @@ var TheApp = React.createClass({
             <div>
                 <Navbar>
                     <Nav>
-                        <NavItem eventKey={1} href="#">Link</NavItem>
-                        <NavItem eventKey={2} href="#">Link</NavItem>
-                        <DropdownButton eventKey={3} title="Dropdown">
-                            <MenuItem eventKey="1">Action</MenuItem>
-                            <MenuItem eventKey="2">Another action</MenuItem>
-                            <MenuItem eventKey="3">Something else here</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey="4">Separated link</MenuItem>
-                        </DropdownButton>
+                        <li eventKey={1}>
+                            <div className="navbar-header">
+                                <span className="navbar-brand" href="#">Your App</span>
+                            </div>
+                        </li>
+                        <li eventKey={2}>
+                            <Link to="documents">Documents</Link>
+                        </li>
                     </Nav>
                     <div id="profile" className="pull-right">
                         <div className="placeholder">
-                            <img src="img/placeholder.png" className="placeholder"></img>
+                            <Link to="profile">
+                                <img src="img/placeholder.png" className="placeholder"></img>
+                            </Link>
                         </div>
                     </div>
                 </Navbar>
@@ -498,12 +499,41 @@ var TheApp = React.createClass({
 
 
 var Profile = React.createClass({
+    mixins: [Reflux.ListenerMixin],
     render: function () {
         return (
-            <div>
-                <span>yo!</span>
-                <button onClick={this.onClick}>Logout</button>
+            <div className="profile">
+
+                <div className="profile-photo">
+                    <img src="img/placeholder.png" className="placeholder"></img>
+                </div>
+                <div className="username">
+                    {this.state.user.name}
+                </div>
+                <button onClick={couchPotato.logout.bind(couchPotato)}>Logout</button>
             </div>
+        )
+    },
+    componentDidMount: function () {
+        this.listenTo(userStore, this.onUserChange);
+    },
+    onUserChange: function (user) {
+        this.setState({
+            user: user
+        });
+    },
+    getInitialState: function () {
+        return {
+            user: userStore.user
+        }
+    }
+});
+
+
+var Documents = React.createClass({
+    render: function () {
+        return (
+            <span></span>
         )
     }
 });
@@ -516,6 +546,8 @@ var routes = (
             <DefaultRoute handler={Login}/>
         </Route>
         <Route name="app" path="/app" handler={TheApp}>
+            <Route name="profile" path="profile" handler={Profile}/>
+            <Route name="documents" path="documents" handler={Documents}/>
             <DefaultRoute handler={Profile}/>
         </Route>
     </Route>
