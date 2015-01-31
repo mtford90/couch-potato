@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="55c7b0b1-09c2-43bd-b32f-08409449b7b0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/front/src/admin.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/front/src/attachments.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/front/src/auth.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/front/src/documents.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/front/src/mime.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/front/src/users.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/front/src/constants.js" afterPath="$PROJECT_DIR$/front/src/constants.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/front/src/couchdb.js" afterPath="$PROJECT_DIR$/front/src/couchdb.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/front/test/storage.spec.js" afterPath="$PROJECT_DIR$/front/test/storage.spec.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/front/src/util.js" afterPath="$PROJECT_DIR$/front/src/util.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/data.jsx" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example/src/app.jsx" afterPath="$PROJECT_DIR$/example/src/app.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="couchdb-as-a-backend.iws" />
@@ -39,58 +31,38 @@
     <favorites_list name="couchdb-as-a-backend" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="storage.spec.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/front/test/storage.spec.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.08695652" vertical-offset="375" max-vertical-offset="1170">
-              <caret line="29" column="33" selection-start-line="29" selection-start-column="33" selection-end-line="29" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="couchdb.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/couchdb.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="900" max-vertical-offset="1635">
-              <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="documents.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/documents.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2250">
-              <caret line="15" column="5" selection-start-line="15" selection-start-column="5" selection-end-line="15" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="attachments.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/attachments.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1405" max-vertical-offset="2790">
-              <caret line="125" column="10" selection-start-line="125" selection-start-column="10" selection-end-line="125" selection-end-column="10" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="auth.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/auth.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="1035">
-              <caret line="14" column="30" selection-start-line="14" selection-start-column="30" selection-end-line="14" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="data.jsx" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/example/src/data.jsx">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.8913044" vertical-offset="0" max-vertical-offset="945">
+                  <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="app.jsx" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/example/src/app.jsx">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.5289855" vertical-offset="4030" max-vertical-offset="7830">
+                  <caret line="293" column="93" selection-start-line="293" selection-start-column="93" selection-end-line="293" selection-end-column="93" />
+                  <folding>
+                    <element signature="n#!!doc" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="Git.Settings">
     <option name="ROOT_SYNC" value="DONT_SYNC" />
@@ -129,7 +101,6 @@
         <option value="$PROJECT_DIR$/example/scss/_components.scss" />
         <option value="$PROJECT_DIR$/example/scss/main.scss" />
         <option value="$PROJECT_DIR$/example/scss/_input.scss" />
-        <option value="$PROJECT_DIR$/example/src/app.jsx" />
         <option value="$PROJECT_DIR$/front/src/CouchError.js" />
         <option value="$PROJECT_DIR$/front/src/Set.js" />
         <option value="$PROJECT_DIR$/front/src/util.js" />
@@ -145,6 +116,9 @@
         <option value="$PROJECT_DIR$/front/src/auth.js" />
         <option value="$PROJECT_DIR$/front/src/couchdb.js" />
         <option value="$PROJECT_DIR$/front/test/storage.spec.js" />
+        <option value="$PROJECT_DIR$/example/src/flux.jsx" />
+        <option value="$PROJECT_DIR$/example/src/data.jsx" />
+        <option value="$PROJECT_DIR$/example/src/app.jsx" />
       </list>
     </option>
   </component>
@@ -293,8 +267,18 @@
               <option name="myItemId" value="front" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
+              <option name="myItemId" value="couchdb-as-a-backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="couchdb-as-a-backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="example" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -308,25 +292,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="front" />
+              <option name="myItemId" value="example" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="couchdb-as-a-backend" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="couchdb-as-a-backend" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="front" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -931,16 +901,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/example/src/app.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7326733" vertical-offset="7491" max-vertical-offset="8610">
-          <caret line="529" column="9" selection-start-line="529" selection-start-column="9" selection-end-line="529" selection-end-column="9" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/example/scss/_components.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.077186964" vertical-offset="0" max-vertical-offset="583">
@@ -1057,8 +1017,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/front/test/storage.spec.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.08695652" vertical-offset="375" max-vertical-offset="1170">
-          <caret line="29" column="33" selection-start-line="29" selection-start-column="33" selection-end-line="29" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1170">
+          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/src/app.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5289855" vertical-offset="4030" max-vertical-offset="7830">
+          <caret line="293" column="93" selection-start-line="293" selection-start-column="93" selection-end-line="293" selection-end-column="93" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/src/data.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8913044" vertical-offset="0" max-vertical-offset="945">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
           <folding />
         </state>
       </provider>

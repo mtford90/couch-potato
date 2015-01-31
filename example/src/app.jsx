@@ -6,62 +6,10 @@ var Router = ReactRouter,
     NotFoundRoute = Router.NotFoundRoute,
     RouteHandler = Router.RouteHandler,
     Link = Router.Link,
-    couchdb = require('../../front/src/couchdb').couchdb,
+    data = require('./data.jsx'),
     merge = require('merge');
 
 
-var auth = localStorage.getItem('auth'),
-    couchPotato = couchdb({auth: auth ? JSON.parse(auth) : null});
-
-console.log('couchPotato auth', couchPotato.auth);
-
-
-var userActions = Reflux.createActions(['changeUser']),
-    loginActions = Reflux.createActions(['changeUsername', 'changePassword', 'changeRepeatPassword']),
-    userStore = Reflux.createStore({
-        init: function () {
-            this.listenToMany(userActions);
-            this.user = couchPotato.auth ? couchPotato.auth.user : null;
-        },
-        onChangeUser: function (user) {
-            this.user = user;
-            this.trigger(this.user);
-        }
-    }),
-    loginStore = Reflux.createStore({
-        init: function () {
-            this.listenToMany(loginActions);
-        },
-        onChangeUsername: function (username) {
-            console.log('username changed', username);
-            this.username = username;
-            this._trigger();
-        },
-        onChangePassword: function (password) {
-            this.password = password;
-            this._trigger();
-        },
-        onChangeRepeatPassword: function (repeatPassword) {
-            this.repeatPassword = repeatPassword;
-            this._trigger();
-        },
-        _trigger: function () {
-            this.trigger({
-                username: this.username,
-                password: this.password,
-                repeatPassword: this.repeatPassword
-            })
-        }
-    });
-
-couchPotato.on('auth', function (auth) {
-    console.log('auth changed!');
-    localStorage.setItem('auth', auth ? JSON.stringify(auth) : null);
-    userActions.changeUser(auth ? auth.user : null);
-    loginActions.changeUsername('');
-    loginActions.changePassword('');
-    loginActions.changeRepeatPassword('');
-});
 
 
 var App = React.createClass({
@@ -74,7 +22,7 @@ var App = React.createClass({
         );
     },
     componentDidMount: function () {
-        var user = userStore.user;
+        var user = data.userStore.user;
         this.user = user;
         if (user) {
             this.transitionTo('app');
@@ -82,7 +30,7 @@ var App = React.createClass({
         else {
             this.transitionTo('home');
         }
-        userStore.listen(function (user) {
+        data.userStore.listen(function (user) {
             var loggedOut = !user && this.user;
             if (loggedOut) {
                 this.user = null;
@@ -265,8 +213,8 @@ var Login = React.createClass({
                         id="username"
                         name="username"
                         placeholder="username"
-                        initialValue={loginStore.username}
-                        onInputChange={loginActions.changeUsername.bind(loginActions)}
+                        initialValue={data.loginStore.username}
+                        onInputChange={data.loginActions.changeUsername.bind(data.loginActions)}
                         ref="username"
                     />
                 </div>
@@ -276,8 +224,8 @@ var Login = React.createClass({
                         type="password"
                         ref="password"
                         placeholder="password"
-                        initialValue={loginStore.password}
-                        onInputChange={loginActions.changePassword.bind(loginActions)}
+                        initialValue={data.loginStore.password}
+                        onInputChange={data.loginActions.changePassword.bind(data.loginActions)}
                     />
                 </div>
             </form>
@@ -293,7 +241,7 @@ var Login = React.createClass({
         </div>);
     },
     onClick: function () {
-        couchPotato.basicAuth({
+        data.couchPotato.basicAuth({
             username: this.refs.username.getValue(),
             password: this.refs.password.getValue()
         }, function (err, user) {
@@ -334,8 +282,8 @@ var SignUp = React.createClass({
                         name="username"
                         placeholder="username"
                         ref="username"
-                        onInputChange={loginActions.changeUsername.bind(loginActions)}
-                        initialValue={loginStore.username}
+                        onInputChange={data.loginActions.changeUsername.bind(data.loginActions)}
+                        initialValue={data.loginStore.username}
                         validate={this.validateUsername}/>
                 </div>
                 <div>
@@ -343,8 +291,8 @@ var SignUp = React.createClass({
                     <ValidatedInput type="password"
                         placeholder="password"
                         ref="password"
-                        onInputChange={loginActions.changePassword.bind(loginActions)}
-                        initialValue={loginStore.password}
+                        onInputChange={data.loginActions.changePassword.bind(data.loginActions)}
+                        initialValue={data.loginStore.password}
                         validate={this.validatePassword}/>
                 </div>
                 <div>
@@ -352,8 +300,8 @@ var SignUp = React.createClass({
                     <ValidatedInput type="password"
                         placeholder="repeat password"
                         ref="repeatPassword"
-                        onInputChange={loginActions.changeRepeatPassword.bind(loginActions)}
-                        initialValue={loginStore.repeatPassword}
+                        onInputChange={data.loginActions.changeRepeatPassword.bind(data.loginActions)}
+                        initialValue={data.loginStore.repeatPassword}
                         validate={this.validateRepeatPassword}/>
                 </div>
             </form>
@@ -374,10 +322,10 @@ var SignUp = React.createClass({
     signUp: function () {
         if (!this.validateAll().length) {
             this.disableAll();
-            couchPotato.createUser({
+            data.couchPotato.createUser({
                 username: this.refs.username.getValue(),
                 password: this.refs.password.getValue(),
-                auth: couchPotato.AUTH_METHOD.BASIC
+                auth: data.couchPotato.AUTH_METHOD.BASIC
             }, function (err, user) {
                 this.enableAll();
                 if (err) {
@@ -436,7 +384,7 @@ var Home = React.createClass({
         );
     },
     componentDidMount: function () {
-        var user = userStore.user;
+        var user = data.userStore.user;
         this.user = user;
         if (user) {
             this.transitionTo('app');
@@ -488,10 +436,10 @@ var TheApp = React.createClass({
         )
     },
     onClick: function () {
-        couchPotato.logout();
+        data.couchPotato.logout();
     },
     componentDidMount: function () {
-        if (!userStore.user) {
+        if (!data.userStore.user) {
             this.transitionTo('home');
         }
     }
@@ -512,12 +460,12 @@ var Profile = React.createClass({
                 <div className="profile">
                     {this.state.user.profile}
                 </div>
-                <button onClick={couchPotato.logout.bind(couchPotato)}>Logout</button>
+                <button onClick={data.couchPotato.logout.bind(data.couchPotato)}>Logout</button>
             </div>
         )
     },
     componentDidMount: function () {
-        this.listenTo(userStore, this.onUserChange);
+        this.listenTo(data.userStore, this.onUserChange);
     },
     onUserChange: function (user) {
         this.setState({
@@ -526,7 +474,7 @@ var Profile = React.createClass({
     },
     getInitialState: function () {
         return {
-            user: userStore.user
+            user: data.userStore.user
         }
     }
 });
