@@ -6,6 +6,7 @@
         url = require('url'),
         util = require('./util'),
         CouchError = require('./CouchError'),
+        constants = require('./constants'),
         EventEmitter = require('events').EventEmitter;
 
     /**
@@ -28,8 +29,6 @@
     }
 
 
-
-
     /**
      *
      * @param {Array} required - List of options that cannot be null/undefined
@@ -46,32 +45,8 @@
         return missing;
     }
 
-    var AUTH_METHOD = {
-        BASIC: 'basic'
-    };
 
-    var MIME = {
-        JSON: 'application/json',
-        PLAIN_TEXT: 'text/plain'
-    };
 
-    var DEFAULT_ADMIN = 'admin';
-
-    /**
-     * @param arr
-     * @constructor
-     */
-    function Set(arr) {
-        arr.forEach(function (el) {
-            this[el] = el;
-        }.bind(this));
-    }
-
-    Set.prototype.memberOf = function (obj) {
-        return obj in this;
-    };
-
-    var IGNORE_DATABASES = new Set(['_replicator']);
 
     var couchdb = function (opts) {
         opts = opts || {};
@@ -84,14 +59,14 @@
          */
         var auth = opts.auth,
             adminAuth = {
-                method: AUTH_METHOD.BASIC,
-                username: DEFAULT_ADMIN,
-                password: DEFAULT_ADMIN
+                method: constants.AUTH_METHOD.BASIC,
+                username: constants.DEFAULT_ADMIN,
+                password: constants.DEFAULT_ADMIN
             };
 
         if (auth) {
             if (auth.method) {
-                if (auth.method == AUTH_METHOD.BASIC) {
+                if (auth.method == constants.AUTH_METHOD.BASIC) {
                     if (!auth.username) {
                         throw new CouchError({message: 'Must specify username if using basic auth'});
                     }
@@ -125,7 +100,7 @@
                 opts.headers = headers;
                 // Allow for authorization overrides.
                 if (!headers.Authorization) {
-                    if (auth.method == AUTH_METHOD.BASIC) {
+                    if (auth.method == constants.AUTH_METHOD.BASIC) {
                         // Note: jQuery >=1.7 has username/password options. I do this simply for backwards
                         // compatibility.
                         headers.Authorization = 'Basic ' + util.btoa(auth.username + ':' + auth.password);
@@ -156,7 +131,7 @@
          */
         function coerceData(mimeType, data) {
             var coercedData;
-            if (mimeType == MIME.JSON) {
+            if (mimeType == constants.MIME.JSON) {
                 if (data) {
                     if (!util.isString(data)) {
                         try {
@@ -190,7 +165,7 @@
             };
             opts = merge({
                 type: 'GET',
-                contentType: MIME.JSON
+                contentType: constants.MIME.JSON
             }, opts || {});
             var coercedData = coerceData(opts.contentType, opts.data);
             if (coercedData && coercedData.isError) {
@@ -235,7 +210,7 @@
         function ensureMimeType(dataType) {
             if (dataType) {
                 if (dataType.trim() == 'json') {
-                    dataType = MIME.JSON;
+                    dataType = constants.MIME.JSON;
                 }
             }
             return dataType;
@@ -269,7 +244,7 @@
             }
 
             var data = opts.data,
-                requestType = 'contentType' in opts ? opts.contentType : MIME.JSON,
+                requestType = 'contentType' in opts ? opts.contentType : constants.MIME.JSON,
                 responseType = ensureMimeType(opts.dataType),
                 method = opts.type || 'GET';
 
@@ -302,7 +277,7 @@
                         var parsedResponse;
                         var _responseType = (responseType || res.headers['content-type'].split(';')[0]).trim();
                         if (_responseType) {
-                            if (_responseType == MIME.JSON) {
+                            if (_responseType == constants.MIME.JSON) {
                                 try {
                                     parsedResponse = JSON.parse(responseString);
                                 }
@@ -475,10 +450,10 @@
                         _rev: resp.rev
                     };
                     if (opts.auth) {
-                        if (opts.auth == AUTH_METHOD.BASIC) {
+                        if (opts.auth == constants.AUTH_METHOD.BASIC) {
 
                             setAuth({
-                                method: AUTH_METHOD.BASIC,
+                                method: constants.AUTH_METHOD.BASIC,
                                 username: username,
                                 password: password,
                                 user: user
@@ -529,7 +504,7 @@
                 if (!err) {
                     if (data.ok) {
                         setAuth({
-                            method: AUTH_METHOD.BASIC,
+                            method: constants.AUTH_METHOD.BASIC,
                             username: username,
                             password: password,
                             user: data
@@ -559,7 +534,7 @@
             cb = cb || function () {
             };
             if (auth) {
-                if (auth.method == AUTH_METHOD.BASIC) {
+                if (auth.method == constants.AUTH_METHOD.BASIC) {
                     basicAuth(auth, cb);
                 }
             }
@@ -584,7 +559,7 @@
             }, function (err) {
                 if (!err) {
                     adminAuth = merge({}, authOpts);
-                    adminAuth.method = AUTH_METHOD.BASIC;
+                    adminAuth.method = constants.AUTH_METHOD.BASIC;
                 }
                 cb(err);
             });
@@ -637,7 +612,7 @@
                     if (err) cb(err);
                     else {
                         var ajaxOpts = data.reduce(function (memo, dbName) {
-                            if (!IGNORE_DATABASES.memberOf(dbName)) {
+                            if (!constants.IGNORE_DATABASES.memberOf(dbName)) {
                                 memo.push({
                                     type: 'DELETE',
                                     path: dbName,
@@ -810,7 +785,7 @@
                 NOT_FOUND: 404,
                 FORBIDDEN: 403
             },
-            AUTH_METHOD: AUTH_METHOD,
+            AUTH_METHOD: constants.AUTH_METHOD,
             /**
              * Verify that the configuration is ok.
              * @param cb
@@ -1129,7 +1104,7 @@
 
     };
 
-    couchdb.AUTH_METHOD = AUTH_METHOD;
+    couchdb.AUTH_METHOD = constants.AUTH_METHOD;
     couchdb.CouchError = CouchError;
 
     root.couchdb = couchdb;
