@@ -470,7 +470,7 @@ var TheApp = React.createClass({
                             </div>
                         </li>
                         <li eventKey={2}>
-                            <Link to="documents">Documents</Link>
+                            <Link to="stream">Stream</Link>
                         </li>
                     </Nav>
                     <div id="profile" className="pull-right">
@@ -503,12 +503,14 @@ var Profile = React.createClass({
     render: function () {
         return (
             <div className="profile">
-
                 <div className="profile-photo">
                     <img src="img/placeholder.png" className="placeholder"></img>
                 </div>
                 <div className="username">
                     {this.state.user.name}
+                </div>
+                <div className="profile">
+                    {this.state.user.profile}
                 </div>
                 <button onClick={couchPotato.logout.bind(couchPotato)}>Logout</button>
             </div>
@@ -530,11 +532,20 @@ var Profile = React.createClass({
 });
 
 
-var Documents = React.createClass({
+var Stream = React.createClass({
     render: function () {
         return (
-            <span></span>
+            <div className="stream">
+                <Row>
+                    <input ref="input" type="text" placeholder="add your comment" onKeyDown={this.onKeyDown}/>
+                </Row>
+            </div>
         )
+    },
+    onKeyDown: function (e) {
+        if (e.keyCode == 13) {
+            $(this.refs.input.getDOMNode()).val('');
+        }
     }
 });
 
@@ -547,7 +558,7 @@ var routes = (
         </Route>
         <Route name="app" path="/app" handler={TheApp}>
             <Route name="profile" path="profile" handler={Profile}/>
-            <Route name="documents" path="documents" handler={Documents}/>
+            <Route name="stream" path="stream" handler={Stream}/>
             <DefaultRoute handler={Profile}/>
         </Route>
     </Route>
