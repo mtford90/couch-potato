@@ -63,6 +63,7 @@ couchPotato.on('auth', function (auth) {
     loginActions.changeRepeatPassword('');
 });
 
+
 var App = React.createClass({
     mixins: [Router.State, Router.Navigation],
     render: function () {
@@ -435,7 +436,11 @@ var Home = React.createClass({
         );
     },
     componentDidMount: function () {
-
+        var user = userStore.user;
+        this.user = user;
+        if (user) {
+            this.transitionTo('app');
+        }
     },
     getInitialState: function () {
         return {
@@ -444,14 +449,41 @@ var Home = React.createClass({
     }
 });
 
+var Row = ReactBootstrap.Row,
+    Col = ReactBootstrap.Col,
+    NavItem = ReactBootstrap.NavItem,
+    DropdownButton = ReactBootstrap.DropdownButton,
+    MenuItem = ReactBootstrap.MenuItem,
+    Navbar = ReactBootstrap.Navbar,
+    Nav = ReactBootstrap.Nav;
+
 var TheApp = React.createClass({
     mixins: [Router.State, Router.Navigation],
-
     render: function () {
         return (
             <div>
-                <span>yo!</span>
-                <button onClick={this.onClick}>Logout</button>
+                <Navbar>
+                    <Nav>
+                        <NavItem eventKey={1} href="#">Link</NavItem>
+                        <NavItem eventKey={2} href="#">Link</NavItem>
+                        <DropdownButton eventKey={3} title="Dropdown">
+                            <MenuItem eventKey="1">Action</MenuItem>
+                            <MenuItem eventKey="2">Another action</MenuItem>
+                            <MenuItem eventKey="3">Something else here</MenuItem>
+                            <MenuItem divider />
+                            <MenuItem eventKey="4">Separated link</MenuItem>
+                        </DropdownButton>
+                    </Nav>
+                    <div id="profile" className="pull-right">
+                        <div className="placeholder">
+                            <img src="img/placeholder.png" className="placeholder"></img>
+                        </div>
+                    </div>
+                </Navbar>
+                <div className="container">
+
+                    <RouteHandler/>
+                </div>
             </div>
         )
     },
@@ -465,6 +497,18 @@ var TheApp = React.createClass({
     }
 });
 
+
+var Profile = React.createClass({
+    render: function () {
+        return (
+            <div>
+                <span>yo!</span>
+                <button onClick={this.onClick}>Logout</button>
+            </div>
+        )
+    }
+});
+
 var routes = (
     <Route handler={App} >
         <Route name="home" path="/" handler={Home}>
@@ -472,10 +516,12 @@ var routes = (
             <Route name="sign-up" path="signup" handler={SignUp}/>
             <DefaultRoute handler={Login}/>
         </Route>
-        <Route name="app" path="/app" handler={TheApp}/>
-    </Route>
-);
+        <Route name="app" path="/app" handler={TheApp}>
+            <DefaultRoute handler={}
+                </Route>
+                </Route>
+                );
 
-Router.run(routes, Router.HashLocation, function (Handler) {
-    React.render(<Handler/>, document.body);
-});
+                Router.run(routes, Router.HashLocation, function (Handler) {
+                React.render(<Handler/>, document.body);
+                });
