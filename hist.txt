@@ -1,0 +1,2018 @@
+    1  git status
+    2  git commit -a -m "init"
+    3  git status
+    4  cd ../yallreadyforthis/
+    5  git remote add  mike /Users/mtford/Playground/TCJ/
+    6  git fetch mike
+    7  git pull mike mike
+    8  git commit -a -m "merge"
+    9  git status
+   10  git log
+   11  git status
+   12  git log
+   13  ls 
+   14  vim Procfile
+   15  mv Procfile.heroku Procfile
+   16  ls
+   17  git status
+   18  git commit -a -m "Restore procfile"
+   19  git push heroku master
+   20  git status
+   21  git commit -a -m "Removed dowser call"
+   22  git push heroku master
+   23  history | grep log
+   24  heroku logs --app yallreadyforthis --tail
+   25  git status
+   26  git commit -a -m "removed silk..."
+   27  vim requirements.txt 
+   28  pip freeze | grep request
+   29  workon TCJ
+   30  pip freeze | grep request
+   31  git status
+   32  git commit -a -m "added grequests to the .txt"
+   33  git push heroku master
+   34  hardlink ../dowser2/ dowser2
+   35  git status
+   36  git add dowser2/
+   37  git status
+   38  git commit -a -m "dowser2"
+   39  git status
+   40  git commit -a -m "launch dowser too"
+   41  git push heroku master
+   42  heroku logs --app yallreadyforthis --tail
+   43  git status
+   44  git commit -a -m "missing requirements"
+   45  git push heroku master
+   46  heroku logs --app yallreadyforthis --tail
+   47  ls
+   48  vim Procfile 
+   49  git status
+   50  git commit -a -m "Run flask on 0.0.0.0, one gunicorn worker"
+   51  git push heroku master
+   52   DJANGO_SETTINGS_MODULE=TCJ.mike_settings python manage.py celeryd  --concurrency=1 -E -B --loglevel=INFO
+   53  ps -ef | grep python
+   54  cd ../yallreadyforthis/
+   55  l
+   56  ls
+   57  vim Procfile 
+   58  ls
+   59  cp ../TCJ/Procfile Procfile.local
+   60  vim Procfile.local 
+   61  ls
+   62  foreman -h
+   63  foreman start -f Procfile.local 
+   64  ps -ef | grep 4000
+   65  ps -ef | grep python
+   66  kill -9 15519
+   67  ps -ef | grep python
+   68  foreman start -f Procfile.local 
+   69  ps -ef | grep python
+   70  kill 16245
+   71  ps -ef | grep python
+   72  kill -9 16245
+   73  ps -ef | grep python
+   74  foreman start -f Procfile.local 
+   75  ps -ef | grep python
+   76  foreman start -f Procfile.local 
+   77  ps -ef | grep python
+   78  kill -9 16694
+   79  ps -ef | grep python
+   80  foreman start -f Procfile.local 
+   81  ps -ef | grep python
+   82  kill -9 16979
+   83  ps -ef | grep python
+   84  foreman start -f Procfile.local 
+   85  ps -ef | grep python
+   86  kill -9 17218 17226
+   87  ps -ef | grep python
+   88  kill -9 17218 17226
+   89  foreman start -f Procfile.local 
+   90  git status
+   91  ps -ef | grep python
+   92  kill -9 17409
+   93  foreman start -f Procfile.local 
+   94  ps -ef | grep python
+   95  kill -9 17659
+   96  kill -9 17659 17667
+   97  kill -9 17659
+   98  ps -ef | grep python
+   99  foreman start -f Procfile.local 
+  100  ps -ef | grep python
+  101  kill -9 17858
+  102  ps -ef | grep python
+  103  kill -9 17866
+  104  ps -ef | grep python
+  105  foreman start -f Procfile.local 
+  106  git status
+  107  ps -ef | grep python
+  108  kill -9 18155
+  109  foreman start -f Procfile.local 
+  110  git status
+  111  git commit -a -m "Added a custom django view that proxies to the profiler"
+  112  git push heroku master
+  113  ps -ef | grep python
+  114  foreman start -f Procfile.local 
+  115  git status
+  116  git add Procfile.local
+  117  git status
+  118  vim .gitignore 
+  119  git status
+  120  ps -ef | grep python
+  121  ps -ef | grep python | grep -v grep
+  122  ps -ef | grep python | grep -v grep | awk '{ print $2 }'
+  123  for x in `ps -ef | grep python | grep -v grep | awk '{ print $2 }'`; do kill -9 $x; done
+  124  git status
+  125  ps -ef | grep python
+  126  alias kill_py="for x in `ps -ef | grep python | grep -v grep | awk '{ print $2 }'`; do kill -9 $x; done"
+  127  kill_py
+  128  which kill_py
+  129  alias kill_py
+  130  vim ~/.bashrc 
+  131  source ~/.bashrc 
+  132  kill_py
+  133  workon TCJ
+  134  foreman start -f Procfile.local 
+  135  kill_py
+  136  ps -ef | grep python
+  137  kill_py
+  138  ps -ef | grep python
+  139  kill_py()
+  140  for x in `ps -ef | grep python | grep -v grep | awk '{ print $2 }'`; do kill -9 $x; done
+  141  ps -ef | grep python
+  142  git status
+  143  git commit -a -m "Pass on query params to the profiler"
+  144  git push heroku master
+  145  git status
+  146  history | grep heroku
+  147  heroku pg:pull DATABASE_URL TCJ -a yallreadyforthis
+  148  dropdb TCJ
+  149  heroku pg:pull DATABASE_URL TCJ -a yallreadyforthis
+  150  git pull
+  151  git pull origin master
+  152  cd ../TCJ
+  153  git pull origin master
+  154  cd ../yallreadyforthis/
+  155  git pull
+  156  git status
+  157  git commit -a -m "bombard"
+  158  git push heroku master
+  159  heroku run "python manage.py cron_hook new_applicant_emails" -a yallreadyforthis
+  160  heroku restart -a yallreadyforthis
+  161  p
+  162  cd rest
+  163  git status
+  164  git status
+  165  git commit -a -m "incr num. workers"
+  166  git push heroku master
+  167  grunt watch
+  168  git status
+  169  history | grep restart
+  170   heroku restart -a yallreadyforthis
+  171  gs
+  172  p
+  173  ps ef -o command,vsize,rss,%mem,size
+  174  history | grep ssh
+  175  ssh bscsbc.co.uk
+  176  ssh bscsbc.co.uk -p 22853
+  177  p
+  178  cd rest
+  179  p
+  180  ls
+  181  cd rest
+  182  grunt watch
+  183  ps -ef | grep grunt
+  184  kill 5507
+  185  grunt watch
+  186  ps -ef | grep grunt
+  187  grunt watch
+  188  cd ../TCJ
+  189  git status
+  190  workon TCJ
+  191  cd ../yallreadyforthis/
+  192  git status
+  193  git commit -a -m "process dump"
+  194  git push heroku master
+  195  git status
+  196  git commit -a -m "sort keys"
+  197  git push heroku master
+  198  git status
+  199  git commit -a -m "get other sys info"
+  200  git push heroku master
+  201  git status
+  202  git commit -a -m "mem"
+  203  git push heroku master
+  204  p
+  205  ls
+  206  cd rest
+  207  p
+  208  cd rest
+  209  p
+  210  cd rest
+  211  git status
+  212  git commit -a -m "return data, xhr with http response, and no longer throw an error if no descriptors match"
+  213  git status
+  214  git commit -a -m ".map -> .graph"
+  215  git push origin master
+  216  git status
+  217  git commit -a -m "Bug fix for 'MyCollection.model('Repo’) errors out with 'Error: No name specified when creating mapping'"
+  218  git push origin master
+  219  git status
+  220  git commit -a -m "test for set ajax via property"
+  221  git push origin master
+  222  cd rest-sit
+  223  p
+  224  cd rest-site
+  225  git status
+  226  git commit -a -m "Additions around HTTP + descriptors"
+  227  git push origin master
+  228  git push origin gh-pages
+  229  git commit -a -m ".map -> .graph"
+  230  git push origin gh-pages
+  231   vim package.json 
+  232  vim bower
+  233  vim bower.json 
+  234  git status
+  235  grunt compile dist
+  236  git status
+  237  git commit -a -m "bump + dist"
+  238  git push origin master
+  239  git tag 0.1.11
+  240  git push origin master --tags
+  241  npm publish ./
+  242  open dist/
+  243  git status
+  244  git commit -a -m "more HTTP stuff"
+  245  git push origin maste
+  246  git push origin master
+  247  git push origin gh-pages
+  248  p
+  249  cd TCJ
+  250  git status
+  251  workon TCJ
+  252  cd ../yallreadyforthis/
+  253  git status
+  254  vim .gitignore 
+  255  git status
+  256  git commit -a -m "Script for polling box_info. Script for parsing box_info"
+  257  git commit --amend
+  258  git push heroku master
+  259  ls
+  260  p
+  261  ls
+  262  git status
+  263  git push heroku master
+  264  git status
+  265  git commit -a -m "add max_requests = 50 to gunicorn process"
+  266  git push origin master
+  267  git push heroku master
+  268  git commit -a -m "improvements to parse box_info script"
+  269  git push heroku master
+  270  ls
+  271  vim Procfile
+  272  pip install uwsgi
+  273  ls
+  274  uwsgi --gevent 100 --socket :3031 --module TCJ.wsgi
+  275  uwsgi --gevent 100 --socket :6000 --module TCJ.wsgi
+  276  uwsgi --gevent 100 --socket localhost:6000 --module TCJ.wsgi
+  277  uwsgi --gevent 100 --socket localhost:6000 --module TCJ.wsgi --gevent-monkey-patch
+  278  git status
+  279  history | grep restart
+  280   heroku restart -a yallreadyforthis
+  281  ls
+  282  vim evented.py
+  283  pip install gevent
+  284  vim evented.py 
+  285  python evented.py 
+  286  vim evented.py 
+  287  python evented.py 
+  288  DJANGO_SETTINGS_MODULE=TCJ.mike_settings python evented.py
+  289  ls
+  290  cp Procfile.local Procfile.gevent.local
+  291  ls
+  292  vim evented.py 
+  293  history | grep foreman
+  294  foreman start -f Procfile.gevent.local 
+  295  ps -ef | grep python
+  296  kill 19423
+  297  ps -ef | grep python
+  298  kill 25660
+  299  ps -ef | grep python
+  300  foreman start -f Procfile.gevent.local 
+  301  ls
+  302  vim nginx.conf 
+  303  p
+  304  workon TCJ
+  305  ls
+  306  cd yallreadyforthis/
+  307  ls
+  308  uwsgi --http :8890 --file rse.py --gevent 2000 -l 1000 -p 1 -L
+  309  DJANGO_SETTINGS_MODULE=TCJ.mike_settings uwsgi --http :8890 --file TCJ/wsgi.py --gevent 2000 -l 1000 -p 1 -L
+  310  man uwsgi
+  311  uwsgi -h
+  312  uwsgi -h | less
+  313  uwsgi -h | grep -p
+  314  uwsgi -h | grep "-p"
+  315  uwsgi -h | grep "\-p"
+  316  uwsgi -h | grep p
+  317  uwsgi -h | grep --proc
+  318  uwsgi -h | grep \-\-proc
+  319  uwsgi -h | grep '-p'
+  320  uwsgi -h | grep "\-p|
+  321  uwsgi -h | grep "\-p"
+  322  uwsgi -h | grep "\-\p"
+  323  uwsgi -h | grep "\\-p"
+  324  uwsgi -h | less
+  325  foreman start -f Procfile.gevent.local 
+  326  uwsgi -h | grep max
+  327  uwsgi -h | grep "max-requests
+  328  "
+  329  uwsgi -h | less
+  330  git status
+  331  vim .gitignore 
+  332  git status
+  333  rm evented.py 
+  334  git status
+  335  vim Procfile
+  336  git status
+  337  git commit -a -m "max_request=100 and various changes to the profiling tools" 
+  338  git push origin master
+  339  git push heroku master
+  340  history | grep uwsgi
+  341  DJANGO_SETTINGS_MODULE=TCJ.mike_settings uwsgi --http :8890 --file TCJ/wsgi.py --gevent 2000 -l 1000 -p 1 -L
+  342  ls
+  343  vim requirements.txt 
+  344  pip freeze | grep gevent
+  345  cat requirements.txt | grep gevent
+  346  vim requirements.txt 
+  347  pip freeze | grep uwsgi
+  348  pip freeze | grep wsgi
+  349  pip install uwsgi
+  350  pip freeze | grep uwsgi
+  351  vim requirements.txt 
+  352  git status
+  353  cp Procfile Procfile.gunicorn
+  354  ls
+  355  vim Procfile
+  356  git status
+  357  git add Procfile*
+  358  git status
+  359  git commit -a -m "uwsgi"
+  360  git push heroku master
+  361  git status
+  362  history | grep log
+  363   heroku logs --app yallreadyforthis --tai
+  364   heroku logs --app yallreadyforthis --tail
+  365  git status
+  366  git commit -a -m "remove new relic for now"
+  367  history | grep log
+  368  git push heroku master
+  369  grunt watch
+  370  heroku logs --app yallreadyforthis --tai
+  371  ls
+  372  cd /tmp
+  373  ls
+  374  vim xyz
+  375  ls
+  376  gpg --output xyz.gpg --encrypt --recipient vendorz@lelantos.org
+  377  ls
+  378  vim xyz.gpg 
+  379  rm xyz.gpg 
+  380  echo "Michael Ford, 4 Smalewell Road, Leeds, LS28 8PS" | gpg --symmetric --armor 
+  381  p
+  382  ls
+  383  cd rest
+  384  cd ../rest-site
+  385  git status
+  386  git commit -a -m ".map -> .graph"
+  387  git status
+  388  git push origin master
+  389  git push rest master
+  390  git push origin gh-pages
+  391  cd ../pv2
+  392  git status
+  393  p
+  394  cd rest
+  395  p
+  396  cd rest
+  397  git status
+  398  git commit -a -m "restored parameter to init method"
+  399  git push origin master
+  400  git status
+  401  git commit -a -m "No longer return results in the emission."
+  402  git push origin master
+  403  p
+  404  ls
+  405  cd react-siesta/
+  406  git status
+  407  ls
+  408  vim package.json 
+  409  vim bower.json 
+  410  git status
+  411  grunt compile dist
+  412  git status
+  413  git commit -a -m "dist"
+  414  git push origin master
+  415  git status
+  416  npm publish ./
+  417  git tag 0.1.12
+  418  git push origin master --tags
+  419  ls
+  420  git push origin master --tags
+  421  ls
+  422  git status
+  423  npm publish ./
+  424  gulp watch
+  425  bower update
+  426  gulp watch
+  427  git status
+  428  vim bower.json 
+  429  git status
+  430  ls
+  431  vim package.json 
+  432  git status
+  433  git commit -a -m "update dependencies"
+  434  git push origin master
+  435  vim package.json 
+  436  vim bower
+  437  vim bower.json
+  438  git status
+  439  gulp compile
+  440  git status
+  441  git commit -a -m "vbump"
+  442  git tag 0.2.3
+  443  git push origin master --tags
+  444  npm publish ./
+  445  p
+  446  cd pv2
+  447  git status
+  448  git commit -a -m "Modifications for new version of Siesta"
+  449  npm install insignia --save
+  450  git status
+  451  p
+  452  cd pv2
+  453  p
+  454  ls
+  455  cd pv2
+  456  git status
+  457  git commit -a -m "Moved filters to right in nav bar"
+  458  git push origin master
+  459  git status
+  460  git commit -a -m "Got rid of summernote for now."
+  461  git push origin master
+  462  cd ../siesta-
+  463  cd ../rest
+  464  git status
+  465  vim /Applications/PyCharm.app/Contents/Info.plist 
+  466  vim /Applications/PyCharm.app/Contents/bin/idea.vmoptions 
+  467  nice 10 /Applications/PyCharm.app 
+  468  ps -ef | grep pycharm
+  469  nice 10 25453
+  470  sudo renice 20 25453
+  471  sudo renice 20 275
+  472  p
+  473  git log
+  474  git status
+  475  cd ../pv2/
+  476  git status
+  477  git commit -a -m "Introduced the Round model and integrated it with the Pomodoro timer"
+  478  git push origin master
+  479  p
+  480  cd pv2
+  481  gulp watch
+  482  ps -ef | grep gulp
+  483  kill -9 2146
+  484  gulp watch
+  485  ps -ef | grep gulp
+  486  grunt watch
+  487  p
+  488  cd rest
+  489  history | grep npm
+  490  grunt watch
+  491  p
+  492  cd pv2
+  493  p
+  494  cd pv2
+  495  git status
+  496  git commit -a -m "added filter that can be toggled"
+  497  git push origin master
+  498  p
+  499  cd pv2
+  500  ls
+  501  cd ..
+  502  git clone git@github.com:mtford90/insignia.git
+  503  cd insignia/
+  504  npm run-scripts start
+  505  npm run-script start
+  506  ls
+  507  history | grep "npm run"
+  508  history | grep "npm"
+  509  npm -h
+  510  npm start
+  511  npm install
+  512  bower install
+  513  p
+  514  cd insignia/
+  515  ls
+  516  npm uninstall insignia
+  517  gulp watch
+  518  git status
+  519  vim .gitignore 
+  520  git status
+  521  npm build
+  522  npm run-script build
+  523  git status
+  524  git commit -a -m "added function 'addTag' to the API, allowing for programmatic creation of tags"
+  525  git push origin master
+  526  git status
+  527  cd ../pv2
+  528  ls
+  529  git status
+  530  git commit -a -m "some more work on tags"
+  531  git push origin master
+  532  git status
+  533  git commit -a -m "Removed tags for now"
+  534  git status
+  535  git commit -a -m "removed asana tags for now"
+  536  git push origin master
+  537  p
+  538  cd rest
+  539  vim package.json 
+  540  npm uninstall pouchdb
+  541  npm install pouchdb
+  542  p
+  543  cd rest
+  544  git status
+  545  npm uninstall pouchdb
+  546  npm install pouchdb --save-dev
+  547  grunt watch
+  548  git status
+  549  git commit -a -m "Added some code that handles upstream bug in pouchdb whereby dates are not deserialised correctly"
+  550  git push origin master
+  551  git status
+  552  git commit -a -m "Fix capitalisation in requires - as this screws up webpack due to filesystem being case insensitive"
+  553  git push origin master
+  554  git status
+  555  git commit -a -m "Basic pomodoro functionality working"
+  556  git push origin master
+  557  cd ../siesta-
+  558  git status
+  559  vim package.json 
+  560  vim bower.json 
+  561  git status
+  562  grunt compile dist
+  563  git status
+  564  git commit -a -m "dist"
+  565  git tag 0.1.13
+  566  git push origin master --tags
+  567  git status
+  568  p
+  569  cd rest
+  570  ls
+  571  grunt build
+  572  grunt compile
+  573  ls
+  574  ls dist/
+  575  ls build
+  576  ps -ef | grep gulp
+  577  kill -9 21891
+  578  ps -ef | grep gulp
+  579  ps -ef | grep grunt
+  580  kill 34894
+  581  ps -ef | grep grunt
+  582  ps -ef | grep gulp
+  583  cd ../pv2
+  584  gulp watch
+  585  ps -ef | grep 3000
+  586  ps -ef | grep gulp
+  587  npm start
+  588  p
+  589  cd rest
+  590  gulp watch
+  591  p
+  592  cd rest
+  593  git status
+  594  git commit -a -m "expanded performance testing functionality + cleared up some console.logs"
+  595  git push origin master
+  596  p
+  597  git status
+  598  git commit -a -m "Create indexes (but not yet using them)"
+  599  git push origin master
+  600  git status
+  601  git commit -a -m "bug fix in tests"
+  602  git push origin master
+  603  git status
+  604  git commit -a -m "Added some extras to storage"
+  605  git push origin master
+  606  git status
+  607  git commit -a -m "install indexes during install step"
+  608  git push origin master
+  609  git status
+  610  git commit -a -m "Use indexes instead now"
+  611  git status
+  612  vim package.json 
+  613  vim bower.json 
+  614  git status
+  615  grunt compile dist
+  616  git status
+  617  git commit -a -m "dist"
+  618  git tag 0.1.14
+  619  git push origin master --tags
+  620  git status
+  621  npm publish ./
+  622  git log
+  623  git status
+  624  grunt watch
+  625  p
+  626  cd yallreadyforthis/
+  627  workon TCJ
+  628  git status
+  629  vim .gitignore 
+  630  git status
+  631  git commit -a -m "Add max requests parameter to uwsgi"
+  632  git push heroku master
+  633  cd ../TCT
+  634  cd ../TCJ
+  635  git pull
+  636  git pull origin master
+  637  git checkout staging
+  638  git pull origin staging
+  639  git log
+  640  ls
+  641  vim Procfile 
+  642  git status
+  643  vim Procfile 
+  644  git status
+  645  vim ../yallreadyforthis/.git/config 
+  646  p
+  647  vim .git/config 
+  648  ls
+  649  open ../yallreadyforthis/.git/config 
+  650  open .git/config 
+  651  vim .git/config 
+  652  git status
+  653  vim Procfile 
+  654  git status
+  655  vim Procfile 
+  656  git commit -a -m "Use uwsgi"
+  657  git push tcjstaging master
+  658  vim .git/config 
+  659  git status
+  660  git push tcjstaging master
+  661  git push tcjstaging staging
+  662  git push tcjstaging master
+  663  cd ..
+  664  heroku git:clone -a tcjstaging
+  665  cd tcjstaging/
+  666  ls
+  667  p
+  668  workon TCJ
+  669  cd TCJ
+  670  ls
+  671  vim .git/config 
+  672  git status
+  673  git push tcjstaging master
+  674  vim .git/config 
+  675  git status
+  676  git push tcjstaging
+  677  git push tcjstaging master
+  678  vim .git/config 
+  679  cp ../TCJ/Procfile .
+  680  git push heroku master
+  681  git status
+  682  git commit -a -m "uwsgi in procfile"
+  683  vim .git/config 
+  684  history | grep log
+  685  git push heroku master
+  686  ls
+  687  vim Procfile 
+  688  vim requirements.txt 
+  689  git status
+  690  git commit -a -m "added missing requirements"
+  691  git push heroku master
+  692  heroku run python manage.py shell
+  693  heroku run python manage.py shell -a tcjstaging
+  694  heroku run python manage.py createsuperuser -a tcjstaging
+  695  p
+  696  ls
+  697  cd tcjstaging/
+  698  ls
+  699  cd ..
+  700  cd tcjstaging/
+  701  ls
+  702  vim ../TCJ/.git/config 
+  703  I could have done with the prod clone to test properly. But not the end of the worl
+  704  git remote add origin git@github.com:jdotjdot/TCJ.git
+  705  git status
+  706  git checkout staging
+  707  git checkout master
+  708  git status
+  709  git log
+  710  git pull origin staging
+  711  git status
+  712  git checkout origin/staging
+  713  git checkout heroku/master
+  714  git status
+  715  git checkout master
+  716  git status
+  717  git log
+  718  git branch -u origin/master
+  719  git branch -u origin/staging
+  720  git status
+  721  git log
+  722  git pull origin staging
+  723  git status
+  724  git push origin staging
+  725  git log
+  726  git status
+  727  git pull origin staging
+  728  git status
+  729  git pull origin staging
+  730  git status
+  731  git commit -a -m "merge"
+  732  git push origin staging
+  733  git status
+  734  git log
+  735  git push origin staging
+  736  git push
+  737  git status
+  738  git log
+  739  cd ..
+  740  rm -rf tcjstaging/
+  741  ls
+  742  cd TCJ/
+  743  git pull
+  744  git status
+  745  git log
+  746  git checkout staging
+  747  git status
+  748  git log
+  749  ls
+  750  heroku logs --app tcjstaging --tail
+  751  vim ../yallreadyforthis/Procfile
+  752  vim requirements.txt 
+  753  vim requirements.txt 
+  754  git status
+  755  git commit -a -m "update requirements"
+  756  git push origin staging
+  757  git checkout master
+  758  ls
+  759  git log
+  760  vim requirements.txt 
+  761  git status
+  762  vim requirements.txt 
+  763  git status
+  764  vim Procfile 
+  765  vim ../yallreadyforthis/requirements.txt 
+  766  cp ../yallreadyforthis/Procfile.gunicorn Procfile
+  767  git status
+  768  git commit -a -m "revert master... git went crazy"
+  769  git push origin master
+  770  git status
+  771  vim Procfile
+  772  git status
+  773  git commit -a -m "remove max_requests"
+  774  git push origin master
+  775  vim ../yallreadyforthis/Procfile.gunicorn 
+  776  p
+  777  ls
+  778  heroku git:clone -a tcjstaging
+  779  vim ../TCJ/.git/config 
+  780  cd tcjstaging/
+  781  cd ../tcjstaging/
+  782  ls
+  783  git remote add tcjstaging https://git.heroku.com/tcjstaging.git
+  784  vim .git/config 
+  785  cd ../TCJ/
+  786  git remote add tcjstaging https://git.heroku.com/tcjstaging.git
+  787  vim .git/config 
+  788  git status
+  789  git checkout staging
+  790  git status
+  791  history | grep log
+  792  vim .git/config 
+  793  ls
+  794  cd ../TCJ/
+  795  ls
+  796  vim requirements.txt 
+  797  pip freeze | grep wsgi
+  798  pip freeze | grep uwsgi
+  799  uwsgi --version
+  800  workon TCJ
+  801  pip freeze | grep uwsgi
+  802  uwsgi --version
+  803  vim requirements.txt 
+  804  git status
+  805  git commit -a -m "pinned uwsgi version"
+  806  git push origin staging
+  807  git branch memory-leak
+  808  git status
+  809  git checkout memory-leak
+  810  cp -r ../yallreadyforthis/mike/ memory-leak-investigation
+  811  ls
+  812  git add memory-leak-investigation/
+  813  git status
+  814  cp ../yallreadyforthis/TCJ/urls.py TCJ/urls.py
+  815  git status
+  816  git diff TCJ/urls.py
+  817  ls
+  818  cp ../yallreadyforthis/Procfile* .
+  819  ls
+  820  git status
+  821  git add Procfile*
+  822  git status
+  823  git commit -a -m "Commit mem leak stuff"
+  824  rm memory-leak-investigation/*.dat
+  825  git status
+  826  vim .gitignore 
+  827  git status
+  828  git commit -a -m "Removed dat files"
+  829  git status
+  830  git push origin memory-leak
+  831  heroku logs --app tcjstaging --tail
+  832  cd ../pb
+  833  git status
+  834  vim .git/config 
+  835  git push testnet master
+  836  git status
+  837  grunt watch
+  838  vim package.json 
+  839  npm watch
+  840  vim package.json 
+  841  npm start
+  842  git status
+  843  git commit -a -m "Charge a fee"
+  844  gulp watch
+  845  git status
+  846  git commit -a -m "refactored trans opts"
+  847  grunt watch
+  848  gulp watch
+  849  git status
+  850  git commit -a -m "add test for charging transaction fee"
+  851  git push origin master
+  852  git log
+  853  ls
+  854  git status
+  855  git commit -a -m "Added fees view"
+  856  git push origin master
+  857  git push testnet master
+  858  git log
+  859  git status
+  860  vim package.json 
+  861  git status
+  862  git commit -a -m "style improvements to fees page"
+  863  git push origin master
+  864  git push testnet master
+  865  git status
+  866  git commit -a -m "add unconfirmed to fees"
+  867  git push origin master
+  868  git status
+  869  git push testnet master
+  870  git status
+  871  git commit -a -m "add unconfirmed to fees"
+  872  git push origin master
+  873  git push testnet master
+  874  vim .git/config 
+  875  git push prodnet master
+  876  git status
+  877  git commit -a -m "update title"
+  878  git push testnet master; git push prodnet master;
+  879  git status
+  880  git commit -a -m "added a header to the fees"
+  881  git push origin master
+  882  git push testnet master; git push prodnet master;
+  883  p
+  884  cd pv2/
+  885  git status
+  886  gulp cordova-clean
+  887  history | grep cordova
+  888  cordova platform add ios
+  889  ls
+  890  gulp cordova-create
+  891  gulp watch
+  892  gulp compile
+  893  p
+  894  cd pv2
+  895  ls
+  896  cd bin
+  897  ls -lah
+  898  cd public
+  899  ls
+  900  ls -lah
+  901  vim index.html 
+  902  open index.html 
+  903  cd ../..
+  904  npm install gulp-connect
+  905  npm install gulp-connect --save-dev
+  906  gulp serve
+  907  p
+  908  cd pv2
+  909  git status
+  910  gulp compile
+  911  gulp serve
+  912  gulp watch
+  913  ls
+  914  vim package.json 
+  915  git status
+  916  node server.js
+  917  npm install simple-express-static-server
+  918  npm install serve-static --save
+  919  npm install finalhandler --save
+  920  node server.js 
+  921  git status
+  922  git commit -a -m "all sorts"
+  923  git push origin master
+  924  node --version
+  925  git status
+  926  vim Procfile
+  927  git status
+  928  vim package.json 
+  929  git status
+  930  git add Procfile 
+  931  git commit -a -m "procfile"
+  932  git push origin master
+  933  heroku git:remote -a tomato-soup
+  934  git status
+  935  git status
+  936  vim .gitignore 
+  937  git status
+  938  git add bin
+  939  git status
+  940  git commit -a -m "bin"
+  941  git push heroku master
+  942  git push origin master
+  943  npm start
+  944  git status
+  945  cd bin
+  946  ls
+  947  cd public
+  948  git status
+  949  ls
+  950  git add *
+  951  cd ..
+  952  vim .gitignore 
+  953  git status
+  954  vim .gitignore 
+  955  git status
+  956  git add bin
+  957  git status
+  958  git commit -a -m "rest of bin
+  959  "
+  960  git status
+  961  git push origin master
+  962  git push heroku master
+  963  git status
+  964  git commit -a -m "engines"
+  965  git push origin master
+  966  grunt watch
+  967  gulp watch
+  968  gulp clean
+  969  rm -rf bin
+  970  gulp watch
+  971  ps -ef | grep gulp
+  972  git status
+  973  git status
+  974  gulp watch
+  975  gulp compile
+  976  p
+  977  cd pv2
+  978  p
+  979  cd pv2
+  980  git status
+  981  git com
+  982  git status
+  983  git commit -a -m "fixed server.js"
+  984  git rm --cached bin/test
+  985  vim .gitignore 
+  986  git status
+  987  git commit -a -m "ignore test bundle"
+  988  git push origin master
+  989  git clone git@github.com:mtford90/PageTransitions.git
+  990  ls
+  991  mv PageTransitions/ ../
+  992  cd ..
+  993  cd PageTransitions/
+  994  ls
+  995  bower init
+  996  ls
+  997  npm init
+  998  ls
+  999  vim package.json 
+ 1000  brew install couchdb
+ 1001  brew update couchdb
+ 1002  brew upgrade couchdb
+ 1003  cd ../pv2/
+ 1004  gulp watch
+ 1005  git status
+ 1006  git commit -a -m "Some work towards animations. Added couchdb spec too"
+ 1007  git push origin master
+ 1008  brew info couchdb
+ 1009  ps -ef | grep couchdb
+ 1010  couchdb -h
+ 1011  brew info couchdb
+ 1012  couchdb -h
+ 1013  ls
+ 1014  gulp watch
+ 1015  ps -ef | grep gulp
+ 1016  kill 55717
+ 1017  ps -ef | grep gulp
+ 1018  kill 41420
+ 1019  gulp watch
+ 1020  ps -ef | grep gulp
+ 1021  p
+ 1022  gulp watch
+ 1023  couchdb
+ 1024  ls
+ 1025  couchdb -h
+ 1026  couchdb -a pv2/couchdb/config.ini 
+ 1027  cd pv2
+ 1028  ./couchdb/start.sh
+ 1029  chmod +x couchdb/start.sh 
+ 1030  ./couchdb/start.sh
+ 1031  ./couchdb/start.sh 
+ 1032  git status
+ 1033  vim .gitignore 
+ 1034  git status
+ 1035  git commit -a -m "Couch mainly"
+ 1036  p
+ 1037  cd pv2
+ 1038  ls
+ 1039  ./couchdb/start.sh 
+ 1040  git status
+ 1041  git commit -a -m "CouchDB script"
+ 1042  git push origin master
+ 1043  vim yallreadyforthis/.git/config 
+ 1044  p
+ 1045  ls
+ 1046  cd TCJ
+ 1047  git status
+ 1048  ls
+ 1049  cp Procfile Procfile.uwsgi
+ 1050  vim Procfile.uwsgi 
+ 1051  vim requirements.txt 
+ 1052  ls
+ 1053  git status
+ 1054  git add Procfile.uwsgi 
+ 1055  git status
+ 1056  git pull origin staging
+ 1057  git commit -a -m "back up uwsgi procfile"
+ 1058  git pull origin staging
+ 1059  vim Procfile
+ 1060  git status
+ 1061  git add Procfile
+ 1062  git status
+ 1063  git commit -a -m "merge with staging"
+ 1064  git push origin memory-leak
+ 1065  git status
+ 1066  heroku git -h
+ 1067  heroku git:remote -a yallreadyforthis
+ 1068  vim .git/config 
+ 1069  vim Procfile
+ 1070  git push heroku master
+ 1071  git pull heroku master
+ 1072  git status
+ 1073  git push heroku master
+ 1074  git pull heroku master
+ 1075  git commit -a -m "merge"
+ 1076  git pull heroku master
+ 1077  git staus
+ 1078  git status
+ 1079  git push heroku master
+ 1080  git pull heroku master
+ 1081  git push heroku master
+ 1082  history | grep heroku
+ 1083  history | grep heroku | less
+ 1084  git checkout -b heroku/master
+ 1085  git status
+ 1086  ls
+ 1087  git push heroku master
+ 1088  git checkout memory-leak
+ 1089  git status
+ 1090  git pull heroku
+ 1091  git push -u heroku master
+ 1092  git branch -u heroku/master
+ 1093  vim .git/config 
+ 1094  git status
+ 1095  git push heroku master
+ 1096  git pull origin staging
+ 1097  git push heroku master
+ 1098  git merge heroku master
+ 1099  git push -f heroku master
+ 1100  vim Procfile
+ 1101  git pull heroku master
+ 1102  vim Procfile
+ 1103  git status
+ 1104  git add memory-leak-investigation/
+ 1105  git status
+ 1106  git add re
+ 1107  git status
+ 1108  git commit -a -m "fix import paths in mem-leak code"
+ 1109  git push heroku master
+ 1110  cd ../yallreadyforthis/
+ 1111  git status
+ 1112  git remote add origin git@github.com:jdotjdot/TCJ.git
+ 1113  cd ..
+ 1114  rm -rf yallreadyforthis/
+ 1115  heroku git:clone -a yallreadyforthis
+ 1116  cd yallreadyforthis/
+ 1117  ls
+ 1118  git remote add origin git@github.com:jdotjdot/TCJ.git
+ 1119  git pull origin memory-leak
+ 1120  vim Procfile
+ 1121  git status
+ 1122  git add Procfile
+ 1123  git commit -a -m "merge with mem-leak branch"
+ 1124  git push heroku master
+ 1125  git status
+ 1126  git commit -a -m "fix imports"
+ 1127  git status
+ 1128  git push heroku master
+ 1129  history |  grep log
+ 1130  heroku logs --app yallreadyforthis --tail
+ 1131  git status
+ 1132  git commit -a -m "fix imports in urls.py"
+ 1133  git push heroku master
+ 1134  p
+ 1135  workon TCJ
+ 1136  cd yallreadyforthis/
+ 1137  git status
+ 1138  git push heroku master
+ 1139  heroku logs --app yallreadyforthis --tail
+ 1140  git status
+ 1141  git commit -a -m "add missing psutil require"
+ 1142  p
+ 1143  ls
+ 1144  cd pomodoro/
+ 1145  git status
+ 1146  gulp watch
+ 1147  cd ../pv2/
+ 1148  git push heroku master
+ 1149  heroku logs --app yallreadyforthis --tail
+ 1150  git commit -a -m "add missing psutil require"
+ 1151  git push heroku master
+ 1152  git commit -a -m "add missing psutil require"
+ 1153  heroku logs --app yallreadyforthis --tail
+ 1154  git statu
+ 1155  git status
+ 1156  git commit -a -m "add grequests requirement"
+ 1157  git push heroku master
+ 1158  p
+ 1159  history | grep ssh
+ 1160   ssh bscsbc.co.uk -p 22853
+ 1161  vim ~/.bashrc 
+ 1162   ssh bscsbc.co.uk -p 22853
+ 1163  ls
+ 1164  p
+ 1165  ls
+ 1166  mkdir vm
+ 1167  cd vm
+ 1168  vagrant init hashicorp/precise32
+ 1169  cd
+ 1170  p
+ 1171  vagrant up
+ 1172  git status
+ 1173  ls
+ 1174  cd Playground/vm/
+ 1175  ls
+ 1176  vagrant up
+ 1177  ls
+ 1178  git status
+ 1179  git commit -a -m "Added master flag and use http-socket instead of http (http uses internal proxy)"
+ 1180  git push heroku master
+ 1181  history | grep log
+ 1182  vagrant ssh
+ 1183  heroku logs --app yallreadyforthis --tail
+ 1184  ls
+ 1185  vim Procfile
+ 1186  git status
+ 1187  git commit -a -m "add new relic back in, increase max requests to 3000, enable threads and use single python interpreter"
+ 1188  git push heroku master
+ 1189  git status
+ 1190  git commit -a -m "recycle after every 1000"
+ 1191  git push heroku master
+ 1192  cd ..
+ 1193  cd TCJ
+ 1194  git status
+ 1195  git checkout staging
+ 1196  git pull
+ 1197  ls
+ 1198  p
+ 1199  vim yallreadyforthis/Procfile
+ 1200  vim Procfile 
+ 1201  git clone git@github.com:mtford90/tcj.git
+ 1202  git status
+ 1203  git log
+ 1204  cd ..
+ 1205  rm -rf git@github.com:mtford90/TCJ.git
+ 1206  rm -rf TCJ/
+ 1207  git@github.com:mtford90/TCJ.git
+ 1208  less yallreadyforthis/Procfile
+ 1209  cd yallreadyforthis/
+ 1210  git status
+ 1211  git log
+ 1212  git clone git@github.com:mtford90/TCJ.git
+ 1213  git remote add git@github.com:jdotjdot/TCJ.git
+ 1214  git remote add upstream git@github.com:jdotjdot/TCJ.git
+ 1215  git status
+ 1216  git checkout -u upstream/memory-leak
+ 1217  git branch -u upstream/memory-leak
+ 1218  git status
+ 1219  p
+ 1220  cd tcj
+ 1221  ls
+ 1222  cd ..
+ 1223  ls
+ 1224  cd TCJ
+ 1225  ls
+ 1226  git status
+ 1227  git checkout staging
+ 1228  git status
+ 1229  vim Procfile
+ 1230  vim Procfile 
+ 1231  vim requirements.txt 
+ 1232  git status
+ 1233  git commit -a -m "uwsgi + gevent + additional params"
+ 1234  git status
+ 1235  vim .git/config 
+ 1236  git status
+ 1237  git push origin staging
+ 1238  git remote add upstream git@github.com:jdotjdot/TCJ.git
+ 1239  git checkout memory-leak
+ 1240  git status
+ 1241  git remote add yallreadyforthis ../yallreadyforthis/.git
+ 1242  git status
+ 1243  git pull yallreadyforthis master
+ 1244  git status
+ 1245  git push origin memory-leak
+ 1246  git status
+ 1247  git push upstream memory-leak
+ 1248  git status
+ 1249  less Procfile
+ 1250  ls
+ 1251  p
+ 1252  ls
+ 1253  cd pv2
+ 1254  ls
+ 1255  npm install drag-drop-webkit-mobile
+ 1256  bower install jqueryui-touch-punch
+ 1257  gulp watch
+ 1258  npm install packer
+ 1259  npm uninstall packer
+ 1260  npm install packery --save
+ 1261  npm uninstall packery
+ 1262  bower install packery
+ 1263  git status
+ 1264  git commit -a -m "Using jquery ui sortable"
+ 1265  git push origin master
+ 1266  bower install draggabilly
+ 1267  bower install draggabilly --save
+ 1268  npm install get-size
+ 1269  npm install get-style-property
+ 1270  npm install get-style-property --save-dev
+ 1271  git status
+ 1272  git reset --hard HEAD
+ 1273  git status
+ 1274  curl -X PUT http://localhost:5984/_config/admins/mtford -d '"mtford"'
+ 1275  curl -X POST http://localhost:5984/_session -d 'name=mtford&password=mtford'
+ 1276  curl -X POST http://localhost:5984/_session -d 'name=mtford&password=mtfordd'
+ 1277  ./couchdb/start.sh 
+ 1278  ls
+ 1279  vim couchdb/config.ini 
+ 1280  ./couchdb/start.sh 
+ 1281  git status
+ 1282  git commit -a -m "various bits of work on the couchdb-as-a-backend api"
+ 1283  git push origin master
+ 1284  gulp watch
+ 1285  p
+ 1286  ls
+ 1287  cd TCJ
+ 1288  ls
+ 1289  vim Procfile
+ 1290  p
+ 1291  cd pv2
+ 1292  ls
+ 1293  p
+ 1294  ls
+ 1295  cd pv2
+ 1296  gulp watch
+ 1297  ls
+ 1298  curl -X PUT localhost:5984/somedata 
+ 1299  curl -X PUT "http://mtford:mtford@localhost:5984/somedata" 
+ 1300  curl -X DELETE "http://mtford:mtford@localhost:5984/somedata" 
+ 1301  curl -X DELETE "http://mtford:mtford@localhost:5984/_users" 
+ 1302  git status
+ 1303  p
+ 1304  cd pv2
+ 1305  git status
+ 1306  git commit -a -m "User creation working"
+ 1307  git status
+ 1308  git commit -a -m "basic auth config"
+ 1309  git push origin master
+ 1310  git status
+ 1311  git commit -a -m "couchdb logout"
+ 1312  git push origin master
+ 1313  mkdir ../couchdb-as-a-backend
+ 1314  cd ../couchdb-as-a-backend/
+ 1315  npm init
+ 1316  bower init
+ 1317  git status
+ 1318  ls
+ 1319  git init
+ 1320  ls
+ 1321  gulp watch
+ 1322  cd ../pv2
+ 1323  bower install nimble
+ 1324  npm install nimble
+ 1325  git status
+ 1326  defaults write com.apple.dock no-bouncing -bool TRUE
+ 1327  killall Dock
+ 1328  git status
+ 1329  git commit -a -m 'create new docs'
+ 1330  git push origin master
+ 1331  curl -X PUT http://localhost:5984/_config/couch_http_auth/public_fields
+ 1332  -H “Content-Type: application/json” -d ‘“name”’ -u mtford:mtford
+ 1333  curl -X PUT http://localhost:5984/_config/couch_http_auth/public_fields -H “Content-Type: application/json” -d ‘“name”’ -u mtford:mtford
+ 1334  curl -X PUT http://localhost:5984/_config/couch_http_auth/public_fields -H “Content-Type: application/json” -d ‘"name”’ -u mtford:mtford
+ 1335  curl -X PUT http://localhost:5984/_config/couch_http_auth/public_fields -H “Content-Type: application/json” -d '"name"' -u mtford:mtford
+ 1336  curl -X PUT http://localhost:5984/_config/couch_http_auth/public_fields -H "Content-Type: application/json" -d '"name"' -u mtford:mtford
+ 1337  curl http://localhost:5984/_users/org.couchdb.user:mtford
+ 1338  curl http://localhost:5984/_users/org.couchdb.user:bob
+ 1339  curl http://localhost:5984/_users/org.couchdb.user:curl -X PUT http://localhost:5984/_users/org.couchdb.user:jan      -H "Accept: application/json"      -H "Content-Type: application/json"      -d '{"name": "jan", "password": "apple", "roles": [], "type": "user"}'
+ 1340  curl http://localhost:5984/_users/org.couchdb.user:jan
+ 1341  curl http://localhost:5984/_users/org.couchdb.user:curl -X PUT http://localhost:5984/_users/org.couchdb.user:jan  -H "Accept: application/json" -H "Content-Type: application/json" -d '{"name": "jan", "password": "apple", "roles": [], "type": "user"}'
+ 1342  curl http://localhost:5984/_users/org.couchdb.user:jan
+ 1343  curl http://localhost:5984/_users/org.couchdb.user:jan -u mtford:mtford
+ 1344  curl http://localhost:5984/_users/org.couchdb.user:jan
+ 1345  ./couchdb/start.sh 
+ 1346  curl http://localhost:5984/_users/org.couchdb.user:jan
+ 1347  curl http://localhost:5984/_users/org.couchdb.user:mtford
+ 1348  curl http://localhost:5984/_users/org.couchdb.user:jan
+ 1349  ./couchdb/start.sh 
+ 1350  git status
+ 1351  git commit -a -m "public fields for users"
+ 1352   cd ../couchdb-as-a-backend/
+ 1353  ls
+ 1354  bower install chai
+ 1355  bower install source-map-support
+ 1356  bower install source-map-support --save
+ 1357  bower install source-map-support --save-dev
+ 1358  bower install chai --save-dev
+ 1359  bower install mocha --save-dev
+ 1360  bower install jquery --save
+ 1361  gulp init
+ 1362  npm install gulp --save-dev
+ 1363  bower uninstall jquery
+ 1364  npm install nimble --save
+ 1365  npm install jquery --save
+ 1366  gulp init
+ 1367  git status
+ 1368  vim .gitignore
+ 1369  git status
+ 1370  npm install gulp-browserify --save-dev
+ 1371  npm uninstall gulp-browserify --save
+ 1372  npm install browserify --save-dev
+ 1373  npm install vinyl-source-stream --save-dev
+ 1374  npm uninstall jquery
+ 1375  bower install jquery --save
+ 1376  bower uninstall jquery
+ 1377  bower install jquery --save-dev
+ 1378  gulp build
+ 1379  npm install merge --save
+ 1380  gulp build
+ 1381  npm install gulp-open --save-dev
+ 1382  npm install gulp-livereload --save-dev
+ 1383  npm install gulp-connect --save-dev
+ 1384  gulp watch
+ 1385  npm install open --save-dev
+ 1386  gulp watch
+ 1387  npm uninstall gulp-open
+ 1388  gulp watch
+ 1389  git status
+ 1390  vim .gitignore 
+ 1391  git status
+ 1392  git  commit -a -m "init"
+ 1393  git remote add origin git@github.com:mtford90/couchdb-as-a-backend.git
+ 1394  git status
+ 1395  git add .gitignore 
+ 1396  git add bower.json 
+ 1397  git add package.json 
+ 1398  git status
+ 1399  git push origin master
+ 1400  npm install cradle --save-dev
+ 1401  npm install cradle --save
+ 1402  gulp watch
+ 1403  history | grep curl
+ 1404  gulp watch
+ 1405  p
+ 1406  cd couchdb-as-a-backend/
+ 1407  git status
+ 1408  git commit -a -m " get users"
+ 1409  git push origin master
+ 1410  git status
+ 1411  ls
+ 1412  bower uninstall chai
+ 1413  ls
+ 1414  ls bower
+ 1415  ls bower_components/
+ 1416  npm install chai
+ 1417  ps
+ 1418  p
+ 1419  ls
+ 1420  p
+ 1421  brew install rcouch
+ 1422  ls
+ 1423  cd couchdb-as-a-backend/
+ 1424  ls
+ 1425  mkdir submodules
+ 1426  cd submodules/
+ 1427  cd ..
+ 1428  ls
+ 1429  git submodule add https://github.com/rcouch/rcouch.git submodules/rcouch
+ 1430  ls
+ 1431  cd submodules/
+ 1432  ls
+ 1433  cd rcouch/
+ 1434  ls
+ 1435  git checkout rcouch-1.0.4
+ 1436  ls
+ 1437  cd ..
+ 1438  git status
+ 1439  git commit -a -m "Added rcouch as submodule. Get permissions"
+ 1440  git push origin master
+ 1441  ls
+ 1442  cd submodules/rcouch/
+ 1443  ls
+ 1444  curl -X PUT http://mtford:mtford@localhost:5984/db
+ 1445  curl -X PUT http://admin:admin@localhost:5984/db
+ 1446  curl -X PUT http://admin:admin@localhost:5984/db/_security -H "Content-Type: application/json" -d '{"admins": { "names": ["admin"], "roles": [""] }, "members": { "names": [], "roles": [] } }'
+ 1447  curl -XGET http://admin:admin@localhost:5984/db/
+ 1448  curl -XPUT http://admin:admin@localhost:5984/db/  -H "Content-Type: application/json" -d '{"x": 1}'
+ 1449  curl -XPUT http://admin:admin@localhost:5984/db/  -H "Content-Type: application/json" -d '{"x": 2}'
+ 1450  curl -XPUT http://admin:admin@localhost:5984/db/my_id  -H "Content-Type: application/json" -d '{"x": 2}'
+ 1451  curl -XPUT http://localhost:5984/db/my_id  -H "Content-Type: application/json" -d '{"x": 2}'
+ 1452  curl -XPUT http://localhost:5984/db/my_id  -H "Content-Type: application/json" -d '{"x": 5}'
+ 1453  curl -XPOST http://localhost:5984/db/  -H "Content-Type: application/json" -d '{"x": 5}'
+ 1454  curl -XGET  http://localhost:5984/db/  
+ 1455  curl -XGET  http://localhost:5984/db/_security
+ 1456  curl -XGET  http://localhost:5984/db/  
+ 1457  curl -XGET  http://localhost:5984/db/_security
+ 1458  curl -XPOST http://localhost:5984/db/  -H "Content-Type: application/json" -d '{"x": 5}'
+ 1459  curl -XPOST http://localhost:5984/db/  -H "Content-Type: application/json" -d '{"x": 5}' -u admin:admin
+ 1460  curl -XGET  http://localhost:5984/db/
+ 1461  curl -XGET  http://localhost:5984/db/8b2e0a8e6033810226360f5a510604b7
+ 1462  ls
+ 1463  cd submodules/rcouch/
+ 1464  ls
+ 1465  make rel
+ 1466  brew install rebar
+ 1467  brew install erlang
+ 1468  brew update erlang
+ 1469  brew upgrade erlang
+ 1470  brew install ICU
+ 1471  make rel
+ 1472  ls
+ 1473  cd rel
+ 1474  rebar generate
+ 1475  ls
+ 1476  cd ..
+ 1477  ls
+ 1478  ls deps/couch/
+ 1479  cd deps
+ 1480  ls
+ 1481  cd couch
+ 1482  ls
+ 1483  cd .git
+ 1484  ls
+ 1485  cd ..
+ 1486  ls
+ 1487  cd .git/
+ 1488  ls
+ 1489  vim description 
+ 1490  ls
+ 1491  ls -lah
+ 1492  vim description 
+ 1493  ls
+ 1494  vim description 
+ 1495  cd ..
+ 1496  ls
+ 1497  cd ../../..
+ 1498  ls
+ 1499  cd rcouch/
+ 1500  make rel
+ 1501  ls
+ 1502  ls rel
+ 1503  cd rel
+ 1504  cd files/
+ 1505  ls
+ 1506  cd ..
+ 1507  ls
+ 1508  cd rcouch/
+ 1509  ls
+ 1510  cd bin
+ 1511  ls
+ 1512  cd ..
+ 1513  cd rcouch/bin/
+ 1514  ls
+ 1515  ./rcouch 
+ 1516  ./rcouch start
+ 1517  ls
+ 1518  setcap 'cap_net_bind_service=+ep' /path/to/rel/refuge/erts-5.8.5/bin/beam.smp
+ 1519  setcap 'cap_net_bind_service=+ep' /path/to/rel/refuge/erts-5.8.5/bin/beam`
+ 1520  setcap 'cap_net_bind_service=+ep' /path/to/rel/refuge/erts-5.8.5/bin/beam
+ 1521  brew install setcap
+ 1522  sysctl net.inet.ip.portrange.reservedhigh=0
+ 1523  cd ..
+ 1524   cd..
+ 1525  ls
+ 1526  cd ..
+ 1527  ls
+ 1528  vim /Users/mtford/Playground/couchdb-as-a-backend/back/couch/start.sh
+ 1529  ./Users/mtford/Playground/couchdb-as-a-backend/back/couch/start.sh
+ 1530  /Users/mtford/Playground/couchdb-as-a-backend/back/couch/start.sh
+ 1531  p
+ 1532  which couchdb
+ 1533  cd /usr/local/bin
+ 1534  ls
+ 1535  ls -lah 
+ 1536  ls -lah  
+ 1537  ls -lah   | grep couch
+ 1538  cd /Users/mtford/Playground/couchdb-as-a-backend/submodules/rcouch/rel/rcouch/bin/rcouch
+ 1539  cd ../Cellar/couchdb/
+ 1540  ls
+ 1541  cd 1.6.1_1/
+ 1542  ls
+ 1543  ls bin
+ 1544  cd bin
+ 1545  ls
+ 1546  vim couchdb 
+ 1547  cd
+ 1548  p
+ 1549  cd couchdb-as-a-backend/
+ 1550  ls
+ 1551  ./submodules/rcouch/rel/rcouch/bin/rcouch 
+ 1552  ./submodules/rcouch/rel/rcouch/bin/rcouch start 
+ 1553  ps -ef | grep rcouch
+ 1554  kill 38976
+ 1555  ps -ef | grep rcouch
+ 1556  kill 38979
+ 1557  ps -ef | grep rcouch
+ 1558  ls
+ 1559  ./submodules/rcouch/rel/rcouch/bin/rcouch start -a back/couch/config.ini 
+ 1560  curl -XGET localhost:5984
+ 1561  ls
+ 1562  ./submodules/rcouch/rel/rcouch/bin/rcouch 
+ 1563  ./submodules/rcouch/rel/rcouch/bin/rcouch help
+ 1564  ./submodules/rcouch/rel/rcouch/bin/rcouch attach
+ 1565  ./submodules/rcouch/rel/rcouch/bin/rcouch stop
+ 1566  ps -ef | grep rcouch
+ 1567  ls
+ 1568  cd submodules/rcouch/
+ 1569  ls
+ 1570  cd etc/
+ 1571  ls
+ 1572  cd ..
+ 1573  ls
+ 1574  cd rel
+ 1575  ls
+ 1576  cd rcouch/etc/
+ 1577  ls
+ 1578  ln -sf ~/Playground/couchdb-as-a-backend/back/couch/config.ini local.ini
+ 1579  ls -lah
+ 1580  cd
+ 1581  p
+ 1582  cd couchdb-as-a-backend/
+ 1583  ls
+ 1584  history | grep rcouch
+ 1585  ./submodules/rcouch/rel/rcouch/bin/rcouch start
+ 1586  git status
+ 1587  git commit -a -m "rcouch"
+ 1588  git status
+ 1589  ls
+ 1590  p
+ 1591  ls
+ 1592  cd couchdb-as-a-backend/
+ 1593  ls
+ 1594  cd example/
+ 1595  ls
+ 1596  touch index.html
+ 1597  cd ..
+ 1598  ls
+ 1599  npm install react --save
+ 1600  p
+ 1601  cd couchdb-as-a-backend/
+ 1602  npm install reactify --save-dev
+ 1603  gulp build-example
+ 1604  gulp watch
+ 1605  ps -ef | grep gulp
+ 1606  kill 49268
+ 1607  ps -ef | grep gulp
+ 1608  npm uninstall react --save
+ 1609  bower install react --save
+ 1610  bower install react-router --save
+ 1611  p
+ 1612  ls
+ 1613  cd couchdb-as-a-backend/
+ 1614  ls
+ 1615  npm install gulp-sass --save-dev
+ 1616  git status
+ 1617  vim .gitignore 
+ 1618  git status
+ 1619  gulp watch
+ 1620  gulp watch-example
+ 1621  p
+ 1622  cd couchdb-as-a-backend/
+ 1623  bower install masonry --save
+ 1624  git status
+ 1625  git add example/
+ 1626  git status
+ 1627  git commit -a -m "init commit of example"
+ 1628  git status
+ 1629  git push origin master
+ 1630  bower install images-loaded
+ 1631  bower install imagesloaded
+ 1632  bower install imagesloaded --save
+ 1633  bower install bootstrap
+ 1634  git status
+ 1635  git commit -a -m "example"
+ 1636  git push origin master
+ 1637  p
+ 1638  ls
+ 1639  cd couchdb-as-a-backend/
+ 1640  ls
+ 1641  gulp watch
+ 1642  ls
+ 1643  p
+ 1644  ls
+ 1645  cd couchdb-as-a-backend/
+ 1646  l
+ 1647  ll
+ 1648  history | grep rcouch
+ 1649  ./submodules/rcouch/rel/rcouch/bin/rcouch start
+ 1650  curl -XGET localhost:5984
+ 1651  curl -XGET localhost:5984/_users/
+ 1652  curl -XGET localhost:5984/_users/admin
+ 1653  curl -XGET localhost:5984/_users/admin -u admin:admin
+ 1654  history | grep curl
+ 1655  history | grep curl | grep user
+ 1656   curl http://localhost:5984/_users/org.couchdb.user:mtford
+ 1657   curl -XPUT http://localhost:5984/_users/org.couchdb.user:mtford
+ 1658   curl http://localhost:5984/_users/org.couchdb.user:mtford
+ 1659  curl http://localhost:5984/_users/org.couchdb.user:curl -X PUT http://localhost:5984/_users/org.couchdb.user:jan  -H "Accept: application/json" -H "Content-Type: application/json" -d '{"name": "jan", "password": "apple", "roles": [], "type": "user"}'
+ 1660   curl http://localhost:5984/_users/org.couchdb.user:jan
+ 1661   curl http://localhost:5984/_users/org.couchdb.user:admin
+ 1662   curl http://localhost:5984/_users/org.couchdb.user:jan
+ 1663  git status
+ 1664  gulp watch
+ 1665  git status
+ 1666  git commit -a -m "cleaned up the way that admin authentication is handled"
+ 1667  git push origin master
+ 1668  gulp watch
+ 1669  git status
+ 1670  git commit -a -m "put/get attachment with raw data"
+ 1671  git push origin master
+ 1672  vim ~/Downloads/myAttr.png 
+ 1673  vim /Users/mtford/Playground/couchdb-as-a-backend/front/test/data/blah.png 
+ 1674  vim ~/Downloads/myAttr.png 
+ 1675  curl http://localhost:7682/front/test/data/blah.png
+ 1676  curl http://localhost:7682/front/test/data/blah.png | less
+ 1677  curl http://localhost:5984/db/da6ab89338819a7bf7e80d38c70f43f1/myAttr
+ 1678  curl http://localhost:5984/db/da6ab89338819a7bf7e80d38c70f43f1/myAttr | less
+ 1679  gulp watch
+ 1680  git status
+ 1681  git commit -a -m "attachments - use xhr to get blob instead"
+ 1682  git push origin master
+ 1683  git status
+ 1684  git commit -a -m "started work on bulk attachments, but got a bit bored"
+ 1685  git push origin master
+ 1686  git status
+ 1687  git commit -a -m "aaaaaaand removed it for now"
+ 1688  git push origin master
+ 1689  ls
+ 1690  bower install packery --save
+ 1691  bower install draggabilly
+ 1692  bower install draggabilly --save
+ 1693  tmux
+ 1694  python
+ 1695  ps -ef | grep gulp
+ 1696  kill 23514
+ 1697  gulp watch-example
+ 1698  p
+ 1699  ls
+ 1700  cd couchdb-as-a-backend/
+ 1701  gulp watch-example
+ 1702  git status
+ 1703  git commit -a -m "Work on the example app mainly, using debouncing"
+ 1704  git push origin master
+ 1705  python
+ 1706  gulp watch-example
+ 1707  git status
+ 1708  git commit -a -m "Scale to width"
+ 1709  gulp watch-example
+ 1710  git status
+ 1711  git commit -a -m "various"
+ 1712  git push origin master
+ 1713  gulp watch-example
+ 1714  git status
+ 1715  git commit -a -m "layout works"
+ 1716  git push origin master
+ 1717  p
+ 1718  cd website_blog/
+ 1719  ls
+ 1720  cd ..
+ 1721  ls
+ 1722  ls | grep blog
+ 1723  cd untitled/
+ 1724  ls
+ 1725  cd ..
+ 1726  ls
+ 1727  cd t
+ 1728  ls
+ 1729  cd ..
+ 1730  rm -rf t
+ 1731  ls media/
+ 1732  ls
+ 1733  ls media/
+ 1734  git clone https://github.com/mtford90/mtford90.github.io.git
+ 1735  cd mtford90.github.io/
+ 1736  ls
+ 1737  brew install jekyll
+ 1738  p
+ 1739  ls
+ 1740  cd mtford90.github.io/
+ 1741  ls
+ 1742  mkdir _drafts
+ 1743  ls
+ 1744  vim _drafts/couchdb.md
+ 1745  gem install jekyll
+ 1746  ls
+ 1747  ls _drafts/
+ 1748  touch _drafts/couchdb.md
+ 1749  cd ../couchdb-as-a-backend/
+ 1750  gulp watch
+ 1751  ls
+ 1752  history | grep rcouch
+ 1753  ./submodules/rcouch/rel/rcouch/bin/rcouch start
+ 1754  ls
+ 1755  gulp watch
+ 1756  npm install gulp-replace --save-dev
+ 1757  npm install --save-dev gulp-replace
+ 1758  npm install through2 --save-dev
+ 1759  gulp build-couchdb
+ 1760  git status
+ 1761  git commit -a -m "Added a hook for node-http instead"
+ 1762  vim front/build/bundle.js 
+ 1763  cd front/build/
+ 1764  ls -lah
+ 1765  cd ../..
+ 1766  git status
+ 1767  git commit -a -m "abstracted xhr away so can replace it with node http when in node environment"
+ 1768  git push origin master
+ 1769  npm install gulp mocha --save-dev
+ 1770  npm install gulp-mocha --save-dev
+ 1771  gulp watch
+ 1772  gulp test-node
+ 1773  npm install gulp --save-dev 
+ 1774  gulp test-node
+ 1775  npm install mocha 
+ 1776  gulp test-node
+ 1777  gulp watch
+ 1778  gulp test-node
+ 1779  gulp watch
+ 1780  gulp node-test
+ 1781  gulp test-node
+ 1782  gulp node-test
+ 1783  gulp test-node
+ 1784  gulp watch
+ 1785  gulp test-node
+ 1786  gulp watch
+ 1787  gulp test-node
+ 1788  git status
+ 1789  git commit -a -m "NodeJS support"
+ 1790  git push origin master
+ 1791  gulp test-node
+ 1792  gulp watch
+ 1793  npm install gulp-watch --save-dev
+ 1794  gulp watch
+ 1795  npm install run-sequence --save-dev
+ 1796  gulp watch
+ 1797  git status
+ 1798  git commit -a -m "run node & browser tests synchronously since using the same couchdb db..."
+ 1799  git push origin master
+ 1800  git status
+ 1801  ls
+ 1802  npm install gulp-uglify --save-dev
+ 1803  npm install gulp-rename --save-dev
+ 1804  gulp compile
+ 1805  ls
+ 1806  ls front/build/
+ 1807  ls -lah front/build
+ 1808  gulp compile
+ 1809  ls -lah front/build
+ 1810  git status
+ 1811  git commit -a -m "added compile step"
+ 1812  git status
+ 1813  gulp dist
+ 1814  cd dist/
+ 1815  git status
+ 1816  ls -lah
+ 1817  cd ..
+ 1818  ls
+ 1819  git status
+ 1820  git add dist
+ 1821  git status
+ 1822  git commit -a -m "first dist"
+ 1823  git push origin master
+ 1824  vim dist/couch.js 
+ 1825  git status
+ 1826  git add submodules/
+ 1827  git status
+ 1828  ls
+ 1829  cp -r example/ ../mosayc
+ 1830  ls
+ 1831  gulp watch-example
+ 1832  history | grep vm
+ 1833  vim /Applications/PyCharm.app/Contents/bin/idea.vmoptions
+ 1834  pbcopy < /Applications/PyCharm.app/Contents/bin/idea.vmoptions
+ 1835  -Xms128m
+ 1836  -Xmx3g
+ 1837  -XX:MaxPermSize=350m
+ 1838  -XX:ReservedCodeCacheSize=225m
+ 1839  -XX:+UseCompressedOops
+ 1840  gulp watch-example
+ 1841  p
+ 1842  p
+ 1843  ls
+ 1844  cd couchdb-as-a-backend/
+ 1845  ls
+ 1846  gulp watch-example
+ 1847  p
+ 1848  cd couchdb-as-a-backend/
+ 1849  gulp watch
+ 1850  history | grep rcouch
+ 1851  ./submodules/rcouch/rel/rcouch/bin/rcouch start
+ 1852  gulp watch
+ 1853  gulp watch-app
+ 1854  gulp watch
+ 1855  gulp watch-example
+ 1856  cd
+ 1857  cd Playground/
+ 1858  cd couchdb-as-a-backend/
+ 1859  ls
+ 1860  npm install reflux --save
+ 1861  npm uninstall reflux --save
+ 1862  bower install reflux --save
+ 1863  gulp watch-app
+ 1864  git status
+ 1865  git commit -a -m "validation for signup"
+ 1866  git push origin master
+ 1867  git status
+ 1868  git commit -a -m 'cleaned up the validaiton a bit'
+ 1869  git status
+ 1870  gulp watch
+ 1871  git status
+ 1872  git commit -a -m "basicAuth + createUser will now return user documents"
+ 1873  git push origin master
+ 1874  git status
+ 1875  git commit -a -m "Login + Signup now work"
+ 1876  git push origin master
+ 1877  gulp dist
+ 1878  git status
+ 1879  git  commit -a -m "dist"
+ 1880  git push origin master
+ 1881  ls -lah dist
+ 1882  gulp dist
+ 1883  gulp watch
+ 1884  git status
+ 1885  gulp dist
+ 1886  git status
+ 1887  git commit -a -m "Added a hook for injecting auth"
+ 1888  git push origin master
+ 1889  git status
+ 1890  git commit -a -m "made the api an event emitter"
+ 1891  git push origin master
+ 1892  git status
+ 1893  git commit -a -m "Verify auth"
+ 1894  git push origin master
+ 1895  git status
+ 1896  git push origin master
+ 1897  git status
+ 1898  git commit -a -m "commit auth to local storage"
+ 1899  git push origin master
+ 1900  git status
+ 1901  git commit -a -m "logout in example"
+ 1902  git push origin master
+ 1903  vim .gitignore 
+ 1904  git status
+ 1905  git add .idea
+ 1906  git status
+ 1907  git commit -a -m "added idea settings"
+ 1908  git push origin master
+ 1909  git status
+ 1910  ls
+ 1911  cd ..
+ 1912  cd mosayc
+ 1913  git status
+ 1914  git init .
+ 1915  git status
+ 1916  rm -rf build/
+ 1917  git status
+ 1918  git add *
+ 1919  git commit -a -m "init"
+ 1920  git remote add origin git@github.com:mtford90/myc.git
+ 1921  git push origin master
+ 1922  git status
+ 1923  cd ..
+ 1924  ls
+ 1925  cd siesta-
+ 1926  cd rest
+ 1927  git status
+ 1928  git commit -a -m "etc"
+ 1929  git push origin master
+ 1930  vim .gitignore 
+ 1931  git status
+ 1932  git add .idea/
+ 1933  git status
+ 1934  git commit -a -m "added .idea settings"
+ 1935  git push origin master
+ 1936  git status
+ 1937  cd ..
+ 1938  ls
+ 1939  cd silk
+ 1940  git status
+ 1941  cd ..
+ 1942  ls
+ 1943  cd pv2/
+ 1944  ls
+ 1945  git status
+ 1946  git commit -a -m "various"
+ 1947  git push origin master
+ 1948  git status
+ 1949  cd ..
+ 1950  ls
+ 1951  cp ~/Library/Application\ Support/PyCharm40/ .
+ 1952  cp -r ~/Library/Application\ Support/PyCharm40/ .
+ 1953  ls
+ 1954  mkdir pycharm-settings
+ 1955  ls
+ 1956  cd pycharm-settings/
+ 1957  ls
+ 1958  cp -r ~/Library/Application\ Support/PyCharm40/ .
+ 1959  ls
+ 1960  mkdir PyCharm40
+ 1961  ls
+ 1962  mv * PyCharm40/
+ 1963  ls
+ 1964  ls PyCharm40/
+ 1965  cp -r ~/Library/Preferences/PyCharm40/ Preferences
+ 1966  ls
+ 1967  mv PyCharm40/ Application\ Support
+ 1968  ls
+ 1969  ls -lah
+ 1970  git status
+ 1971  git init
+ 1972  git status
+ 1973  git add Application\ Support/
+ 1974  git add Preferences/
+ 1975  git status
+ 1976  git commit -a -m "pycharm settings"
+ 1977  git push origin master
+ 1978  git remote add origin git@github.com:mtford90/pycharm-config.git
+ 1979  git status
+ 1980  git push origin master
+ 1981  ls
+ 1982  rm -rf ~/Library/Application\ Support/PyCharm40/
+ 1983  rm -rf ~/Library/Preferences/PyCharm40/
+ 1984  ln -s ~/Library/Application\ Support/PyCharm40/ Application\ Support/
+ 1985  ln -s Application\ Support/ ~/Library/Application\ Support/PyCharm40/
+ 1986  ls -lah
+ 1987  ls
+ 1988  cd ~/Library/Application\ Support/
+ 1989  ln -s ~/Playground/pycharm-settings/Application\ Support/ .
+ 1990  ls
+ 1991  ln -s ~/Playground/pycharm-settings/Application\ Support/ PyCharm40
+ 1992  cd ../Preference
+ 1993  cd ../Preferences
+ 1994  ln -s ~/Playground/pycharm-settings/Preferences/ PyCharm30/
+ 1995  ln -s ~/Playground/pycharm-settings/Preferences/ PyCharm40/
+ 1996  ln -s ~/Playground/pycharm-settings/Preferences/ PyCharm40
+ 1997  ls
+ 1998  cd PyCharm40/
+ 1999  ls
+ 2000  cd
+ 2001  npm install autoprefixer --save-dev
+ 2002  gulp-autoprefixer
+ 2003  npm install gulp-autoprefixer --save-dev
+ 2004  gulp watch-example
+ 2005  git status
+ 2006  p
+ 2007  cd couchdb-as-a-backend/
+ 2008  git status
+ 2009  git commit -a -m "disable autocompletion in the forms on chrome"
+ 2010  git push origin master
+ 2011  git commit -a -m "disable autocompletion in the forms on chrome"
+ 2012  bower install react-bootstrap --save
+ 2013  gulp watch-example
+ 2014  git status
+ 2015  git commit -a -m "profile"
+ 2016  git push origin master
+ 2017  git status
+ 2018  history > hist.txt
