@@ -25,6 +25,7 @@ describe('storage', function () {
     });
     describe('basic', function () {
         it('missing password', function () {
+            console.log('couchdb', couchdb);
             var auth = {
                 username: 'mike',
                 method: couchdb.AUTH_METHOD.BASIC
@@ -64,7 +65,7 @@ describe('storage', function () {
             couch.createUser({
                 username: 'mike',
                 password: 'mike',
-                auth: couchdb.AUTH_METHOD.BASIC
+                auth: couch.AUTH_METHOD.BASIC
             });
         });
 
