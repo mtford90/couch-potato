@@ -4,12 +4,8 @@
         merge = require('merge'),
         nodeHttp = require('http'),
         url = require('url'),
+        util = require('./util'),
         EventEmitter = require('events').EventEmitter;
-
-    var btoa = root.btoa;
-    if (!btoa) btoa = function (str) {
-        return new Buffer(str).toString('base64');
-    };
 
     /**
      * Normalise the host parameter e.g. standardise forward slash, protocol etc.
@@ -178,7 +174,7 @@
                     if (auth.method == AUTH_METHOD.BASIC) {
                         // Note: jQuery >=1.7 has username/password options. I do this simply for backwards
                         // compatibility.
-                        headers.Authorization = 'Basic ' + btoa(auth.username + ':' + auth.password);
+                        headers.Authorization = 'Basic ' + util.btoa(auth.username + ':' + auth.password);
                     }
                 }
             }
@@ -1100,7 +1096,7 @@
                 var attachment = {};
                 attachment[opts.attName] = {
                     'content-type': opts.mimeType,
-                    data: btoa(data)
+                    data: util.btoa(data)
                 };
                 cb(null, attachment)
             },
@@ -1108,7 +1104,7 @@
             verifyAuth: verifyAuth,
 
             /**
-             *
+             * 
              * @param opts
              * @param {Blob} opts.data - blob
              * @param opts.mimeType,
