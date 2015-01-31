@@ -1,10 +1,13 @@
+/**
+ * CouchDB API - works in both browser and node environments.
+ */
 (function (root) {
     'use strict';
 
     var merge = require('merge'),
-        util = require('./util'),
-        CouchError = require('./CouchError'),
-        constants = require('./constants'),
+        util = require('./lib/util'),
+        CouchError = require('./lib/CouchError'),
+        constants = require('./lib/constants'),
         EventEmitter = require('events').EventEmitter;
 
     /**
@@ -68,12 +71,12 @@
 
         // Configure dependencies between the different couchdb APIs.
         var api = new API(),
-            auth = require('./auth')(api, opts),
-            http = require('./http')(auth, opts),
-            users = require('./users')(auth, http),
-            admin = require('./admin')(auth, http, opts),
-            documents = require('./documents')(auth, http, opts),
-            attachments = require('./attachments')(auth, http, opts);
+            auth = require('./lib/auth')(api, opts),
+            http = require('./lib/http')(auth, opts),
+            users = require('./lib/users')(auth, http),
+            admin = require('./lib/admin')(auth, http, opts),
+            documents = require('./lib/documents')(auth, http, opts),
+            attachments = require('./lib/attachments')(auth, http, opts);
 
         // Make available auth info on the api object.
         Object.defineProperty(api, 'auth', {

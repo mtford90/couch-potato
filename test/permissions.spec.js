@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-    couchdb = require('../src/couchdb').couchdb,
+    couchdb = require('../api').couchdb,
     prettyJson = require('./util').prettyJson;
 
 describe('permissions', function () {

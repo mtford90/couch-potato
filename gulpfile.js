@@ -13,8 +13,23 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     source = require('vinyl-source-stream');
 
+// Config
+var BUILD_DIR = './build/',
+    NODE_LIBS = ['url', 'http'],
+    API_BUNDLE = 'bundle.js',
+    TEST_BUNDLE = 'test-bundle.js',
+    MINIFIED_API_BUNDLE = 'bundle.min.js',
+    API_BUNDLE_PATH = BUILD_DIR + API_BUNDLE,
+    API_ROOT = './api.js',
+    TEST_ROOT = './test/tests.js',
+    MINIFIED_API_BUNDLE_PATH = BUILD_DIR + MINIFIED_API_BUNDLE,
+    DIST_BUNDLE_NAME = 'couchPotato.js',
+    DIST_DIR = './dist',
+    DIST_MINIFIED_BUNDLE_NAME = 'couchPotato.min.js',
+    WATCH_JS = ['lib/**/*.js', 'api.js'],
+    WATCH_TEST_JS = ['test/**/*.spec.js'],
+    WATCH_TEST_HTML = ['front/test/**/*.html'];
 
-var NODE_LIBS = ['url', 'http'];
 
 /**
  * Ensure that all node dependencies are eliminated before generating the browser bundle.
@@ -31,23 +46,23 @@ function removeNodeDeps(file) {
     });
 }
 
-gulp.task('build-couchdb', function () {
+gulp.task('build-api', function () {
     var b = browserify({debug: true});
     b.transform(removeNodeDeps);
-    b.add('./front/src/couchdb.js');
+    b.add(API_ROOT);
     return b.bundle()
-        .pipe(source('bundle.js'))
-        .pipe(gulp.dest('./front/build'))
+        .pipe(source(API_BUNDLE))
+        .pipe(gulp.dest(BUILD_DIR))
         .pipe(connect.reload());
 });
 
 gulp.task('build-test', function () {
     var b = browserify({debug: true});
     b.transform(removeNodeDeps);
-    b.add('./front/test/tests.js');
+    b.add(TEST_ROOT);
     b.bundle()
-        .pipe(source('test-bundle.js'))
-        .pipe(gulp.dest('./front/build'))
+        .pipe(source(TEST_BUNDLE))
+        .pipe(gulp.dest(BUILD_DIR))
         .pipe(connect.reload());
 });
 
@@ -77,14 +92,14 @@ gulp.task('fonts', function () {
 
 // Run tests in the node environment.
 gulp.task('test-node', function (cb) {
-    gulp.src('./front/test/**/*.spec.js')
+    gulp.src('./test/**/*.spec.js')
         .pipe(mocha({reporter: 'spec'}).on('end', function () {
             cb();
         }))
 
 });
 
-gulp.task('build', ['build-couchdb', 'build-test']);
+gulp.task('build', ['build-api', 'build-test']);
 
 gulp.task('test', function (cb) {
     // Ran in series due to using the same couchdb database.
@@ -113,37 +128,38 @@ gulp.task('open-tests', function () {
     open('http://localhost:7682/front/test');
 });
 
-gulp.task('compile', ['build-couchdb'], function () {
-    return gulp.src('./front/build/bundle.js')
+gulp.task('compile', ['build-api'], function () {
+    return gulp.src(API_BUNDLE_PATH)
         .pipe(uglify())
-        .pipe(rename('bundle.min.js'))
-        .pipe(gulp.dest('./front/build/'));
+        .pipe(rename(MINIFIED_API_BUNDLE))
+        .pipe(gulp.dest(BUILD_DIR));
 });
 
 gulp.task('dist', ['compile'], function () {
-    gulp.src('./front/build/bundle.js')
-        .pipe(rename('couch.js'))
-        .pipe(gulp.dest('./dist'));
-    gulp.src('./front/build/bundle.min.js')
-        .pipe(rename('couch.min.js'))
-        .pipe(gulp.dest('./dist'));
+    gulp.src(API_BUNDLE_PATH)
+        .pipe(rename(DIST_BUNDLE_NAME))
+        .pipe(gulp.dest(DIST_DIR));
+    gulp.src(MINIFIED_API_BUNDLE_PATH)
+        .pipe(rename(DIST_MINIFIED_BUNDLE_NAME))
+        .pipe(gulp.dest(DIST_DIR));
 });
+
 
 
 gulp.task('watch', ['test-first-time', 'build'], function () {
-    gulp.watch(['front/src/**/*.js'], ['test', 'build-couchdb']);
-    gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['test']);
+    gulp.watch(WATCH_JS, ['test', 'build-couchdb']);
+    gulp.watch(WATCH_TEST_JS.concat(WATCH_TEST_HTML), ['test']);
 });
 
 gulp.task('watch-browser', ['test-server', 'build-test', 'open-tests'], function () {
-    gulp.watch(['front/src/**/*.js'], ['build-test']);
-    gulp.watch(['front/test/**/*.js', 'front/test/**/*.html'], ['build-test']);
+    gulp.watch(WATCH_JS, ['build-test']);
+    gulp.watch(WATCH_TEST_JS.concat(WATCH_TEST_HTML), ['build-test']);
 });
 
 
 gulp.task('watch-node', ['test-server', 'test-node'], function () {
-    gulp.watch(['front/src/**/*.js'], ['test-node']);
-    gulp.watch(['front/test/**/*.js'], ['test-node']);
+    gulp.watch(WATCH_JS, ['test-node']);
+    gulp.watch(WATCH_TEST_JS, ['test-node']);
 });
 
 gulp.task('watch-example', ['build-example', 'sass', 'fonts'], function () {
