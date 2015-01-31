@@ -2,18 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="55c7b0b1-09c2-43bd-b32f-08409449b7b0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/app/App.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/home/Home.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/home/Login.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/app/Profile.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/home/Signup.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/app/Stream.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/components/ValidatedFormMixin.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/components/ValidatedInput.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/example/src/components/ValidatedInputError.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example/src/app.jsx" afterPath="$PROJECT_DIR$/example/src/app.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example/src/data.jsx" afterPath="$PROJECT_DIR$/example/src/data.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="couchdb-as-a-backend.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -46,8 +35,8 @@
           <file leaf-file-name="app.jsx" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/example/src/app.jsx">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.14403293" vertical-offset="0" max-vertical-offset="1275">
-                  <caret line="7" column="23" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.30864197" vertical-offset="0" max-vertical-offset="1140">
+                  <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
                   </folding>
@@ -72,8 +61,8 @@
           <file leaf-file-name="app.jsx" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/example/src/app.jsx">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="1275">
-                  <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="630" max-vertical-offset="1140">
+                  <caret line="52" column="0" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -214,7 +203,6 @@
         <option value="$PROJECT_DIR$/example/src/flux.jsx" />
         <option value="$PROJECT_DIR$/example/src/components/ValidatedInputError.jsx" />
         <option value="$PROJECT_DIR$/example/src/components/ValidatedFormMixin.jsx" />
-        <option value="$PROJECT_DIR$/example/src/app.jsx" />
         <option value="$PROJECT_DIR$/example/src/app/Stream.jsx" />
         <option value="$PROJECT_DIR$/example/src/home/Login.jsx" />
         <option value="$PROJECT_DIR$/example/src/components/ValidatedInput.jsx" />
@@ -223,6 +211,7 @@
         <option value="$PROJECT_DIR$/example/src/data.jsx" />
         <option value="$PROJECT_DIR$/example/src/app/Profile.jsx" />
         <option value="$PROJECT_DIR$/example/src/home/Signup.jsx" />
+        <option value="$PROJECT_DIR$/example/src/app.jsx" />
       </list>
     </option>
   </component>
@@ -1226,18 +1215,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/example/src/app.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="1275">
-          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/example/src/home/Signup.jsx">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.0164609" vertical-offset="921" max-vertical-offset="1650">
           <caret line="12" column="31" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="31" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/src/app.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.30864197" vertical-offset="0" max-vertical-offset="1140">
+          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
