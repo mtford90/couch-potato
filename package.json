@@ -2,9 +2,10 @@
   "name": "couch-potato",
   "version": "0.0.1",
   "description": "",
-  "main": "sofa/sofa.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./index.js"
   },
   "author": "",
   "license": "MIT",
@@ -38,5 +39,9 @@
     "optimist": "^0.6.1",
     "path": "^0.11.14",
     "yargs": "^1.3.3"
+  },
+  "preferGlobal": "true",
+  "bin": {
+    "sofa": "sofa/index.js"
   }
 }

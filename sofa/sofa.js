@@ -1,15 +1,84 @@
 /**
- * This script pulls together sofa into a command line tool after being compiled browserify.
- * Browserify is usually used for pulling together commonjs scripts for the browser however it also
- * works nicely for producing a relocatable node script.
- * By doing this the sofa command line tool can then be used anywhere :)
+ * Couch Potato command-line tools.
+ * @module tools
  */
-var yargs = require('yargs'),
-    sofa = require('./index');
+(function () {
+    'use strict';
 
-var argv = yargs
-    .default('x', 10)
-    .default('y', 10)
-    .argv;
+    var sofaUtil = require('./util'),
+        util = require('../lib/util'),
+        async = require('async'),
+        potato = require('../potato'),
+        merge = require('merge');
 
-console.log('argv', argv);
+    /**
+     * Merges provided options with default options.
+     * @param {Object} opts
+     */
+    function getOpts(opts) {
+        return merge({
+            cleanUp: false
+        }, opts);
+    }
+
+    /**
+     *
+     * @param opts
+     * @param [opts.cleanUp] - Whether or not to remove design docs that are no longer present in the config file. Defaults to false
+     *
+     */
+    module.exports = function (opts) {
+        opts = getOpts(opts);
+        return {
+            /**
+             * Load and verify a couch potato config file (which is just a javascript module that follows a
+             * particular structure)
+             * @param {String|Object} pathOrConfig
+             * @returns {*}
+             */
+            loadConfig: function (pathOrConfig) {
+                var config;
+                if (util.isString(pathOrConfig)) {
+                    config = require(pathOrConfig);
+                }
+                else config = pathOrConfig;
+                this.verifyConfig(config);
+                return config;
+            },
+            /**
+             * Throws an error if invalid couch potato config is detected.
+             * @param {Object} config
+             */
+            verifyConfig: function (config) {
+
+            },
+            /**
+             *
+             * @param {Object} databases
+             * @param {Function} [cb]
+             */
+            configureDatabases: function (databases, cb) {
+                cb = cb || function () {
+                };
+                var tasks = Object.keys(databases).map(function (dbName) {
+                    var dbConfig = databases[dbName];
+                    var couch = potato.couchdb();
+                    return function (done) {
+                        couch.createOrUpdateDatabase(merge({database: dbName}, dbConfig), done);
+                    }.bind(this);
+                }.bind(this));
+                async.parallel(tasks, cb);
+            },
+            /**
+             * Given a couch potato configuration object, configures CouchDB accordingly.
+             * @param {Object} config
+             * @param {Function} [cb]
+             */
+            configureCouch: function (config, cb) {
+                cb = cb || function () {};
+                var databases = config.databases || {};
+                this.configureDatabases(databases, cb);
+            }
+        }
+    }
+})();
