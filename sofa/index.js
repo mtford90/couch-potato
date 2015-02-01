@@ -7,12 +7,14 @@
  * By doing this the sofa command line tool can then be used anywhere :)
  */
 
-var yargs = require('yargs'),
-    sofa = require('./sofa');
-
-var argv = yargs
-    .default('x', 10)
-    .default('y', 10)
+var argv = require('yargs')
+    .usage('Apply a couch potato config to a CouchDB instance.\nUsage: $0')
+    .example('$0 -c', 'cp.conf.js')
+    .describe('c', 'Specify config file')
+    .alias('c', 'config')
+    .demand('c')
     .argv;
 
 console.log('argv', argv);
+
+require('./sofa')(argv).loadConfig(argv.config);

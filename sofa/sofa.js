@@ -15,7 +15,7 @@
      * Merges provided options with default options.
      * @param {Object} opts
      */
-    function getOpts(opts) {
+    function mergeOptsWithDefaults(opts) {
         return merge({
             cleanUp: false
         }, opts);
@@ -24,11 +24,9 @@
     /**
      *
      * @param opts
-     * @param [opts.cleanUp] - Whether or not to remove design docs that are no longer present in the config file. Defaults to false
-     *
      */
     module.exports = function (opts) {
-        opts = getOpts(opts);
+        opts = mergeOptsWithDefaults(opts);
         return {
             /**
              * Load and verify a couch potato config file (which is just a javascript module that follows a
