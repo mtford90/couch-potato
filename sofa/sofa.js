@@ -12,22 +12,10 @@
         merge = require('merge');
 
     /**
-     * Merges provided options with default options.
-     * @param {Object} opts
-     */
-    function mergeOptsWithDefaults(opts) {
-        return merge({
-            cleanUp: false
-
-        }, opts);
-    }
-
-    /**
      *
      * @param opts
      */
     module.exports = function (opts) {
-        opts = mergeOptsWithDefaults(opts);
         return {
             /**
              * Load and verify a couch potato config file (which is just a javascript module that follows a
