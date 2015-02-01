@@ -1,8 +1,8 @@
 {
-  "name": "couchdb-as-a-backend",
+  "name": "couch-potato",
   "version": "0.0.1",
   "description": "",
-  "main": "api.js",
+  "main": "sofa/sofa.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

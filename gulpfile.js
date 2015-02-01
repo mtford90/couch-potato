@@ -5,7 +5,6 @@ var gulp = require('gulp'),
     through = require('through2'),
     runSequence = require('run-sequence'),
     rename = require('gulp-rename'),
-    insert = require('gulp-insert'),
     mocha = require('gulp-mocha'),
     uglify = require('gulp-uglify'),
     source = require('vinyl-source-stream');
@@ -15,23 +14,15 @@ var BUILD_DIR = './build/',
     NODE_LIBS = ['url', 'http'],
     TEST_BUNDLE = 'test-bundle.js',
     POTATO_ROOT = './potato.js',
-    SOFA_ROOT = './sofa/index.js',
     TEST_ROOT = './test/tests.js',
     POTATO_BUNDLE_NAME = 'potato.js',
     POTATO_MINIFIED_BUNDLE_NAME = 'potato.min.js',
-    SOFA_BUNDLE_NAME = 'sofa.js',
-    SOFA_MINIFIED_BUNDLE_NAME = 'sofa.min.js',
-    SOFA_SCRIPT_NAME = 'sofa',
     POTATO_BUNDLE_PATH = BUILD_DIR + POTATO_BUNDLE_NAME,
-    SOFA_BUNDLE_PATH = BUILD_DIR + SOFA_BUNDLE_NAME,
     POTATO_MINIFIED_BUNDLE_PATH = BUILD_DIR + POTATO_MINIFIED_BUNDLE_NAME,
-    SOFA_MINIFIED_BUNDLE_PATH = BUILD_DIR + SOFA_MINIFIED_BUNDLE_NAME,
     DIST_DIR = './dist',
     WATCH_JS = ['lib/**/*.js', POTATO_BUNDLE_NAME, 'sofa/**/*.js'],
     WATCH_TEST_JS = ['test/**/*.spec.js'],
-    SHABANG = '#!/usr/bin/env node',
     WATCH_TEST_HTML = ['test/**/*.html'];
-
 
 function swallowError(error) {
     console.error(error.toString());
@@ -63,22 +54,6 @@ gulp.task('build-potato', function () {
         .pipe(connect.reload());
 });
 
-gulp.task('build-sofa', function () {
-    var b = browserify({debug: true});
-    b.add(SOFA_ROOT);
-    return b.bundle()
-        .pipe(source(SOFA_BUNDLE_NAME))
-        .pipe(gulp.dest(BUILD_DIR));
-});
-
-gulp.task('build-sofa-cmd', function () {
-    return browserify('./sofa/sofa.js', {debug: true})
-        .bundle()
-        .pipe(source('sofa'))
-        .pipe(insert.prepend(SHABANG + '\n'))
-        .pipe(gulp.dest(BUILD_DIR));
-});
-
 gulp.task('build-test', function () {
     var b = browserify({debug: true});
     b.transform(removeNodeDeps);
@@ -96,7 +71,7 @@ gulp.task('test-node', function () {
         .on('error', swallowError)
 });
 
-gulp.task('build', ['build-potato', 'build-test', 'build-sofa', 'build-sofa-cmd']);
+gulp.task('build', ['build-potato', 'build-test']);
 
 gulp.task('test', function (cb) {
     // Ran in series due to using the same couchdb database.
@@ -132,17 +107,10 @@ gulp.task('compile-potato', ['build-potato'], function () {
         .pipe(gulp.dest(BUILD_DIR));
 });
 
-gulp.task('compile-sofa', ['build-sofa'], function () {
-    return gulp.src(SOFA_BUNDLE_PATH)
-        .pipe(uglify())
-        .pipe(rename(SOFA_MINIFIED_BUNDLE_NAME))
-        .pipe(gulp.dest(BUILD_DIR));
-});
-
-gulp.task('compile', ['compile-potato', 'compile-sofa']);
+gulp.task('compile', ['compile-potato']);
 
 gulp.task('dist', ['compile'], function () {
-    return gulp.src([POTATO_BUNDLE_PATH, POTATO_MINIFIED_BUNDLE_PATH, SOFA_BUNDLE_PATH, SOFA_MINIFIED_BUNDLE_PATH])
+    return gulp.src([POTATO_BUNDLE_PATH, POTATO_MINIFIED_BUNDLE_PATH])
         .pipe(gulp.dest(DIST_DIR));
 });
 
