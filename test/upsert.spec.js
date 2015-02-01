@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-    couchdb = require('../api').couchdb,
+    couchdb = require('../potato').couchdb,
     prettyJson = require('./util').prettyJson;
 
 

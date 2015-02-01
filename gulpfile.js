@@ -12,22 +12,27 @@ var gulp = require('gulp'),
 // Config
 var BUILD_DIR = './build/',
     NODE_LIBS = ['url', 'http'],
-    API_BUNDLE = 'bundle.js',
     TEST_BUNDLE = 'test-bundle.js',
-    MINIFIED_API_BUNDLE = 'bundle.min.js',
-    API_BUNDLE_PATH = BUILD_DIR + API_BUNDLE,
-    API_ROOT = './api.js',
+
+    POTATO_ROOT = './potato.js',
+    SOFA_ROOT = './sofa/index.js',
     TEST_ROOT = './test/tests.js',
-    MINIFIED_API_BUNDLE_PATH = BUILD_DIR + MINIFIED_API_BUNDLE,
-    DIST_BUNDLE_NAME = 'couchPotato.js',
+    POTATO_BUNDLE_NAME = 'potato.js',
+    POTATO_MINIFIED_BUNDLE_NAME = 'potato.min.js',
+    SOFA_BUNDLE_NAME = 'sofa.js',
+    SOFA_MINIFIED_BUNDLE_NAME = 'sofa.min.js',
+    SOFA_SCRIPT_NAME = 'sofa',
+    POTATO_BUNDLE_PATH = BUILD_DIR + POTATO_BUNDLE_NAME,
+    SOFA_BUNDLE_PATH = BUILD_DIR + SOFA_BUNDLE_NAME,
+    POTATO_MINIFIED_BUNDLE_PATH = BUILD_DIR + POTATO_MINIFIED_BUNDLE_NAME,
+    SOFA_MINIFIED_BUNDLE_PATH = BUILD_DIR + SOFA_MINIFIED_BUNDLE_NAME,
     DIST_DIR = './dist',
-    DIST_MINIFIED_BUNDLE_NAME = 'couchPotato.min.js',
-    WATCH_JS = ['lib/**/*.js', 'api.js'],
+    WATCH_JS = ['lib/**/*.js', POTATO_BUNDLE_NAME, 'sofa/**/*.js'],
     WATCH_TEST_JS = ['test/**/*.spec.js'],
-    WATCH_TEST_HTML = ['front/test/**/*.html'];
+    WATCH_TEST_HTML = ['test/**/*.html'];
 
 
-function swallowError (error) {
+function swallowError(error) {
     console.error(error.toString());
     this.emit('end');
 }
@@ -47,14 +52,22 @@ function removeNodeDeps(file) {
     });
 }
 
-gulp.task('build-api', function () {
+gulp.task('build-potato', function () {
     var b = browserify({debug: true});
     b.transform(removeNodeDeps);
-    b.add(API_ROOT);
+    b.add(POTATO_ROOT);
     return b.bundle()
-        .pipe(source(API_BUNDLE))
+        .pipe(source(POTATO_BUNDLE_NAME))
         .pipe(gulp.dest(BUILD_DIR))
         .pipe(connect.reload());
+});
+
+gulp.task('build-sofa', function () {
+    var b = browserify({debug: true});
+    b.add(SOFA_ROOT);
+    return b.bundle()
+        .pipe(source(SOFA_BUNDLE_NAME))
+        .pipe(gulp.dest(BUILD_DIR));
 });
 
 gulp.task('build-test', function () {
@@ -74,7 +87,7 @@ gulp.task('test-node', function () {
         .on('error', swallowError)
 });
 
-gulp.task('build', ['build-api', 'build-test']);
+gulp.task('build', ['build-potato', 'build-test']);
 
 gulp.task('test', function (cb) {
     // Ran in series due to using the same couchdb database.
@@ -103,19 +116,24 @@ gulp.task('open-tests', function () {
     open('http://localhost:7682/front/test');
 });
 
-gulp.task('compile', ['build-api'], function () {
-    return gulp.src(API_BUNDLE_PATH)
+gulp.task('compile-potato', ['build-potato'], function () {
+    return gulp.src(POTATO_BUNDLE_PATH)
         .pipe(uglify())
-        .pipe(rename(MINIFIED_API_BUNDLE))
+        .pipe(rename(POTATO_MINIFIED_BUNDLE_NAME))
         .pipe(gulp.dest(BUILD_DIR));
 });
 
+gulp.task('compile-sofa', ['build-sofa'], function () {
+    return gulp.src(SOFA_BUNDLE_PATH)
+        .pipe(uglify())
+        .pipe(rename(SOFA_MINIFIED_BUNDLE_NAME))
+        .pipe(gulp.dest(BUILD_DIR));
+});
+
+gulp.task('compile', ['compile-potato', 'compile-sofa']);
+
 gulp.task('dist', ['compile'], function () {
-    gulp.src(API_BUNDLE_PATH)
-        .pipe(rename(DIST_BUNDLE_NAME))
-        .pipe(gulp.dest(DIST_DIR));
-    gulp.src(MINIFIED_API_BUNDLE_PATH)
-        .pipe(rename(DIST_MINIFIED_BUNDLE_NAME))
+    return gulp.src([POTATO_BUNDLE_PATH, POTATO_MINIFIED_BUNDLE_PATH, SOFA_BUNDLE_PATH, SOFA_MINIFIED_BUNDLE_PATH])
         .pipe(gulp.dest(DIST_DIR));
 });
 
