@@ -20,7 +20,7 @@ var BUILD_DIR = './build/',
     POTATO_BUNDLE_PATH = BUILD_DIR + POTATO_BUNDLE_NAME,
     POTATO_MINIFIED_BUNDLE_PATH = BUILD_DIR + POTATO_MINIFIED_BUNDLE_NAME,
     DIST_DIR = './dist',
-    WATCH_JS = ['lib/**/*.js', POTATO_BUNDLE_NAME, 'sofa/**/*.js'],
+    WATCH_JS = ['lib/**/*.js', POTATO_BUNDLE_NAME, 'sofa/**/*.js', 'testUtil.js'],
     WATCH_TEST_JS = ['test/**/*.spec.js'],
     WATCH_TEST_HTML = ['test/**/*.html'];
 
@@ -114,7 +114,6 @@ gulp.task('dist', ['compile'], function () {
         .pipe(gulp.dest(DIST_DIR));
 });
 
-
 gulp.task('watch', ['test-first-time', 'build'], function () {
     gulp.watch(WATCH_JS, ['test', 'build-couchdb']);
     gulp.watch(WATCH_TEST_JS.concat(WATCH_TEST_HTML), ['test']);
@@ -124,7 +123,6 @@ gulp.task('watch-browser', ['test-server', 'build-test', 'open-tests'], function
     gulp.watch(WATCH_JS, ['build-test']);
     gulp.watch(WATCH_TEST_JS.concat(WATCH_TEST_HTML), ['build-test']);
 });
-
 
 gulp.task('watch-node', ['test-server', 'test-node'], function () {
     gulp.watch(WATCH_JS, ['test-node']);

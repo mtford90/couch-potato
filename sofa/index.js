@@ -18,7 +18,7 @@ var options = {
         required: false,
         description: 'Specify host of couchdb instance',
         default: 'localhost'
-    },  
+    },
     port: {
         short: 'p',
         required: false,
@@ -32,6 +32,7 @@ var examples = [
     ['$0 -h', 'localhost'],
     ['$0 -c', 'cp.conf.js']
 ];
+
 
 var yargs = require('yargs')
     .usage('Apply a couch potato config to a CouchDB instance.\nUsage: $0');
@@ -56,4 +57,9 @@ examples.forEach(function (example) {
 
 var argv = yargs.argv;
 
-require('./sofa')(argv).loadConfig(argv.config);
+var sofa = require('./sofa');
+sofa.configureCouch(argv.config);
+
+
+
+module.exports = sofa;

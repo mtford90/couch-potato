@@ -9,63 +9,68 @@
         util = require('../lib/util'),
         async = require('async'),
         potato = require('../potato'),
+        path = require('path'),
+        winston = require('winston'),
         merge = require('merge');
 
-    /**
-     *
-     * @param opts
-     */
-    module.exports = function (opts) {
-        return {
-            /**
-             * Load and verify a couch potato config file (which is just a javascript module that follows a
-             * particular structure)
-             * @param {String|Object} pathOrConfig
-             * @returns {*}
-             */
-            loadConfig: function (pathOrConfig) {
-                var config;
-                if (util.isString(pathOrConfig)) {
-                    config = require(pathOrConfig);
-                }
-                else config = pathOrConfig;
-                this.verifyConfig(config);
-                return config;
-            },
-            /**
-             * Throws an error if invalid couch potato config is detected.
-             * @param {Object} config
-             */
-            verifyConfig: function (config) {
-
-            },
-            /**
-             *
-             * @param {Object} databases
-             * @param {Function} [cb]
-             */
-            configureDatabases: function (databases, cb) {
-                cb = cb || function () {
-                };
-                var tasks = Object.keys(databases).map(function (dbName) {
-                    var dbConfig = databases[dbName];
-                    var couch = potato.couchdb();
-                    return function (done) {
-                        couch.createOrUpdateDatabase(merge({database: dbName}, dbConfig), done);
-                    }.bind(this);
-                }.bind(this));
-                async.parallel(tasks, cb);
-            },
-            /**
-             * Given a couch potato configuration object, configures CouchDB accordingly.
-             * @param {Object} config
-             * @param {Function} [cb]
-             */
-            configureCouch: function (config, cb) {
-                cb = cb || function () {};
-                var databases = config.databases || {};
-                this.configureDatabases(databases, cb);
+    module.exports = {
+        /**
+         * Load and verify a couch potato config file (which is just a javascript module that follows a
+         * particular structure)
+         * @param {String|Object} pathOrConfig
+         * @returns {*}
+         */
+        loadConfig: function (pathOrConfig) {
+            var config;
+            if (util.isString(pathOrConfig)) {
+                var splt = pathOrConfig.split('.');
+                if (splt[splt.length - 1] == 'js') pathOrConfig = pathOrConfig.slice(0, pathOrConfig.length - 3);
+                console.log('path', pathOrConfig);
+                var resolvedPath = path.resolve(pathOrConfig);
+                console.log('resolvedPath', resolvedPath);
+                config = require(resolvedPath);
             }
+            else config = pathOrConfig;
+            this.verifyConfig(config);
+            return config;
+        },
+        /**
+         * Throws an error if invalid couch potato config is detected.
+         * @param {Object} config
+         */
+        verifyConfig: function (config) {
+
+        },
+        /**
+         *
+         * @param {Object} databases
+         * @param {Function} [cb]
+         */
+        configureDatabases: function (databases, cb) {
+            cb = cb || function () {
+            };
+            var tasks = Object.keys(databases).map(function (dbName) {
+                var dbConfig = databases[dbName];
+                var couch = potato.couchdb();
+                return function (done) {
+                    winston.info('Creating ' + dbName);
+                    couch.createOrUpdateDatabase(merge({database: dbName}, dbConfig), done);
+                }.bind(this);
+            }.bind(this));
+            async.parallel(tasks, cb);
+        },
+        /**
+         * Given a couch potato configuration object, configures CouchDB accordingly.
+         * @param {Object|String|string} config
+         * @param {Function} [cb]
+         */
+        configureCouch: function (config, cb) {
+            config = this.loadConfig(config);
+            console.log('config', config);
+            cb = cb || function () {
+            };
+            var databases = config.databases || {};
+            this.configureDatabases(databases, cb);
         }
     }
 })();

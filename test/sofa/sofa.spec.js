@@ -5,7 +5,7 @@ var assert = require('chai').assert,
 
 describe('sofa', function () {
     var potato = require('../../potato').couchdb(),
-        sofa = require('../../sofa/sofa')();
+        sofa = require('../../sofa/sofa');
 
     beforeEach(function (done) {
         potato.reset(done);
