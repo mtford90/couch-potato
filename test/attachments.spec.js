@@ -56,7 +56,7 @@ describe('attachments', function () {
                 assert.notOk(err);
                 couch.putAttachment({
                     doc: doc,
-                    url: 'http://localhost:7682/front/test/data/blah.png',
+                    url: 'http://localhost:7682/test/data/blah.png',
                     attName: 'myAttr'
                 }, function (err) {
                     assert.notOk(err);

@@ -8,6 +8,7 @@
         util = require('./lib/util'),
         CouchError = require('./lib/CouchError'),
         constants = require('./lib/constants'),
+        _ = require('nimble'),
         EventEmitter = require('events').EventEmitter;
 
     /**
@@ -62,7 +63,10 @@
                 var __ret = util.optsOrCallback(optsOrCb, cb),
                     opts = __ret.opts;
                 cb = __ret.cb;
-                this.deleteAllDatabases(opts, function (err) {
+                _.series([
+                    this.deleteAllDatabases.bind(this, opts),
+                    this.deleteAllUsers.bind(this)
+                ], function (err) {
                     if (!err) this.logout();
                     cb(err);
                 }.bind(this));

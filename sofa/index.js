@@ -52,28 +52,7 @@
             verifyConfig: function (config) {
 
             },
-            __logError: function (prelude, message) {
-                console.error(prelude + ': ' + message);
-            },
             /**
-             * Log errors to console, depending on the kind of error.
-             * @param prelude
-             * @param err
-             * @private
-             */
-            _logError: function (prelude, err) {
-                if (err) {
-                    if (err.isCouchError) {
-                        this.__logError(prelude, '(' + err.error + ') ' + err.reason);
-                    }
-                    else if (err.isHttpError) {
-                        this.__logError(prelude, err.status + ': ' + JSON.stringify(err.responseData));
-                    }
-                    else {
-                        this.__logError(prelude, err.message);
-                    }
-                }
-            }, /**
              *
              * @param {Object} databases
              * @param {Function} [cb]
@@ -85,10 +64,7 @@
                     var dbConfig = databases[dbName];
                     var couch = potato.couchdb();
                     return function (done) {
-                        couch.createOrUpdateDatabase(merge({database: dbName}, dbConfig), function (err) {
-                            if (err) this._logError('Error creating database "' + dbName + '"', err);
-                            done(err);
-                        }.bind(this));
+                        couch.createOrUpdateDatabase(merge({database: dbName}, dbConfig), done);
                     }.bind(this);
                 }.bind(this));
                 async.parallel(tasks, cb);

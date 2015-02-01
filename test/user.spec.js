@@ -75,8 +75,7 @@ describe('User management', function () {
         });
 
         it('no user exists', function (done) {
-            couch.getUser('mike', function (err, doc) {
-                assert.notOk(doc);
+            couch.getUser('mike', function (err, data) {
                 assert.ok(err.isHttpError);
                 done();
             });
