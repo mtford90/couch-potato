@@ -18,6 +18,7 @@
     function mergeOptsWithDefaults(opts) {
         return merge({
             cleanUp: false
+
         }, opts);
     }
 

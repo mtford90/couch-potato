@@ -7,14 +7,34 @@
  * By doing this the sofa command line tool can then be used anywhere :)
  */
 
-var argv = require('yargs')
-    .usage('Apply a couch potato config to a CouchDB instance.\nUsage: $0')
-    .example('$0 -c', 'cp.conf.js')
-    .describe('c', 'Specify config file')
-    .alias('c', 'config')
-    .demand('c')
-    .argv;
+var options = {
+    config: {
+        short: 'c',
+        required: true,
+        examples: [
+            ['$0 -c', 'cp.conf.js']
+        ],
+        description: 'Specify config file'
+    }
+};
 
-console.log('argv', argv);
+var yargs = require('yargs')
+    .usage('Apply a couch potato config to a CouchDB instance.\nUsage: $0');
+
+Object.keys(options).forEach(function (name) {
+    var conf = options[name],
+        short = conf.short,
+        required = conf.required,
+        description = conf.description,
+        examples = conf.examples || [];
+    yargs.alias(short, name);
+    if (description) yargs.describe(short, description);
+    if (required) yargs.demand(short);
+    examples.forEach(function (example) {
+        yargs.example.apply(yargs, example);
+    });
+});
+
+var argv = yargs.argv;
 
 require('./sofa')(argv).loadConfig(argv.config);
