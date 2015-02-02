@@ -3,13 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="55c7b0b1-09c2-43bd-b32f-08409449b7b0" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/submodules/rcouch" afterPath="$PROJECT_DIR$/submodules/rcouch" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/admin.js" afterPath="$PROJECT_DIR$/lib/admin.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/bower_components.xml" afterPath="$PROJECT_DIR$/.idea/libraries/bower_components.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/couch-potato.iml" afterPath="$PROJECT_DIR$/.idea/couch-potato.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/node_modules.xml" afterPath="$PROJECT_DIR$/.idea/libraries/node_modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/testUtil.js" afterPath="$PROJECT_DIR$/testUtil.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/testUtil/testutils.spec.js" afterPath="$PROJECT_DIR$/test/testUtil/testutils.spec.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -39,15 +32,17 @@
     <favorites_list name="couchdb-as-a-backend" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
+    <splitter split-orientation="horizontal" split-proportion="0.5273292">
       <split-first>
         <leaf>
           <file leaf-file-name="testutils.spec.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/test/testUtil/testutils.spec.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.32553408" vertical-offset="0" max-vertical-offset="983">
-                  <caret line="20" column="7" selection-start-line="20" selection-start-column="7" selection-end-line="20" selection-end-column="7" />
-                  <folding />
+                <state vertical-scroll-proportion="0.5534079" vertical-offset="0" max-vertical-offset="983">
+                  <caret line="34" column="50" selection-start-line="34" selection-start-column="50" selection-end-line="34" selection-end-column="50" />
+                  <folding>
+                    <element signature="n#!!doc" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -59,8 +54,8 @@
           <file leaf-file-name="testUtil.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/testUtil.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.11546392" vertical-offset="0" max-vertical-offset="1776">
-                  <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.7360825" vertical-offset="406" max-vertical-offset="1376">
+                  <caret line="70" column="10" selection-start-line="70" selection-start-column="10" selection-end-line="70" selection-end-column="10" />
                   <folding />
                 </state>
               </provider>
@@ -134,8 +129,8 @@
         <option value="$PROJECT_DIR$/lib/admin.js" />
         <option value="$PROJECT_DIR$/../couch-potato-example/test.js" />
         <option value="$PROJECT_DIR$/../couch-potato-example/cp.conf.js" />
-        <option value="$PROJECT_DIR$/test/testUtil/testutils.spec.js" />
         <option value="$PROJECT_DIR$/testUtil.js" />
+        <option value="$PROJECT_DIR$/test/testUtil/testutils.spec.js" />
       </list>
     </option>
   </component>
@@ -641,7 +636,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="0" width="1920" height="1080" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="FLOATING" visible="false" weight="0.32937685" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" x="640" y="469" width="136" height="37" />
@@ -653,7 +648,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16145833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16145833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32838774" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1006,19 +1001,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/testUtil/testutils.spec.js">
+    <entry file="file://$PROJECT_DIR$/testUtil.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32553408" vertical-offset="0" max-vertical-offset="983">
-          <caret line="20" column="7" selection-start-line="20" selection-start-column="7" selection-end-line="20" selection-end-column="7" />
+        <state vertical-scroll-proportion="0.7360825" vertical-offset="406" max-vertical-offset="1376">
+          <caret line="70" column="10" selection-start-line="70" selection-start-column="10" selection-end-line="70" selection-end-column="10" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/testUtil.js">
+    <entry file="file://$PROJECT_DIR$/test/testUtil/testutils.spec.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.11546392" vertical-offset="0" max-vertical-offset="1776">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
+        <state vertical-scroll-proportion="0.5534079" vertical-offset="0" max-vertical-offset="983">
+          <caret line="34" column="50" selection-start-line="34" selection-start-column="50" selection-end-line="34" selection-end-column="50" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

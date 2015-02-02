@@ -21,31 +21,24 @@ describe.only('Test utils', function () {
     });
 
     describe('map/reduce', function () {
-        it('map only should return a key/value object', function () {
-            var mapReducer = testUtil.mapReduce(
-                function (doc) {
-                    emit(doc._id, doc);
-                }
-            );
-            var results = mapReducer.map([{_id: 1}, {_id: 2}]);
-            assert.equal(results[1].length, 1);
-            assert.equal(results[2].length, 1);
-            assert.equal(results[1][0]._id, 1);
-            assert.equal(results[2][0]._id, 2);
-        });
-        it('map/reduce', function () {
+        it('map/reduce', function (done) {
             var mapReducer = testUtil.mapReduce(
                 function (doc) {
                     emit(doc.age, doc);
                 },
                 function (key, values) {
                     return values.length;
+                },
+                function (err, query) {
+                    query(function (err, resp) {
+                        assert.notOk(err);
+                        console.log('resp', resp);
+                        assert.ok(resp);
+                        done();
+                    })
+
                 }
             );
-            var docs = [{_id: 1}, {_id: 2}];
-            var results = mapReducer.map(docs, {
-                group: false
-            });
         });
     });
 

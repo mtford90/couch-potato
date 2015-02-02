@@ -5,6 +5,7 @@
 (function () {
     var EventEmitter = require('events').EventEmitter,
         merge = require('merge'),
+        PouchDB = require('pouchdb'),
         util = require('./lib/util');
 
     'use strict';
@@ -42,65 +43,39 @@
         return wrappedMapFunc;
     }
 
-    /**
-     * A mock of CouchDB's map/reduce functionality. Allows testing of map/reduce queries using Mocha etc.
-     * @param {Function} mapFunc
-     * @param {Function} [reduceFunc]
-     */
-    function mapReduce(mapFunc, reduceFunc) {
-        mapFunc = map(mapFunc);
-        var emitter = new EventEmitter();
-        var rows = [],
-            rereduce = [],
-            keys = {};
-        return merge(emitter, {
-            /**
-             * Map data into your map/reduce view
-             * @param data - An array of objects & arrays, where arrays are treated as reductions and hence passed with rereduce=true
-             * @param opts
-             * @param opts.group
-             */
-            map: function (data, opts) {
-                mapFunc.on('emit', function (row) {
-                    if (!keys[row.key]) keys[row.key] = [];
-                    keys[row.key].push(row);
-                    rows.push(row);
-                });
-                data.forEach(function (datum) {
-                    if (Array.isArray(datum)) rereduce.push(datum);
-                    else mapFunc(datum);
-                });
-                var res;
-                if (reduceFunc) {
-                    var reducedRows = [];
-                    Object.keys(keys).forEach(function (key) {
-                        var rows = keys[key];
-                        var pairs = [],
-                            value = [];
-                        rows.forEach(function (row) {
-                            pairs.push([row.key, row.id]);
-                            value.push(row.value);
-                        });
-                    });
+    var guid = (function () {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
 
-                    res = {
-                        rows: reducedRows
-                    };
-                }
-                else {
-                    res = {
-                        total_rows: data.length,
-                        rows: rows,
-                        offset: 0
-                    };
-                }
-                return res;
-            }
-        });
-    }
+        return function () {
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        };
+    })();
+
 
     module.exports = {
         map: map,
-        mapReduce: mapReduce
+        mapReduce: function (mapFunc, reduceFunc, cb) {
+            var db = new PouchDB(guid(), {db: require('memdown')});
+            var view = {
+                map: mapFunc.toString()
+            };
+            if (reduceFunc) view.reduce = reduceFunc.toString();
+            var myDesignDoc = {
+                _id: '_design/view',
+                views: {
+                    view: view
+                }
+            };
+            return db.put(myDesignDoc, function (err) {
+                if (!err) {
+                    cb(null, db.query.bind(db, 'view'));
+                } else cb(err);
+            });
+        }
     };
 })();
