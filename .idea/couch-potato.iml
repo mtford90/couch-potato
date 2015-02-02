@@ -16,5 +16,6 @@
     <orderEntry type="library" name="couchdb node_modules" level="project" />
     <orderEntry type="library" name="couchdb bower_components" level="project" />
     <orderEntry type="module" module-name="couch-potato-example" />
+    <orderEntry type="library" name="Node.js v0.10.28 Core Modules" level="application" />
   </component>
 </module>

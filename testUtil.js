@@ -14,19 +14,32 @@
      * easier.
      * @param {Function} mapFunc
      */
-    function wrapMap(mapFunc) {
+    function map(mapFunc) {
         var emitter = new EventEmitter();
         //noinspection JSUnusedLocalSymbols
-        var emit = emitter.emit.bind(emitter, 'emit');
-
-        // The reevaluation of mapFunc ensures that 'emit' is now within its environment.
-        eval('mapFunc = ' + mapFunc.toString());
-        console.log(mapFunc);
-        mapFunc.on = emitter.on.bind(emitter);
-        mapFunc.once = emitter.once.bind(emitter);
-        mapFunc.removeListener = emitter.removeListener.bind(emitter);
-        mapFunc.removeAllListeners = emitter.removeAllListeners.bind(emitter);
-        return mapFunc;
+        var wrappedMapFunc = function (doc) {
+            var emit = function (key, value) {
+                emitter.emit('emit', {id: doc._id, key: key, value: value});
+            };
+            // The reevaluation of mapFunc ensures that 'emit' is now within its environment.
+            // Eval is evil yada-yada-yada but this is just for testing.
+            var strFunc = mapFunc.toString();
+            try {
+                eval('var mapFunc = ' + strFunc);
+            }
+            catch (e) {
+                if (e instanceof SyntaxError) {
+                    throw new Error('Error parsing map function. Is it actually a function?');
+                }
+                else throw e;
+            }
+            mapFunc(doc);
+        };
+        wrappedMapFunc.on = emitter.on.bind(emitter);
+        wrappedMapFunc.once = emitter.once.bind(emitter);
+        wrappedMapFunc.removeListener = emitter.removeListener.bind(emitter);
+        wrappedMapFunc.removeAllListeners = emitter.removeAllListeners.bind(emitter);
+        return wrappedMapFunc;
     }
 
     /**
@@ -34,49 +47,60 @@
      * @param {Function} mapFunc
      * @param {Function} [reduceFunc]
      */
-    function wrapMapReduce(mapFunc, reduceFunc) {
-        mapFunc = wrapMap(mapFunc);
+    function mapReduce(mapFunc, reduceFunc) {
+        mapFunc = map(mapFunc);
         var emitter = new EventEmitter();
-        var toReduce = {},
-            toRereduce = [];
+        var rows = [],
+            rereduce = [],
+            keys = {};
         return merge(emitter, {
             /**
              * Map data into your map/reduce view
              * @param data - An array of objects & arrays, where arrays are treated as reductions and hence passed with rereduce=true
+             * @param opts
+             * @param opts.group
              */
-            map: function (data) {
-                mapFunc.on('emit', function (key, value) {
-                    if (!toReduce[key]) toReduce[key] = [];
-                    toReduce[key].push(value);
+            map: function (data, opts) {
+                mapFunc.on('emit', function (row) {
+                    if (!keys[row.key]) keys[row.key] = [];
+                    keys[row.key].push(row);
+                    rows.push(row);
                 });
                 data.forEach(function (datum) {
-                    if (util.isArray(datum)) {
-                        toRereduce.push(datum);
-                    }
-                    else {
-                        mapFunc(datum);
-                    }
+                    if (Array.isArray(datum)) rereduce.push(datum);
+                    else mapFunc(datum);
                 });
-                var values;
+                var res;
                 if (reduceFunc) {
-                    values = Object.keys(toReduce).reduce(function (values, key) {
-                        return values.concat(reduceFunc(key, toReduce[key], false));
-                    }, []);
-                    toRereduce.forEach(function (values) {
-                        values = values.concat(reduceFunc(null, values, true));
+                    var reducedRows = [];
+                    Object.keys(keys).forEach(function (key) {
+                        var rows = keys[key];
+                        var pairs = [],
+                            value = [];
+                        rows.forEach(function (row) {
+                            pairs.push([row.key, row.id]);
+                            value.push(row.value);
+                        });
                     });
+
+                    res = {
+                        rows: reducedRows
+                    };
                 }
                 else {
-                    values = toReduce;
+                    res = {
+                        total_rows: data.length,
+                        rows: rows,
+                        offset: 0
+                    };
                 }
-                return values;
+                return res;
             }
         });
     }
 
     module.exports = {
-        wrapMap: wrapMap,
-        wrapReduce: wrapReduce,
-        wrapMapReduce: wrapMapReduce
+        map: map,
+        mapReduce: mapReduce
     };
 })();
