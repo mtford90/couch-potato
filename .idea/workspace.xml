@@ -2,31 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="55c7b0b1-09c2-43bd-b32f-08409449b7b0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/couch_potato_node_modules.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/attachments.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/documents.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/attachments.spec.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/couchdb.spec.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/data/blah.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/testUtil/testutils.spec.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/verification.spec.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/testUtil.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/submodules/rcouch" afterPath="$PROJECT_DIR$/submodules/rcouch" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/admin.js" afterPath="$PROJECT_DIR$/lib/admin.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/auth.js" afterPath="$PROJECT_DIR$/lib/auth.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/couch-potato.iml" afterPath="$PROJECT_DIR$/.idea/couch-potato.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gulpfile.js" afterPath="$PROJECT_DIR$/gulpfile.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/http.js" afterPath="$PROJECT_DIR$/lib/http.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/permissions.spec.js" afterPath="$PROJECT_DIR$/test/permissions.spec.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/potato.js" afterPath="$PROJECT_DIR$/potato.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/sofa/sofa.spec.js" afterPath="$PROJECT_DIR$/test/sofa/sofa.spec.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/storage.spec.js" afterPath="$PROJECT_DIR$/test/storage.spec.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/tests.js" afterPath="$PROJECT_DIR$/test/tests.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/upsert.spec.js" afterPath="$PROJECT_DIR$/test/upsert.spec.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/user.spec.js" afterPath="$PROJECT_DIR$/test/user.spec.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="couchdb-as-a-backend.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -58,7 +39,7 @@
         <entry file="file://$PROJECT_DIR$/lib/admin.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3680">
-              <caret line="14" column="10" selection-start-line="14" selection-start-column="10" selection-end-line="14" selection-end-column="10" />
+              <caret line="69" column="39" selection-start-line="69" selection-start-column="39" selection-end-line="69" selection-end-column="39" />
               <folding>
                 <element signature="e#563#2026#0" expanded="false" />
               </folding>
@@ -66,81 +47,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="auth.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/auth.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1104">
-              <caret line="17" column="33" selection-start-line="17" selection-start-column="33" selection-end-line="17" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="http.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/http.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2727" max-vertical-offset="5216">
-              <caret line="179" column="59" selection-start-line="179" selection-start-column="59" selection-end-line="179" selection-end-column="59" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="potato.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="potato.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/potato.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2441" max-vertical-offset="4944">
-              <caret line="170" column="34" selection-start-line="170" selection-start-column="34" selection-end-line="170" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="upsert.spec.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/upsert.spec.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1632">
-              <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="storage.spec.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test/storage.spec.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.06510682" vertical-offset="0" max-vertical-offset="1264">
-              <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tests.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/tests.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="208">
-              <caret line="7" column="26" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/node_modules/pouchdb/node_modules/pouchdb-extend/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1977" max-vertical-offset="2960">
-              <caret line="136" column="21" selection-start-line="136" selection-start-column="21" selection-end-line="136" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="http.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/node_modules/pouchdb/lib/adapters/http/http.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="8215" max-vertical-offset="17344">
-              <caret line="534" column="58" selection-start-line="534" selection-start-column="58" selection-end-line="534" selection-end-column="58" />
+            <state vertical-scroll-proportion="0.36724314" vertical-offset="2407" max-vertical-offset="4944">
+              <caret line="173" column="31" selection-start-line="173" selection-start-column="31" selection-end-line="173" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -210,10 +121,10 @@
         <option value="$PROJECT_DIR$/node_modules/pouchdb/lib/deps/ajax-browser.js" />
         <option value="$PROJECT_DIR$/test/permissions.spec.js" />
         <option value="$PROJECT_DIR$/test/user.spec.js" />
-        <option value="$PROJECT_DIR$/potato.js" />
         <option value="$PROJECT_DIR$/test/upsert.spec.js" />
         <option value="$PROJECT_DIR$/test/tests.js" />
         <option value="$PROJECT_DIR$/test/storage.spec.js" />
+        <option value="$PROJECT_DIR$/potato.js" />
       </list>
     </option>
   </component>
@@ -1128,16 +1039,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/admin.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3680">
-          <caret line="14" column="10" selection-start-line="14" selection-start-column="10" selection-end-line="14" selection-end-column="10" />
-          <folding>
-            <element signature="e#563#2026#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/pouchdb/node_modules/pouchdb-extend/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1977" max-vertical-offset="2960">
@@ -1154,22 +1055,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/potato.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2441" max-vertical-offset="4944">
-          <caret line="170" column="34" selection-start-line="170" selection-start-column="34" selection-end-line="170" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/upsert.spec.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1632">
-          <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/tests.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="208">
@@ -1180,8 +1065,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test/storage.spec.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.06510682" vertical-offset="0" max-vertical-offset="1264">
-          <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
+        <state vertical-scroll-proportion="0.3418108" vertical-offset="0" max-vertical-offset="1264">
+          <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/upsert.spec.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32553408" vertical-offset="0" max-vertical-offset="1632">
+          <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/admin.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3680">
+          <caret line="69" column="39" selection-start-line="69" selection-start-column="39" selection-end-line="69" selection-end-column="39" />
+          <folding>
+            <element signature="e#563#2026#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/potato.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36724314" vertical-offset="2407" max-vertical-offset="4944">
+          <caret line="173" column="31" selection-start-line="173" selection-start-column="31" selection-end-line="173" selection-end-column="31" />
           <folding />
         </state>
       </provider>

@@ -8,7 +8,7 @@ describe('permissions', function () {
         beforeEach(function (done) {
             potato.reset(function (err) {
                 assert.notOk(err);
-                potato.getOrCreateDatabase('db', function (err, _db) {
+                potato.database('db', function (err, _db) {
                     assert.notOk(err);
                     db = _db;
                     done();
@@ -33,7 +33,7 @@ describe('permissions', function () {
             describe('no anonymous updates', function () {
                 var db;
                 beforeEach(function (done) {
-                    potato.getOrCreateDatabase('db', {anonymousUpdates: false}, function (err, _db) {
+                    potato.database('db', {anonymousUpdates: false}, function (err, _db) {
                         assert.notOk(err, 'Was not expecting error when creating database...');
                         db = _db;
                         done();
@@ -72,7 +72,7 @@ describe('permissions', function () {
             describe('no anonymous reads', function () {
                 var db;
                 beforeEach(function (done) {
-                    potato.getOrCreateDatabase('db', {anonymousReads: false}, function (err, _db) {
+                    potato.database('db', {anonymousReads: false}, function (err, _db) {
                         assert.notOk(err);
                         db = _db;
                         done();
@@ -100,7 +100,7 @@ describe('permissions', function () {
             describe('disable both', function () {
                 var db;
                 beforeEach(function (done) {
-                    potato.getOrCreateDatabase('db', {
+                    potato.database('db', {
                         anonymousReads: false,
                         anonymousUpdates: false
                     }, function (err, _db) {
@@ -143,7 +143,7 @@ describe('permissions', function () {
                 beforeEach(function (done) {
                     potato.reset(function (err) {
                         assert.notOk(err);
-                        potato.getOrCreateDatabase('db', {
+                        potato.database('db', {
                             anonymousReads: false,
                             anonymousUpdates: false
                         }, function (err, _db) {

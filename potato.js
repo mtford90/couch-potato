@@ -162,7 +162,7 @@
              * @param [opts.designDocs]
              * @param [cb]
              */
-            getOrCreateDatabase: function (name, opts, cb) {
+            database: function (name, opts, cb) {
                 var __ret = util.optsOrCallback(opts, cb);
                 opts = merge({}, __ret.opts);
                 cb = __ret.cb;

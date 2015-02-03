@@ -8,7 +8,7 @@ describe('upsert documents', function () {
     beforeEach(function (done) {
         potato.reset(function (err) {
             assert.notOk(err, 'Error when reset database: ' + prettyJson(err));
-            potato.getOrCreateDatabase('db', {anonymousUpdates: true, anonymousReads: true}, function (err, _db) {
+            potato.database('db', {anonymousUpdates: true, anonymousReads: true}, function (err, _db) {
                 assert.notOk(err);
                 db = _db;
                 done();
