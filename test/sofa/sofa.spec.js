@@ -27,7 +27,7 @@ describe('sofa', function () {
                     }
                 }, function (err) {
                     assert.notOk(err);
-                    potato.getDatabase({database: 'db'}, function (err, data) {
+                    potato.getDatabase('db', function (err, data) {
                         assert.notOk(err);
                         done();
                     });
@@ -35,20 +35,18 @@ describe('sofa', function () {
             });
 
             it('multiple databases', function (done) {
-                potato.reset(function () {
-                    sofa.configureCouch({
-                        databases: {
-                            db: {},
-                            anotherdb: {}
-                        }
-                    }, function (err) {
+                sofa.configureCouch({
+                    databases: {
+                        db: {},
+                        anotherdb: {}
+                    }
+                }, function (err) {
+                    assert.notOk(err);
+                    potato.getDatabase('db', function (err, data) {
                         assert.notOk(err);
-                        potato.getDatabase({database: 'db'}, function (err, data) {
+                        potato.getDatabase('anotherdb', function (err, data) {
                             assert.notOk(err);
-                            potato.getDatabase({database: 'anotherdb'}, function (err, data) {
-                                assert.notOk(err);
-                                done();
-                            });
+                            done();
                         });
                     });
                 });
@@ -73,17 +71,21 @@ describe('sofa', function () {
                             }
                         }
                     }
-                }, function (err, doc) {
+                }, function (err) {
                     assert.notOk(err);
-                    potato.getDesignDocument({
-                        name: 'myDesignDoc'
-                    }, function (err, doc) {
+                    potato.getDatabase('db', function (err, db) {
                         assert.notOk(err);
-                        assert.equal(doc._id, '_design/myDesignDoc');
-                        assert.ok(doc._rev);
-                        assert.ok('myView' in doc.views);
-                        done();
+                        db.getDesignDocument({
+                            name: 'myDesignDoc'
+                        }, function (err, doc) {
+                            assert.notOk(err);
+                            assert.equal(doc._id, '_design/myDesignDoc');
+                            assert.ok(doc._rev);
+                            assert.ok('myView' in doc.views);
+                            done();
+                        });
                     });
+
                 });
             });
         });

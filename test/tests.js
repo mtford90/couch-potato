@@ -1,3 +1,8 @@
+/**
+ * Root for test-bundle used in browser testing
+ */
+
+
 require('./upsert.spec');
 
 

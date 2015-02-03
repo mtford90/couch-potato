@@ -154,7 +154,32 @@
                     cb(err);
                 }.bind(this));
             },
-            /**
+            _pouchDB: function (name) {
+                var db = new CouchPotatoDB(name);
+                var oldPut = db.put,
+                    oldGet = db.get;
+                merge(db, {
+                    put: getArguments(function (args) {
+                        var argsobj = injectAuthIntoArgs(args);
+                        args = argsobj._;
+                        if ('user' in argsobj.doc) {
+                            var cb = argsobj.cb || function () {
+                                };
+                            cb(new CouchError({message: 'User arg not allowed'}));
+                            return;
+                        }
+                        console.log('put args', args);
+                        oldPut.apply(db, args);
+                    }),
+                    get: getArguments(function (args) {
+                        var argsobj = injectAuthIntoArgs(args);
+                        args = argsobj._;
+                        console.log('get args', args);
+                        oldGet.apply(db, args);
+                    })
+                });
+                return db;
+            }, /**
              * @param name
              * @param [opts]
              * @param [opts.anonymousUpdates]
@@ -162,7 +187,7 @@
              * @param [opts.designDocs]
              * @param [cb]
              */
-            database: function (name, opts, cb) {
+            getOrCreateDatabase: function (name, opts, cb) {
                 var __ret = util.optsOrCallback(opts, cb);
                 opts = merge({}, __ret.opts);
                 cb = __ret.cb;
@@ -172,35 +197,24 @@
                 // Create database
                 http.json(opts, function (err, data) {
                     if (!err) {
-                        var db = new CouchPotatoDB(name);
-                        var oldPut = db.put,
-                            oldPost = db.post,
-                            oldGet = db.get;
-                        merge(db, {
-                            put: getArguments(function (args) {
-                                var argsobj = injectAuthIntoArgs(args);
-                                args = argsobj._;
-                                if ('user' in argsobj.doc) {
-                                    var cb = argsobj.cb || function () {};
-                                    cb(new CouchError({message: 'User arg not allowed'}));
-                                    return;
-                                }
-                                console.log('put args', args);
-                                oldPut.apply(db, args);
-                            }),
-                            get: getArguments(function (args) {
-                                var argsobj = injectAuthIntoArgs(args);
-                                args = argsobj._;
-                                console.log('get args', args);
-                                oldGet.apply(db, args);
-                            })
-                        });
+                        var db = this._pouchDB(name);
                         db.configureDatabase(opts, function (err) {
                             if (!err) {
                                 cb(null, db);
                             } else cb(err);
                         });
                     } else cb(err, data);
+                }.bind(this));
+            },
+            getDatabase: function (name, cb) {
+                http.json({
+                    path: name,
+                    admin: true
+                }, function (err) {
+                    if (!err) {
+                        var db = this._pouchDB(name);
+                        cb(null, db);
+                    } else cb(err);
                 }.bind(this));
             },
             /**

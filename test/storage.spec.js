@@ -50,7 +50,7 @@ describe('storage', function () {
         beforeEach(function (done) {
             potato.reset(function (err) {
                 assert.notOk(err);
-                potato.database('db', {anonymousUpdates: true, anonymousReads: true}, function (err, _db) {
+                potato.getOrCreateDatabase('db', {anonymousUpdates: true, anonymousReads: true}, function (err, _db) {
                     assert.notOk(err);
                     db = _db;
                     done();

@@ -8,7 +8,7 @@ describe('User management', function () {
     beforeEach(function (done) {
         potato.reset(function (err) {
             assert.notOk(err);
-            potato.database('db', function (err, _db) {
+            potato.getOrCreateDatabase('db', function (err, _db) {
                 assert.notOk(err);
                 db = _db;
                 done();

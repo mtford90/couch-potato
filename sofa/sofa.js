@@ -51,10 +51,10 @@
             };
             var tasks = Object.keys(databases).map(function (dbName) {
                 var dbConfig = databases[dbName];
-                var couch = potato.couchdb();
+                var couch = potato.potato();
                 return function (done) {
                     winston.info('Creating ' + dbName);
-                    couch.createOrUpdateDatabase(merge({database: dbName}, dbConfig), done);
+                    couch.getOrCreateDatabase(dbName, dbConfig, done);
                 }.bind(this);
             }.bind(this));
             async.parallel(tasks, cb);
