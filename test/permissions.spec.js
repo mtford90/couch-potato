@@ -1,19 +1,22 @@
 var assert = require('chai').assert,
-    couchdb = require('../potato').couchdb,
-    prettyJson = require('./util').prettyJson;
+    potato = require('../potato').potato();
 
 describe('permissions', function () {
-    var couch = couchdb();
 
     describe('_security', function () {
+        var db;
         beforeEach(function (done) {
-            couch.reset(function (err) {
+            potato.reset(function (err) {
                 assert.notOk(err);
-                couch.createDatabase(done);
+                potato.getOrCreateDatabase('db', function (err, _db) {
+                    assert.notOk(err);
+                    db = _db;
+                    done();
+                });
             });
         });
         it('get default permissions', function (done) {
-            couch.getPermissions(function (err, resp) {
+            db.getPermissions(function (err) {
                 assert.notOk(err);
                 done();
             });
@@ -22,60 +25,42 @@ describe('permissions', function () {
     });
 
     describe('configure database', function () {
-        describe('defaults', function () {
-            beforeEach(function (done) {
-                couch.reset(function (err) {
-                    assert.notOk(err);
-                    couch.createDatabase(done);
-                });
-            });
-            it('anonymous creation', function (done) {
-                couch.upsertDocument({x: 1}, function (err) {
-                    assert.notOk(err);
-                    done();
-                })
-            });
-            it('anonymous read', function (done) {
-                couch.upsertDocument({x: 1}, function (err, doc) {
-                    assert.notOk(err);
-                    couch.getDocument(doc._id, function (err) {
-                        assert.notOk(err);
-                        done();
-                    });
-                })
-            });
+        beforeEach(function (done) {
+            potato.reset(done);
         });
+
         describe('anonymous operations', function () {
             describe('no anonymous updates', function () {
+                var db;
                 beforeEach(function (done) {
-                    couch.reset(function (err) {
-                        assert.notOk(err, 'Was not expecting error when reseting');
-                        couch.createDatabase({anonymousUpdates: false}, function (err) {
-                            assert.notOk(err, 'Was not expecting error when creating database...' + prettyJson(err));
-                            done();
-                        });
+                    potato.getOrCreateDatabase('db', {anonymousUpdates: false}, function (err, _db) {
+                        assert.notOk(err, 'Was not expecting error when creating database...');
+                        db = _db;
+                        done();
                     });
                 });
                 it('anonymous creation should now be forbidden', function (done) {
-                    couch.upsertDocument({x: 1}, function (err) {
+                    db.post({x: 1}, function (err, resp) {
+                        console.log('resp', resp);
                         assert.ok(err);
-                        assert.ok(err.isHttpError);
-                        assert.equal(err.status, couch.HTTP_STATUS.FORBIDDEN);
+                        assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
                         done();
                     })
                 });
                 it('anonymous read should still be available', function (done) {
-                    couch.createUser({username: 'mike', password: 'mike'}, function (err) {
+                    potato.createUser({username: 'mike', password: 'mike'}, function (err) {
                         assert.notOk(err);
-                        couch.basicAuth({
+                        potato.basicAuth({
                             username: 'mike',
                             password: 'mike'
                         }, function (err) {
-                            assert.notOk(err);
-                            couch.upsertDocument({x: 1}, function (err, doc) {
-                                assert.notOk(err);
-                                couch.logout();
-                                couch.getDocument(doc._id, function (err) {
+                            assert.notOk(err, 'Error during basic auth');
+                            console.log('posting new object')
+                            db.post({x: 1}, function (err, doc) {
+                                console.log('err', err);
+                                assert.notOk(err, 'error during posting new object. should work now that authorised!');
+                                potato.logout();
+                                db.get(doc.id, function (err) {
                                     assert.notOk(err);
                                     done();
                                 });
@@ -85,67 +70,67 @@ describe('permissions', function () {
                 });
             });
             describe('no anonymous reads', function () {
+                var db;
                 beforeEach(function (done) {
-                    couch.reset(function (err) {
+                    potato.getOrCreateDatabase('db', {anonymousReads: false}, function (err, _db) {
                         assert.notOk(err);
-                        couch.createDatabase({anonymousReads: false}, function (err) {
-                            assert.notOk(err);
-                            done();
-                        });
+                        db = _db;
+                        done();
                     });
                 });
                 it('anonymous creation should be fine', function (done) {
-                    couch.upsertDocument({x: 1}, function (err) {
+                    db.post({x: 1}, function (err) {
                         assert.notOk(err);
                         done();
                     })
                 });
                 it('anonymous read should now be forbidden', function (done) {
-                    couch.upsertDocument({x: 1}, function (err, doc) {
+                    db.post({x: 1}, function (err, resp) {
                         assert.notOk(err);
-                        couch.getDocument(doc._id, function (err) {
+                        var id = resp.id;
+                        console.log('id', id);
+                        db.get(id, function (err, doc) {
                             assert.ok(err);
-                            assert.ok(err.isHttpError);
-                            assert.equal(err.status, couch.HTTP_STATUS.FORBIDDEN);
+                            assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
                             done();
                         });
                     })
                 });
             });
             describe('disable both', function () {
+                var db;
                 beforeEach(function (done) {
-                    couch.reset(function (err) {
+                    potato.getOrCreateDatabase('db', {
+                        anonymousReads: false,
+                        anonymousUpdates: false
+                    }, function (err, _db) {
                         assert.notOk(err);
-                        couch.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
-                            assert.notOk(err);
-                            done();
-                        });
+                        db = _db;
+                        done();
                     });
                 });
                 it('anonymous creation should now be forbidden', function (done) {
-                    couch.upsertDocument({x: 1}, function (err) {
+                    db.post({x: 1}, function (err) {
                         assert.ok(err);
-                        assert.ok(err.isHttpError);
-                        assert.equal(err.status, couch.HTTP_STATUS.FORBIDDEN);
+                        assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
                         done();
                     })
                 });
 
                 it('anonymous read should now be forbidden', function (done) {
-                    couch.createUser({username: 'mike', password: 'mike'}, function (err) {
+                    potato.createUser({username: 'mike', password: 'mike'}, function (err) {
                         assert.notOk(err);
-                        couch.basicAuth({
+                        potato.basicAuth({
                             username: 'mike',
                             password: 'mike'
                         }, function (err) {
                             assert.notOk(err);
-                            couch.upsertDocument({x: 1}, function (err, doc) {
+                            db.post({x: 1}, function (err, resp) {
                                 assert.notOk(err);
-                                couch.logout();
-                                couch.getDocument(doc._id, function (err) {
+                                potato.logout();
+                                db.get(resp.id, function (err) {
                                     assert.ok(err);
-                                    assert.ok(err.isHttpError);
-                                    assert.equal(err.status, couch.HTTP_STATUS.FORBIDDEN);
+                                    assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
                                     done();
                                 });
                             })
@@ -154,11 +139,16 @@ describe('permissions', function () {
                 });
             });
             describe('reenable ', function () {
+                var db;
                 beforeEach(function (done) {
-                    couch.reset(function (err) {
+                    potato.reset(function (err) {
                         assert.notOk(err);
-                        couch.createDatabase({anonymousReads: false, anonymousUpdates: false}, function (err) {
+                        potato.getOrCreateDatabase('db', {
+                            anonymousReads: false,
+                            anonymousUpdates: false
+                        }, function (err, _db) {
                             assert.notOk(err);
+                            db = _db;
                             done();
                         });
                     });
@@ -166,33 +156,32 @@ describe('permissions', function () {
 
                 describe('reenable reads', function () {
                     beforeEach(function (done) {
-                        couch.configureDatabase({
+                        db.configureDatabase({
                             anonymousReads: true
                         }, function (err) {
-                            assert.notOk(err, 'was not expecting an error when enabling anonymous reads:' + prettyJson(err));
+                            assert.notOk(err, 'was not expecting an error when enabling anonymous reads');
                             done();
                         });
                     });
                     it('anonymous creation should still be forbidden', function (done) {
-                        couch.upsertDocument({x: 1}, function (err) {
+                        db.post({x: 1}, function (err) {
                             assert.ok(err);
-                            assert.ok(err.isHttpError);
-                            assert.equal(err.status, couch.HTTP_STATUS.FORBIDDEN);
+                            assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
                             done();
                         })
                     });
                     it('anonymous read should still be available', function (done) {
-                        couch.createUser({username: 'mike', password: 'mike'}, function (err) {
+                        potato.createUser({username: 'mike', password: 'mike'}, function (err) {
                             assert.notOk(err);
-                            couch.basicAuth({
+                            potato.basicAuth({
                                 username: 'mike',
                                 password: 'mike'
                             }, function (err) {
                                 assert.notOk(err);
-                                couch.upsertDocument({x: 1}, function (err, doc) {
+                                db.post({x: 1}, function (err, resp) {
                                     assert.notOk(err);
-                                    couch.logout();
-                                    couch.getDocument(doc._id, function (err) {
+                                    potato.logout();
+                                    db.get(resp.id, function (err) {
                                         assert.notOk(err);
                                         done();
                                     });
@@ -204,28 +193,27 @@ describe('permissions', function () {
 
                 describe('reenable updates', function () {
                     beforeEach(function (done) {
-                        couch.configureDatabase({
+                        db.configureDatabase({
                             anonymousUpdates: true
                         }, function (err) {
-                            assert.notOk(err, 'did not expect an error when reconfiguring: ' + prettyJson(err));
+                            assert.notOk(err, 'did not expect an error when reconfiguring');
                             done();
                         });
                     });
 
                     it('anonymous creation should be fine', function (done) {
-                        couch.upsertDocument({x: 1}, function (err) {
+                        db.post({x: 1}, function (err) {
                             assert.notOk(err);
                             done();
                         })
                     });
 
                     it('anonymous read should now be forbidden', function (done) {
-                        couch.upsertDocument({x: 1}, function (err, doc) {
+                        db.post({x: 1}, function (err, resp) {
                             assert.notOk(err);
-                            couch.getDocument(doc._id, function (err) {
+                            db.get(resp.id, function (err) {
                                 assert.ok(err);
-                                assert.ok(err.isHttpError);
-                                assert.equal(err.status, couch.HTTP_STATUS.FORBIDDEN);
+                                assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
                                 done();
                             });
                         })

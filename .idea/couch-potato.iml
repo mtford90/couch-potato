@@ -5,7 +5,6 @@
       <excludeFolder url="file://$MODULE_DIR$/bower_components" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/submodules" />
       <excludeFolder url="file://$MODULE_DIR$/../couchdb-as-a-backend/example/build" />
       <excludeFolder url="file://$MODULE_DIR$/../couchdb-as-a-backend/front/build" />
@@ -17,5 +16,6 @@
     <orderEntry type="library" name="couchdb bower_components" level="project" />
     <orderEntry type="module" module-name="couch-potato-example" />
     <orderEntry type="library" name="Node.js v0.10.28 Core Modules" level="application" />
+    <orderEntry type="library" name="couch-potato node_modules" level="project" />
   </component>
 </module>

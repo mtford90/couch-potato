@@ -27,6 +27,7 @@
     "vinyl-source-stream": "^1.0.0"
   },
   "dependencies": {
+    "argsarray": "0.0.1",
     "async": "^0.9.0",
     "cradle": "^0.6.9",
     "jquery": "^2.1.3",

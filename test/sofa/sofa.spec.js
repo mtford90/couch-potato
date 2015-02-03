@@ -4,7 +4,7 @@ var assert = require('chai').assert,
     path = require('path');
 
 describe('sofa', function () {
-    var potato = require('../../potato').couchdb(),
+    var potato = require('../../potato').potato(),
         sofa = require('../../sofa/sofa');
 
     beforeEach(function (done) {

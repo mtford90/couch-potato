@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-    couchdb = require('../potato').couchdb,
+    potato = require('../potato').potato(),
     prettyJson = require('./util').prettyJson;
 
 describe('storage', function () {
@@ -8,10 +8,10 @@ describe('storage', function () {
         var auth = {
             username: 'mike',
             password: 'mike',
-            method: couchdb.AUTH_METHOD.BASIC
+            method: potato.AUTH_METHOD.BASIC
         };
-        var couch = couchdb({auth: auth});
-        assert.equal(auth, couch.auth);
+        var p = require('../potato').potato({auth: auth});
+        assert.equal(auth, p.auth);
     });
     it('invalid method', function () {
         var auth = {
@@ -20,52 +20,53 @@ describe('storage', function () {
             method: 'dsfsdfsdf'
         };
         assert.throws(function () {
-            couchdb({auth: auth});
-        }, couchdb.CouchError);
+            potato({auth: auth});
+        }, potato.CouchError);
     });
     describe('basic', function () {
         it('missing password', function () {
-            console.log('couchdb', couchdb);
+            console.log('couchdb', potato);
             var auth = {
                 username: 'mike',
-                method: couchdb.AUTH_METHOD.BASIC
+                method: potato.AUTH_METHOD.BASIC
             };
             assert.throws(function () {
-                couchdb({auth: auth});
-            }, couchdb.CouchError);
+                potato({auth: auth});
+            }, potato.CouchError);
         });
         it('missing username', function () {
             var auth = {
                 password: 'mike',
-                method: couchdb.AUTH_METHOD.BASIC
+                method: potato.AUTH_METHOD.BASIC
             };
             assert.throws(function () {
-                couchdb({auth: auth});
-            }, couchdb.CouchError);
+                potato({auth: auth});
+            }, potato.CouchError);
         });
     });
 
     describe('event on auth change', function () {
-        var couch = couchdb();
+        var db;
         beforeEach(function (done) {
-            couch.reset(function (err) {
+            potato.reset(function (err) {
                 assert.notOk(err);
-                couch.createDatabase({anonymousUpdates: true, anonymousReads: true}, function (err) {
+                potato.getOrCreateDatabase('db', {anonymousUpdates: true, anonymousReads: true}, function (err, _db) {
                     assert.notOk(err);
+                    db = _db;
                     done();
                 });
             });
         });
         it('create user', function (done) {
-            couch.once('auth', function (auth) {
+            potato.once('auth', function (auth) {
                 assert.equal(auth.username, 'mike');
                 assert.equal(auth.password, 'mike');
                 done();
             });
-            couch.createUser({
+            potato.createUser({
                 username: 'mike',
                 password: 'mike',
-                auth: couch.AUTH_METHOD.BASIC
+                auth: potato.AUTH_METHOD.BASIC
             });
         });
 

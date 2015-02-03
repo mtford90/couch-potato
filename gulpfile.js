@@ -97,7 +97,7 @@ gulp.task('test-server', function () {
 });
 
 gulp.task('open-tests', function () {
-    open('http://localhost:7682/front/test');
+    open('http://localhost:7682/test');
 });
 
 gulp.task('compile-potato', ['build-potato'], function () {
