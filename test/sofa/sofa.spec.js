@@ -4,13 +4,13 @@ var assert = require('chai').assert,
     path = require('path');
 
 describe('sofa', function () {
-    var potato = require('../../potato').potato(),
+    var Potato = require('../../potato'),
+        potato = new Potato(),
         sofa = require('../../sofa/sofa');
 
     beforeEach(function (done) {
         potato.reset(done);
     });
-
 
     describe('load config', function () {
         it('from path', function () {

@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
-    potato = require('../potato').potato(),
+    Potato = require('../potato'),
+    potato = new Potato(),
     prettyJson = require('./util').prettyJson;
 
 describe('storage', function () {
@@ -10,8 +11,9 @@ describe('storage', function () {
             password: 'mike',
             method: potato.AUTH_METHOD.BASIC
         };
-        var p = require('../potato').potato({auth: auth});
-        assert.equal(auth, p.auth);
+        var Potato = require('../potato'),
+            p = new Potato({auth: auth});
+        assert.equal(auth, p.auth.auth);
     });
     it('invalid method', function () {
         var auth = {
@@ -63,7 +65,7 @@ describe('storage', function () {
                 assert.equal(auth.password, 'mike');
                 done();
             });
-            potato.createUser({
+            potato.accounts.register({
                 username: 'mike',
                 password: 'mike',
                 auth: potato.AUTH_METHOD.BASIC

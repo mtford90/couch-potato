@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
-    potato = require('../potato').potato(),
+    Potato = require('../potato'),
+    potato = new Potato(),
     prettyJson = require('./util').prettyJson;
 
 
@@ -40,10 +41,12 @@ describe('upsert documents', function () {
     });
     describe('user', function () {
         beforeEach(function (done) {
-            potato.createUser({username: 'mike', password: 'mike'}, function (err) {
+            potato.accounts.register({username: 'mike', password: 'mike'}, function (err) {
                 assert.notOk(err);
-                potato.basicAuth({
-                    username: 'mike', password: 'mike'
+                potato.accounts.login({
+                    username: 'mike',
+                    password: 'mike',
+                    method: Potato.AUTH_METHOD.BASIC
                 }, function (err) {
                     assert.notOk(err);
                     done();

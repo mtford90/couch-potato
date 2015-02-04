@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
-    potato = require('../potato').potato();
+    Potato = require('../potato'),
+    potato = new Potato();
 
 describe('permissions', function () {
 
@@ -48,9 +49,9 @@ describe('permissions', function () {
                     })
                 });
                 it('anonymous read should still be available', function (done) {
-                    potato.createUser({username: 'mike', password: 'mike'}, function (err) {
+                    potato.accounts.register({username: 'mike', password: 'mike'}, function (err) {
                         assert.notOk(err);
-                        potato.basicAuth({
+                        potato.accounts.login.basic({
                             username: 'mike',
                             password: 'mike'
                         }, function (err) {
@@ -118,9 +119,9 @@ describe('permissions', function () {
                 });
 
                 it('anonymous read should now be forbidden', function (done) {
-                    potato.createUser({username: 'mike', password: 'mike'}, function (err) {
+                    potato.accounts.register({username: 'mike', password: 'mike'}, function (err) {
                         assert.notOk(err);
-                        potato.basicAuth({
+                        potato.accounts.login.basic({
                             username: 'mike',
                             password: 'mike'
                         }, function (err) {
@@ -171,9 +172,9 @@ describe('permissions', function () {
                         })
                     });
                     it('anonymous read should still be available', function (done) {
-                        potato.createUser({username: 'mike', password: 'mike'}, function (err) {
+                        potato.accounts.register({username: 'mike', password: 'mike'}, function (err) {
                             assert.notOk(err);
-                            potato.basicAuth({
+                            potato.accounts.login.basic({
                                 username: 'mike',
                                 password: 'mike'
                             }, function (err) {

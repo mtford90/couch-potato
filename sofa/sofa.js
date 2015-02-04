@@ -8,7 +8,7 @@
     var sofaUtil = require('./util'),
         util = require('../lib/util'),
         async = require('async'),
-        potato = require('../potato'),
+        Potato = require('../potato'),
         path = require('path'),
         winston = require('winston'),
         merge = require('merge');
@@ -51,10 +51,10 @@
             };
             var tasks = Object.keys(databases).map(function (dbName) {
                 var dbConfig = databases[dbName];
-                var couch = potato.potato();
+                var potato = new Potato();
                 return function (done) {
                     winston.info('Creating ' + dbName);
-                    couch.getOrCreateDatabase(dbName, dbConfig, done);
+                    potato.getOrCreateDatabase(dbName, dbConfig, done);
                 }.bind(this);
             }.bind(this));
             async.parallel(tasks, cb);
