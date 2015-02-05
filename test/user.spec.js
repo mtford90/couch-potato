@@ -95,13 +95,14 @@ describe('User management', function () {
 
         describe('basic', function () {
             it('fail', function (done) {
-                potato.accounts.login.basic({
+                potato.accounts.login({
                     username: 'bob',
-                    password: 'yo'
+                    password: 'yo',
+                    method: Potato.AUTH_METHOD.BASIC
                 }, function (err) {
                     assert.ok(err, 'Should be an error');
                     assert.equal(err.status, db.HTTP_STATUS.UNAUTHORISED);
-                    assert.notOk(potato.auth);
+                    assert.notOk(potato.auth.auth);
                     done();
                 })
             });
@@ -167,7 +168,6 @@ describe('User management', function () {
                 };
                 potato.accounts.verifyAuth(function (err) {
                     assert.ok(err);
-                    assert.ok(err.isHttpError);
                     done();
                 });
             });

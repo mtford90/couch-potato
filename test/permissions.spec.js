@@ -51,9 +51,10 @@ describe('permissions', function () {
                 it('anonymous read should still be available', function (done) {
                     potato.accounts.register({username: 'mike', password: 'mike'}, function (err) {
                         assert.notOk(err);
-                        potato.accounts.login.basic({
+                        potato.accounts.login({
                             username: 'mike',
-                            password: 'mike'
+                            password: 'mike',
+                            method: Potato.AUTH_METHOD.BASIC
                         }, function (err) {
                             assert.notOk(err, 'Error during basic auth');
                             console.log('posting new object')
@@ -121,9 +122,10 @@ describe('permissions', function () {
                 it('anonymous read should now be forbidden', function (done) {
                     potato.accounts.register({username: 'mike', password: 'mike'}, function (err) {
                         assert.notOk(err);
-                        potato.accounts.login.basic({
+                        potato.accounts.login({
                             username: 'mike',
-                            password: 'mike'
+                            password: 'mike',
+                            method: Potato.AUTH_METHOD.BASIC
                         }, function (err) {
                             assert.notOk(err);
                             db.post({x: 1}, function (err, resp) {
@@ -174,9 +176,10 @@ describe('permissions', function () {
                     it('anonymous read should still be available', function (done) {
                         potato.accounts.register({username: 'mike', password: 'mike'}, function (err) {
                             assert.notOk(err);
-                            potato.accounts.login.basic({
+                            potato.accounts.login({
                                 username: 'mike',
-                                password: 'mike'
+                                password: 'mike',
+                                method: Potato.AUTH_METHOD.BASIC
                             }, function (err) {
                                 assert.notOk(err);
                                 db.post({x: 1}, function (err, resp) {
