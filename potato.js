@@ -216,10 +216,10 @@
             opts = merge({}, __ret.opts);
             cb = __ret.cb;
             opts.path = name;
-            opts.type = 'PUT';
+            opts.method = 'PUT';
             opts.admin = true;
             // Create database
-            this.http.json(opts, function (err, data) {
+            this.http.http(opts, function (err, data) {
                 if (!err) {
                     var db = this._pouchDB(name);
                     db.configureDatabase(opts, function (err) {
@@ -231,7 +231,7 @@
             }.bind(this));
         },
         getDatabase: function (name, cb) {
-            this.http.json({
+            this.http.http({
                 path: name,
                 admin: true
             }, function (err) {
@@ -252,20 +252,20 @@
             cb = __ret.cb;
             opts.path = '_all_dbs';
             opts.admin = true;
-            this.http.json(opts, function (err, data) {
+            this.http.http(opts, function (err, data) {
                 if (err) cb(err);
                 else {
                     var ajaxOpts = data.reduce(function (memo, dbName) {
                         if (!constants.IGNORE_DATABASES.memberOf(dbName)) {
                             memo.push({
-                                type: 'DELETE',
+                                method: 'DELETE',
                                 path: dbName,
                                 admin: true
                             });
                         }
                         return memo;
                     }, []);
-                    this.http.json(ajaxOpts, cb);
+                    this.http.http(ajaxOpts, cb);
                 }
             }.bind(this));
         },
@@ -276,7 +276,7 @@
         deleteAllUsers: function (cb) {
             cb = cb || function () {
             };
-            this.http.json({
+            this.http.http({
                 path: '_users/_all_docs',
                 admin: true
             }, function (err, resp) {
@@ -291,15 +291,20 @@
                         }
                         return memo;
                     }, []);
-                    this.http.json({
-                        path: '_users/_bulk_docs',
-                        data: {docs: userDocs},
-                        admin: true,
-                        type: 'POST'
-                    }, function (err) {
-                        if (err) util.logError('Error deleting all users', err);
-                        cb(err);
-                    });
+                    if (userDocs.length) {
+                        this.http.http({
+                            path: '_users/_bulk_docs',
+                            body: {docs: userDocs},
+                            admin: true,
+                            method: 'POST'
+                        }, function (err) {
+                            if (err) util.logError('Error deleting all users', err);
+                            cb(err);
+                        });
+                    }
+                    else {
+                        cb();
+                    }
                 } else {
                     util.logError('Error getting all users', err);
                     cb(err);
@@ -317,6 +322,6 @@
     // Place on window object if in browser environment.
     var isBrowser = !!global.XMLHttpRequest;
     if (isBrowser) global.Potato = Potato;
-    else if (typeof module !== 'undefined') module.exports = Potato;
+    module.exports = Potato;
 
 })();

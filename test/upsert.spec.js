@@ -18,7 +18,6 @@ describe('upsert documents', function () {
     });
 
     describe('no user', function () {
-
         it('auto ids', function (done) {
             db.post({x: 1}, function (err, resp) {
                 assert.notOk(err, 'Was expecting error to be falsy: ' + prettyJson(err));
@@ -30,7 +29,7 @@ describe('upsert documents', function () {
         });
         it('custom ids', function (done) {
             var _id = 'abc';
-            db.put({x: 1, _id: 'abc'}, {include_doc: true}, function (err, resp) {
+            db.put({x: 1, _id: 'abc'}, function (err, resp) {
                 assert.notOk(err);
                 assert.equal(resp.id, _id);
                 assert.ok(resp.rev);

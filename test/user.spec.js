@@ -123,7 +123,6 @@ describe('User management', function () {
                     }, function (err, user) {
                         assert.notOk(err);
                         _authDict = potato.auth.auth;
-                        console.log('potato', potato);
                         assert.equal(_authDict.method, potato.AUTH_METHOD.BASIC);
                         assert.equal(_authDict.username, username);
                         assert.equal(_authDict.password, password);
