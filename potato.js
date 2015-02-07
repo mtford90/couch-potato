@@ -6,7 +6,6 @@
 
     var merge = require('merge'),
         util = require('./lib/util'),
-        CouchError = require('./lib/CouchError'),
         constants = require('./lib/constants'),
         _ = require('nimble'),
         PouchDB = require('pouchdb'),
@@ -162,7 +161,7 @@
                     if ('user' in argsobj.doc) {
                         var cb = argsobj.cb || function () {
                             };
-                        cb(new CouchError({message: 'User arg not allowed'}));
+                        cb(util.error({message: 'User arg not allowed'}));
                         return;
                     }
                     console.log('put args', args);
@@ -300,7 +299,6 @@
         if (constants.hasOwnProperty(prop)) Potato[prop] = constants[prop];
     }
 
-    Potato.CouchError = CouchError;
     // Place on window object if in browser environment.
     var isBrowser = !!global.XMLHttpRequest;
     if (isBrowser) global.Potato = Potato;

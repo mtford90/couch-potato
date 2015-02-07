@@ -1,6 +1,7 @@
 var assert = require('chai').assert,
     Potato = require('../potato'),
     potato = new Potato(),
+    CouchPotatoError = require('../lib/errors').CouchPotatoError,
     prettyJson = require('./util').prettyJson;
 
 describe('storage', function () {
@@ -23,7 +24,7 @@ describe('storage', function () {
         };
         assert.throws(function () {
             potato({auth: auth});
-        }, potato.CouchError);
+        }, CouchPotatoError);
     });
     describe('basic', function () {
         it('missing password', function () {
@@ -34,7 +35,7 @@ describe('storage', function () {
             };
             assert.throws(function () {
                 potato({auth: auth});
-            }, potato.CouchError);
+            }, CouchPotatoError);
         });
         it('missing username', function () {
             var auth = {
@@ -43,7 +44,7 @@ describe('storage', function () {
             };
             assert.throws(function () {
                 potato({auth: auth});
-            }, potato.CouchError);
+            }, CouchPotatoError);
         });
     });
 
