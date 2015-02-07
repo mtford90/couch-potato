@@ -11,7 +11,6 @@
         _ = require('nimble'),
         PouchDB = require('pouchdb'),
         getArguments = require('argsarray'),
-        ajax = PouchDB.ajax,
         url = require('url'),
         EventEmitter = require('events').EventEmitter;
 
@@ -88,10 +87,11 @@
 
         var auth = require('./lib/auth')(this, opts),
             http = require('./lib/http')(auth, opts),
-            users = require('./lib/users')(auth, http);
+            ajax = http.http.bind(http),
+            users = require('./lib/users')(auth, ajax);
 
         this.auth = auth;
-        this.http = http;
+        this.http = ajax;
         this.accounts = this.users = this.account = users;
 
         extendAPI(this, auth);
@@ -219,7 +219,7 @@
             opts.method = 'PUT';
             opts.admin = true;
             // Create database
-            this.http.http(opts, function (err, data) {
+            this.http(opts, function (err, data) {
                 if (!err) {
                     var db = this._pouchDB(name);
                     db.configureDatabase(opts, function (err) {
@@ -230,8 +230,9 @@
                 } else cb(err, data);
             }.bind(this));
         },
+
         getDatabase: function (name, cb) {
-            this.http.http({
+            this.http({
                 path: name,
                 admin: true
             }, function (err) {
@@ -252,7 +253,7 @@
             cb = __ret.cb;
             opts.path = '_all_dbs';
             opts.admin = true;
-            this.http.http(opts, function (err, data) {
+            this.http(opts, function (err, data) {
                 if (err) cb(err);
                 else {
                     var ajaxOpts = data.reduce(function (memo, dbName) {
@@ -265,7 +266,7 @@
                         }
                         return memo;
                     }, []);
-                    this.http.http(ajaxOpts, cb);
+                    this.http(ajaxOpts, cb);
                 }
             }.bind(this));
         },
@@ -276,7 +277,7 @@
         deleteAllUsers: function (cb) {
             cb = cb || function () {
             };
-            this.http.http({
+            this.http({
                 path: '_users/_all_docs',
                 admin: true
             }, function (err, resp) {
@@ -292,7 +293,7 @@
                         return memo;
                     }, []);
                     if (userDocs.length) {
-                        this.http.http({
+                        this.http({
                             path: '_users/_bulk_docs',
                             body: {docs: userDocs},
                             admin: true,
