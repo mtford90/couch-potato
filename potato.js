@@ -95,7 +95,7 @@
                     // Ensure that there are no session keys to screw up admin basic auth...
                     this.accounts.logout.bind(this.accounts),
                     this.deleteAllDatabases.bind(this, args.opts),
-                    this.deleteAllUsers.bind(this)
+                    this.deleteUserDatabase.bind(this)
                 ], cb);
             }.bind(this));
         }),
@@ -294,6 +294,15 @@
                         cb(err);
                     }
                 }.bind(this));
+            }.bind(this));
+        },
+        deleteUserDatabase: function (cb) {
+            return util.promise(cb, function (cb) {
+                this.http({
+                    path: '_users',
+                    method: 'DELETE',
+                    admin:  true
+                }, cb);
             }.bind(this));
         }
     });
