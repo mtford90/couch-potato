@@ -73,12 +73,14 @@ describe('User management', function () {
                 password: password
             }, function (err) {
                 assert.notOk(err);
-                potato.logout();
-                potato.accounts.get('mike', function (err, doc) {
-                    assert.ok(doc._id);
-                    assert.ok(doc._rev);
-                    assert.equal(doc.name, username);
-                    done();
+                potato.accounts.logout(function (err) {
+                    assert.notOk(err, 'unexpected error when logging out...');
+                    potato.accounts.get('mike', function (err, doc) {
+                        assert.ok(doc._id);
+                        assert.ok(doc._rev);
+                        assert.equal(doc.name, username);
+                        done();
+                    });
                 });
             });
         });
@@ -134,13 +136,16 @@ describe('User management', function () {
                     });
                 });
             });
-            it('logout', function () {
+            it('logout', function (done) {
                 var auth = potato.auth;
                 console.log(potato);
                 auth.auth = {};
                 assert.ok(auth.auth);
-                potato.logout();
-                assert.notOk(auth.auth);
+                potato.accounts.logout(function (err) {
+                    assert.notOk(err, 'unexpected error when logging out...');
+                    assert.notOk(auth.auth);
+                    done();
+                });
             });
         });
         describe('verify', function () {

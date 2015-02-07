@@ -57,15 +57,18 @@ describe('permissions', function () {
                             method: Potato.AUTH_METHOD.BASIC
                         }, function (err) {
                             assert.notOk(err, 'Error during basic auth');
-                            console.log('posting new object')
+                            console.log('posting new object');
                             db.post({x: 1}, function (err, doc) {
                                 console.log('err', err);
                                 assert.notOk(err, 'error during posting new object. should work now that authorised!');
-                                potato.logout();
-                                db.get(doc.id, function (err) {
-                                    assert.notOk(err);
-                                    done();
+                                potato.accounts.logout(function (err) {
+                                    assert.notOk(err, 'unexpected error whilst logging out...');
+                                    db.get(doc.id, function (err) {
+                                        assert.notOk(err);
+                                        done();
+                                    });
                                 });
+
                             })
                         });
                     });
@@ -130,11 +133,13 @@ describe('permissions', function () {
                             assert.notOk(err);
                             db.post({x: 1}, function (err, resp) {
                                 assert.notOk(err);
-                                potato.logout();
-                                db.get(resp.id, function (err) {
-                                    assert.ok(err);
-                                    assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
-                                    done();
+                                potato.accounts.logout(function (err) {
+                                    assert.notOk(err, 'unexpected error when logging out...');
+                                    db.get(resp.id, function (err) {
+                                        assert.ok(err);
+                                        assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
+                                        done();
+                                    });
                                 });
                             })
                         });
@@ -184,10 +189,12 @@ describe('permissions', function () {
                                 assert.notOk(err);
                                 db.post({x: 1}, function (err, resp) {
                                     assert.notOk(err);
-                                    potato.logout();
-                                    db.get(resp.id, function (err) {
-                                        assert.notOk(err);
-                                        done();
+                                    potato.accounts.logout(function (err) {
+                                        assert.notOk(err, 'unexpected error when logging out');
+                                        db.get(resp.id, function (err) {
+                                            assert.notOk(err);
+                                            done();
+                                        });
                                     });
                                 })
                             });
