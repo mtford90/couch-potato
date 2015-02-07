@@ -167,7 +167,7 @@
             var ajax;
             if (!opts.ajax) opts.ajax = {};
             ajax = opts.ajax;
-            this.http._configureAuth(ajax);
+            this.auth.configure(ajax);
             return argObj;
         },
 
