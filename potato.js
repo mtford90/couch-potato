@@ -89,19 +89,16 @@
          * @param [opts.password] - admin password
          * @param cb
          */
-        reset: function (opts, cb) {
-            var __ret = util.optsOrCallback(opts, cb);
-            opts = __ret.opts;
-            return util.promise(__ret.cb, function (cb) {
+        reset: util.optsOrCb(function (args) {
+            return util.promise(args.cb, function (cb) {
                 _.series([
                     // Ensure that there are no session keys to screw up admin basic auth...
                     this.accounts.logout.bind(this.accounts),
-                    this.deleteAllDatabases.bind(this, opts),
+                    this.deleteAllDatabases.bind(this, args.opts),
                     this.deleteAllUsers.bind(this)
                 ], cb);
             }.bind(this));
-        },
-
+        }),
         _gatherArguments: function (args) {
             var doc, opts, cb, argsArray = [];
             for (var i = 0; i < args.length; i++) {
@@ -121,10 +118,15 @@
             };
         },
 
+        /**
+         * Searches out or creates the PouchDB options object and ensures that the right authorisation headers are set!
+         * @param _args
+         * @returns {*}
+         * @private
+         */
         _injectAuthIntoArgs: function (_args) {
             var argObj = this._gatherArguments(_args),
                 args = argObj._;
-            console.log('argObj', argObj);
             var opts;
             if (argObj.opts) {
                 opts = argObj.opts;
@@ -178,16 +180,18 @@
 
         /**
          * @param name
-         * @param [opts]
+         * @param {Object|Function} [opts]
          * @param [opts.anonymousUpdates]
          * @param [opts.anonymousReads]
          * @param [opts.designDocs]
          * @param [cb]
          */
         getOrCreateDatabase: function (name, opts, cb) {
-            var __ret = util.optsOrCallback(opts, cb);
-            opts = merge({}, __ret.opts);
-            cb = __ret.cb;
+            if (opts instanceof Function) {
+                cb = opts;
+                opts = undefined;
+            }
+            opts = opts || {};
             opts.path = name;
             opts.method = 'PUT';
             opts.admin = true;
@@ -220,10 +224,9 @@
          * @param [opts]
          * @param cb
          */
-        deleteAllDatabases: function (opts, cb) {
-            var __ret = util.optsOrCallback(opts, cb);
-            opts = __ret.opts;
-            cb = __ret.cb;
+        deleteAllDatabases: util.optsOrCb(function (args) {
+            var opts = args.opts,
+                cb = args.cb;
             opts.path = '_all_dbs';
             opts.admin = true;
             this.http(opts, function (err, data) {
@@ -242,7 +245,7 @@
                     this.http(ajaxOpts, cb);
                 }
             }.bind(this));
-        },
+        }),
         /**
          * Delete all users in the database (excluding admin users)
          * @param cb
