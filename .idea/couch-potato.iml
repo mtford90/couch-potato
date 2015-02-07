@@ -19,5 +19,6 @@
     <orderEntry type="module" module-name="couch-potato-example" />
     <orderEntry type="library" name="Node.js v0.10.28 Core Modules" level="application" />
     <orderEntry type="library" name="couch-potato node_modules" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Erlang SDK" level="project" />
   </component>
 </module>

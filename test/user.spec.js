@@ -1,12 +1,12 @@
 var assert = require('chai').assert,
-    Potato = require('../potato'),
-    potato = new Potato();
+    Potato = require('../potato');
 
 describe('User management', function () {
 
-    var db;
+    var db, potato;
 
     beforeEach(function (done) {
+        potato = new Potato();
         potato.reset(function (err) {
             assert.notOk(err);
             potato.getOrCreateDatabase('db', function (err, _db) {
@@ -93,6 +93,59 @@ describe('User management', function () {
         });
     });
 
+    describe('current user', function () {
+        it('user', function (done) {
+            var username = 'mike',
+                password = 'mike';
+            potato.accounts.register({
+                username: username,
+                password: password,
+                auth: potato.AUTH_METHOD.BASIC
+            }, function (err, user) {
+                assert.notOk(err);
+                assert.ok(user);
+                assert.equal(user, potato.accounts.user);
+                console.log('user', user);
+                done();
+            });
+        });
+
+        it('auth', function (done) {
+            var username = 'mike',
+                password = 'mike';
+            potato.accounts.register({
+                username: username,
+                password: password,
+                auth: potato.AUTH_METHOD.BASIC
+            }, function (err, user) {
+                assert.notOk(err);
+                assert.ok(user);
+                assert.equal(user, potato.accounts.auth.user);
+                assert.equal(potato.accounts.auth.method, potato.AUTH_METHOD.BASIC);
+                done();
+            });
+        });
+
+        it('logout should no longer return auth or user...', function (done) {
+            var username = 'mike',
+                password = 'mike';
+            potato.accounts.register({
+                username: username,
+                password: password,
+                auth: potato.AUTH_METHOD.BASIC
+            }, function (err, user) {
+                assert.notOk(err);
+                assert.ok(user);
+                potato.accounts.logout(function (err) {
+                    assert.notOk(err);
+                    assert.notOk(potato.accounts.auth);
+                    assert.notOk(potato.accounts.user);
+                    done();
+                });
+            });
+        });
+    });
+
     describe('auth', function () {
 
         describe('basic', function () {
@@ -108,34 +161,65 @@ describe('User management', function () {
                     done();
                 })
             });
-            it('success', function (done) {
-                var username = 'mike',
-                    password = 'mike';
-                potato.accounts.register({
-                    username: username,
-                    password: password
-                }, function (err) {
-                    assert.notOk(err);
-                    var _authDict = potato.auth.auth;
-                    assert.notOk(_authDict);
-                    potato.accounts.login({
+            function assertLoginSuccess(_authDict, username, password, user) {
+                _authDict = potato.auth.auth;
+                assert.equal(_authDict.method, potato.AUTH_METHOD.BASIC);
+                assert.equal(_authDict.username, username);
+                assert.equal(_authDict.password, password);
+                assert.equal(_authDict.user.name, username);
+                assert.equal(user.name, username);
+                assert.equal(user.username, username);
+                assert.equal(user.password, password);
+            }
+
+            describe('success', function () {
+                it('login', function (done) {
+                    var username = 'mike',
+                        password = 'mike';
+                    potato.accounts.register({
                         username: username,
-                        password: password,
-                        method: Potato.AUTH_METHOD.BASIC
-                    }, function (err, user) {
+                        password: password
+                    }, function (err) {
                         assert.notOk(err);
-                        _authDict = potato.auth.auth;
-                        assert.equal(_authDict.method, potato.AUTH_METHOD.BASIC);
-                        assert.equal(_authDict.username, username);
-                        assert.equal(_authDict.password, password);
-                        assert.equal(_authDict.user.name, username);
-                        assert.equal(user.name, username);
-                        assert.equal(user.username, username);
-                        assert.equal(user.password, password);
-                        done();
+                        var _authDict = potato.auth.auth;
+                        assert.notOk(_authDict);
+                        potato.accounts.login({
+                            username: username,
+                            password: password,
+                            method: Potato.AUTH_METHOD.BASIC
+                        }, function (err, user) {
+                            assert.notOk(err);
+                            assertLoginSuccess(_authDict, username, password, user);
+                            done();
+                        });
+                    });
+                });
+                it('login.basic', function (done) {
+                    var username = 'mike',
+                        password = 'mike';
+                    potato.accounts.register({
+                        username: username,
+                        password: password
+                    }, function (err) {
+                        assert.notOk(err);
+                        var _authDict = potato.auth.auth;
+                        assert.notOk(_authDict);
+                        potato.accounts.login.basic({
+                            username: username,
+                            password: password
+                        }, function (err, user) {
+                            assert.notOk(err);
+                            _authDict = potato.auth.auth;
+                            console.log('auth', potato.auth.auth);
+                            assert.ok(_authDict, 'should have logged them in');
+                            assertLoginSuccess(_authDict, username, password, user);
+                            done();
+                        });
                     });
                 });
             });
+
+
             it('logout', function (done) {
                 var auth = potato.auth;
                 auth.auth = {};

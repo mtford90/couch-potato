@@ -50,6 +50,7 @@
      * @constructor
      */
     function Potato(opts) {
+        console.log('potato!');
         opts = opts || {};
         if (opts.port) opts.port = opts.port.toString();
 
@@ -75,7 +76,6 @@
         for (var prop in constants) {
             if (constants.hasOwnProperty(prop)) this[prop] = constants[prop];
         }
-
     }
 
     Potato.prototype = Object.create(EventEmitter.prototype);
