@@ -23,7 +23,7 @@ describe('storage', function () {
             method: 'dsfsdfsdf'
         };
         assert.throws(function () {
-            potato({auth: auth});
+            new Potato({auth: auth});
         }, CouchPotatoError);
     });
     describe('basic', function () {
@@ -34,7 +34,7 @@ describe('storage', function () {
                 method: potato.AUTH_METHOD.BASIC
             };
             assert.throws(function () {
-                potato({auth: auth});
+                new Potato({auth: auth});
             }, CouchPotatoError);
         });
         it('missing username', function () {
@@ -43,7 +43,7 @@ describe('storage', function () {
                 method: potato.AUTH_METHOD.BASIC
             };
             assert.throws(function () {
-                potato({auth: auth});
+                new Potato({auth: auth});
             }, CouchPotatoError);
         });
     });
