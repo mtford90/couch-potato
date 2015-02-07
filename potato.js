@@ -14,6 +14,8 @@
         url = require('url'),
         EventEmitter = require('events').EventEmitter;
 
+    util._patchBind();
+
     /**
      * @param opts
      * @param opts.database
@@ -37,7 +39,6 @@
     CouchPotatoDB.prototype = Object.create(PouchDB.prototype);
 
     merge(CouchPotatoDB.prototype, require('./lib/admin'));
-
 
     /**
      * Returns an API to an instance of CouchDB,
@@ -83,23 +84,21 @@
         Database: CouchPotatoDB,
         /**
          * Clear out the database. Useful during testing.
-         * @param [optsOrCb]
-         * @param [optsOrCb.username] - admin username
-         * @param [optsOrCb.password] - admin password
+         * @param [opts]
+         * @param [opts.username] - admin username
+         * @param [opts.password] - admin password
          * @param cb
          */
-        reset: function (optsOrCb, cb) {
-            var __ret = util.optsOrCallback(optsOrCb, cb),
-                opts = __ret.opts;
-            cb = __ret.cb;
-            _.series([
-                // Ensure that there are no session keys to screw up admin basic auth...
-                this.accounts.logout.bind(this.accounts),
-                this.deleteAllDatabases.bind(this, opts),
-                this.deleteAllUsers.bind(this)
-            ], function (err) {
-                if (err) util.logError('Error resetting db', err);
-                cb(err);
+        reset: function (opts, cb) {
+            var __ret = util.optsOrCallback(opts, cb);
+            opts = __ret.opts;
+            return util.promise(__ret.cb, function (cb) {
+                _.series([
+                    // Ensure that there are no session keys to screw up admin basic auth...
+                    this.accounts.logout.bind(this.accounts),
+                    this.deleteAllDatabases.bind(this, opts),
+                    this.deleteAllUsers.bind(this)
+                ], cb);
             }.bind(this));
         },
 
