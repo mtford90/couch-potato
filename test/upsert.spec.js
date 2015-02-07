@@ -7,14 +7,14 @@ var assert = require('chai').assert,
 describe('upsert documents', function () {
     var db;
     beforeEach(function (done) {
-        potato.reset(function (err) {
-            assert.notOk(err, 'Error when reset database: ' + prettyJson(err));
-            potato.getOrCreateDatabase('db', {anonymousUpdates: true, anonymousReads: true}, function (err, _db) {
-                assert.notOk(err);
-                db = _db;
-                done();
-            });
-        });
+        potato.reset()
+            .then(function () {
+                potato.getOrCreateDatabase('db', {anonymousUpdates: true, anonymousReads: true}, function (err, _db) {
+                    assert.notOk(err);
+                    db = _db;
+                    done();
+                });
+            }).catch(done);
     });
 
     describe('no user', function () {

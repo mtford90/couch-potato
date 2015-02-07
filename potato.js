@@ -90,7 +90,7 @@
          * @param cb
          */
         reset: util.optsOrCb(function (args) {
-            return util.promise(args.cb, function (cb) {
+            var promise = util.promise(args.cb, function (cb) {
                 _.series([
                     // Ensure that there are no session keys to screw up admin basic auth...
                     this.accounts.logout.bind(this.accounts),
@@ -98,6 +98,8 @@
                     this.deleteAllUsers.bind(this)
                 ], cb);
             }.bind(this));
+            console.log('promise', promise);
+            return promise;
         }),
         _gatherArguments: function (args) {
             var doc, opts, cb, argsArray = [];
@@ -196,6 +198,7 @@
             opts.method = 'PUT';
             opts.admin = true;
             // Create database
+
             this.http(opts, function (err, data) {
                 if (!err) {
                     var db = this._pouchDB(name);
