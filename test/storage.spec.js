@@ -1,8 +1,7 @@
 var assert = require('chai').assert,
     Potato = require('../potato'),
     potato = new Potato(),
-    CouchPotatoError = require('../lib/errors').CouchPotatoError,
-    prettyJson = require('./util').prettyJson;
+    CouchPotatoError = require('../lib/errors').CouchPotatoError;
 
 describe('storage', function () {
 
@@ -28,7 +27,6 @@ describe('storage', function () {
     });
     describe('basic', function () {
         it('missing password', function () {
-            console.log('couchdb', potato);
             var auth = {
                 username: 'mike',
                 method: potato.AUTH_METHOD.BASIC

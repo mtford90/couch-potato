@@ -14,9 +14,7 @@ describe('sofa', function () {
 
     describe('load config', function () {
         it('from path', function () {
-            console.log('sofa', sofa);
             var config = sofa.loadConfig(__dirname + '/fixtures/example');
-            console.log('config', config);
         });
 
         describe('create database', function () {

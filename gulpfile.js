@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     mocha = require('gulp-mocha'),
     uglify = require('gulp-uglify'),
+    sh = require('shelljs'),
     source = require('vinyl-source-stream');
 
 // Config
@@ -127,4 +128,22 @@ gulp.task('watch-browser', ['test-server', 'build-test', 'open-tests'], function
 gulp.task('watch-node', ['test-server', 'test-node'], function () {
     gulp.watch(WATCH_JS, ['test-node']);
     gulp.watch(WATCH_TEST_JS, ['test-node']);
+});
+
+gulp.task('rcouch:stop', function () {
+    sh.exec('./submodules/rcouch/rel/rcouch/bin/rcouch stop', {silent: true});
+});
+
+gulp.task('rcouch:start', function () {
+    sh.exec('./submodules/rcouch/rel/rcouch/bin/rcouch start', {silent: true});
+});
+
+gulp.task('rcouch:clean', function () {
+    sh.exec('rm -rf data/databases/*');
+    sh.exec('rm -rf data/views/*');
+});
+
+// Clearing out the data ensures that the tests stay nice & snappy.
+gulp.task('rcouch:refresh', function (done) {
+    runSequence('rcouch:stop', 'rcouch:clean', 'rcouch:start', done);
 });

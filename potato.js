@@ -15,6 +15,7 @@
 
     util._patchBind();
 
+
     /**
      * @param opts
      * @param opts.database
@@ -256,6 +257,8 @@
          * @param cb
          */
         deleteAllUsers: function (cb) {
+            var log = util.logger('potato:core');
+            log('deleting all users');
             return util.promise(cb, function (cb) {
                 this.http({
                     path: '_users/_all_docs',
@@ -302,6 +305,8 @@
     // Place on window object if in browser environment.
     var isBrowser = !!global.XMLHttpRequest;
     if (isBrowser) global.Potato = Potato;
+    Potato.debug = require('debug');
+    Potato.debug.enable('*');
     module.exports = Potato;
 
 })();

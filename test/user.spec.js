@@ -138,7 +138,6 @@ describe('User management', function () {
             });
             it('logout', function (done) {
                 var auth = potato.auth;
-                console.log(potato);
                 auth.auth = {};
                 assert.ok(auth.auth);
                 potato.accounts.logout(function (err) {

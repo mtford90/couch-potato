@@ -42,7 +42,6 @@ describe('permissions', function () {
                 });
                 it('anonymous creation should now be forbidden', function (done) {
                     db.post({x: 1}, function (err, resp) {
-                        console.log('resp', resp);
                         assert.ok(err);
                         assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
                         done();
@@ -57,9 +56,7 @@ describe('permissions', function () {
                             method: Potato.AUTH_METHOD.BASIC
                         }, function (err) {
                             assert.notOk(err, 'Error during basic auth');
-                            console.log('posting new object');
                             db.post({x: 1}, function (err, doc) {
-                                console.log('err', err);
                                 assert.notOk(err, 'error during posting new object. should work now that authorised!');
                                 potato.accounts.logout(function (err) {
                                     assert.notOk(err, 'unexpected error whilst logging out...');
@@ -93,7 +90,6 @@ describe('permissions', function () {
                     db.post({x: 1}, function (err, resp) {
                         assert.notOk(err);
                         var id = resp.id;
-                        console.log('id', id);
                         db.get(id, function (err, doc) {
                             assert.ok(err);
                             assert.equal(err.status, db.HTTP_STATUS.FORBIDDEN);
