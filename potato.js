@@ -118,13 +118,12 @@
                 opts = __ret.opts;
             cb = __ret.cb;
             _.series([
+                // Ensure that there are no session keys to screw up admin basic auth...
+                this.accounts.logout.bind(this.accounts),
                 this.deleteAllDatabases.bind(this, opts),
                 this.deleteAllUsers.bind(this)
             ], function (err) {
-                if (!err) this.logout();
-                else {
-                    util.logError('Error resetting db', err);
-                }
+                if (err) util.logError('Error resetting db', err);
                 cb(err);
             }.bind(this));
         },
