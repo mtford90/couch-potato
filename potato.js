@@ -90,7 +90,7 @@
          * @param cb
          */
         reset: util.optsOrCb(function (args) {
-            var promise = util.promise(args.cb, function (cb) {
+            return util.promise(args.cb, function (cb) {
                 _.series([
                     // Ensure that there are no session keys to screw up admin basic auth...
                     this.accounts.logout.bind(this.accounts),
@@ -98,8 +98,6 @@
                     this.deleteAllUsers.bind(this)
                 ], cb);
             }.bind(this));
-            console.log('promise', promise);
-            return promise;
         }),
         _gatherArguments: function (args) {
             var doc, opts, cb, argsArray = [];
@@ -197,29 +195,32 @@
             opts.path = name;
             opts.method = 'PUT';
             opts.admin = true;
-            // Create database
-
-            this.http(opts, function (err, data) {
-                if (!err) {
-                    var db = this._pouchDB(name);
-                    db.configureDatabase(opts, function (err) {
-                        if (!err) {
-                            cb(null, db);
-                        } else cb(err);
-                    });
-                } else cb(err, data);
+            return util.promise(cb, function (cb) {
+                // Create database
+                this.http(opts, function (err, data) {
+                    if (!err) {
+                        var db = this._pouchDB(name);
+                        db.configureDatabase(opts, function (err) {
+                            if (!err) {
+                                cb(null, db);
+                            } else cb(err);
+                        });
+                    } else cb(err, data);
+                }.bind(this));
             }.bind(this));
         },
 
         getDatabase: function (name, cb) {
-            this.http({
-                path: name,
-                admin: true
-            }, function (err) {
-                if (!err) {
-                    var db = this._pouchDB(name);
-                    cb(null, db);
-                } else cb(err);
+            return util.promise(cb, function (cb) {
+                this.http({
+                    path: name,
+                    admin: true
+                }, function (err) {
+                    if (!err) {
+                        var db = this._pouchDB(name);
+                        cb(null, db);
+                    } else cb(err);
+                }.bind(this));
             }.bind(this));
         },
         /**
@@ -232,21 +233,23 @@
                 cb = args.cb;
             opts.path = '_all_dbs';
             opts.admin = true;
-            this.http(opts, function (err, data) {
-                if (err) cb(err);
-                else {
-                    var ajaxOpts = data.reduce(function (memo, dbName) {
-                        if (!constants.IGNORE_DATABASES.memberOf(dbName)) {
-                            memo.push({
-                                method: 'DELETE',
-                                path: dbName,
-                                admin: true
-                            });
-                        }
-                        return memo;
-                    }, []);
-                    this.http(ajaxOpts, cb);
-                }
+            return util.promise(cb, function (cb) {
+                this.http(opts, function (err, data) {
+                    if (err) cb(err);
+                    else {
+                        var ajaxOpts = data.reduce(function (memo, dbName) {
+                            if (!constants.IGNORE_DATABASES.memberOf(dbName)) {
+                                memo.push({
+                                    method: 'DELETE',
+                                    path: dbName,
+                                    admin: true
+                                });
+                            }
+                            return memo;
+                        }, []);
+                        this.http(ajaxOpts, cb);
+                    }
+                }.bind(this));
             }.bind(this));
         }),
         /**
@@ -254,45 +257,44 @@
          * @param cb
          */
         deleteAllUsers: function (cb) {
-            cb = cb || function () {
-            };
-            this.http({
-                path: '_users/_all_docs',
-                admin: true
-            }, function (err, resp) {
-                if (!err) {
-                    var userDocs = resp.rows.reduce(function (memo, data) {
-                        if (data.id.indexOf('org.couchdb.user') > -1) {
-                            memo.push({
-                                _id: data.id,
-                                _rev: data.value.rev,
-                                _deleted: true
-                            })
+            return util.promise(cb, function (cb) {
+                this.http({
+                    path: '_users/_all_docs',
+                    admin: true
+                }, function (err, resp) {
+                    if (!err) {
+                        var userDocs = resp.rows.reduce(function (memo, data) {
+                            if (data.id.indexOf('org.couchdb.user') > -1) {
+                                memo.push({
+                                    _id: data.id,
+                                    _rev: data.value.rev,
+                                    _deleted: true
+                                })
+                            }
+                            return memo;
+                        }, []);
+                        if (userDocs.length) {
+                            this.http({
+                                path: '_users/_bulk_docs',
+                                body: {docs: userDocs},
+                                admin: true,
+                                method: 'POST'
+                            }, function (err) {
+                                if (err) util.logError('Error deleting all users', err);
+                                cb(err);
+                            });
                         }
-                        return memo;
-                    }, []);
-                    if (userDocs.length) {
-                        this.http({
-                            path: '_users/_bulk_docs',
-                            body: {docs: userDocs},
-                            admin: true,
-                            method: 'POST'
-                        }, function (err) {
-                            if (err) util.logError('Error deleting all users', err);
-                            cb(err);
-                        });
+                        else {
+                            cb();
+                        }
+                    } else {
+                        util.logError('Error getting all users', err);
+                        cb(err);
                     }
-                    else {
-                        cb();
-                    }
-                } else {
-                    util.logError('Error getting all users', err);
-                    cb(err);
-                }
+                }.bind(this));
             }.bind(this));
         }
     });
-
 
     for (var prop in constants) {
         if (constants.hasOwnProperty(prop)) Potato[prop] = constants[prop];
